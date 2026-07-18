@@ -17,6 +17,8 @@ it is the source of truth for who is working where.
 | surge-trackboard | T1 | `src/halo/mci/census.py`, `src/halo/mci/surge.py`, `tests/fixtures/ed_census.json`, `src/halo/static/`, `src/halo/app.py` (surge routes), `tests/test_mci_surge.py`, docs updates | done | `make check` (219 passed); board + door tabs verified in Chrome; plan: 11 dc + 6 chairs + 4 admit-pull + 2 hold of 23 |
 | interactive-board | T1 | `src/halo/mci/board.py`, `src/halo/mci/edu_links.py`, `src/halo/mci/panel.py` (mrn), `src/halo/mci/scenarios.py`, `src/halo/static/`, `src/halo/app.py` (board routes + readiness tab wiring; no `halo/edu` edits), `tests/test_mci_board.py`, `tests/test_edu_links.py` | done | `make check` (252 passed); Chrome-verified: mid-execution board (discharge/chairs/2-phase pull/undo/audit log), MRNs derived from FHIR ids, canthotomy '?' chip on live handoff, readiness tab embedding `/edu/` |
 
+| sim-lab | T1 | `src/halo/sim/`, `src/halo/static/sim.html`, `src/halo/app.py` (sim routes + `/edu/*.html` redirect shim), `src/halo/static/index.html` (readiness section), `tests/test_sim.py`, `pyproject.toml` (package-data line) | done | `make check` (258 passed); both IO-case endings Chrome-verified (tibia -> distension/arrest/death debrief; humerus -> survival); /edu/*.html shim 307->200 |
+
 Claim a lane: add a row with a short name, your terminal label (T1/T2/…), the exact files or
 directories you own, state `active`, and the command that proves your work. Push the claim before
 you start. Set state to `done` (with the verify command's result) when you finish.
@@ -68,6 +70,10 @@ you start. Set state to `done` (with the verify command's result) when you finis
   missing data = don't move. UI revamped as a two-tab EDIS-style module-within-the-EHR
   (track board + door triage), one dependency-free HTML file. No model call on the board —
   sorts in milliseconds by design.
+- 2026-07-18 (T1 note for T2): the `/edu/` index links to relative `{module_id}.html`
+  (render.py:233 — static-export style), which 404s when served live at `/edu/`. I added an
+  app-level redirect shim (`/edu/{module_id}.html` -> `/edu/modules/{module_id}/card`) in my
+  lane so the served page works; consider making the href serving-mode-aware when you're back.
 - 2026-07-18 (T1 note for T2): my `make fmt` incidentally reformatted your uncommitted
   `src/halo/edu/diagrams.py` (ruff format only, no semantic change) — apologies; it was
   untracked so I could not revert it.
