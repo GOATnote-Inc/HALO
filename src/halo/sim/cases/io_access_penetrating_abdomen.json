@@ -1,0 +1,139 @@
+{
+  "id": "io_access_penetrating_abdomen",
+  "title": "Vascular access — penetrating abdominal trauma",
+  "synthetic": true,
+  "draft": true,
+  "clock_seconds_per_tick": 5,
+  "briefing": "34-year-old male from the factory explosion. Metal fragment wound to the left upper abdomen. Pale, diaphoretic, confused. Two peripheral IV attempts have already failed — veins are collapsed. The massive transfusion protocol is primed and waiting on access.",
+  "sprite": { "wound": "abdomen", "props": [] },
+  "states": {
+    "arrival": {
+      "vitals": { "hr": 132, "sbp": 78, "dbp": 40, "spo2": 91, "rr": 28 },
+      "drift": { "sbp": -0.6, "hr": 0.5 },
+      "sprite": { "pallor": 0.45, "distension": 0.15, "distress": 0.6 },
+      "note": "Hemorrhagic shock — no access"
+    },
+    "iv_delay": {
+      "vitals": { "hr": 138, "sbp": 72, "dbp": 38, "spo2": 90, "rr": 30 },
+      "drift": { "sbp": -1.2, "hr": 0.8 },
+      "sprite": { "pallor": 0.55, "distension": 0.18, "distress": 0.7 },
+      "note": "Third IV attempt in progress — clock running"
+    },
+    "tibia_run": {
+      "vitals": { "hr": 136, "sbp": 80, "dbp": 42, "spo2": 90, "rr": 30 },
+      "drift": { "sbp": -2.4, "hr": 1.2 },
+      "sprite": { "pallor": 0.6, "distension": 0.45, "distress": 0.75, "io": "tibia" },
+      "note": "MTP wide open via tibial IO — abdomen distending"
+    },
+    "tibia_crash": {
+      "vitals": { "hr": 148, "sbp": 52, "dbp": 30, "spo2": 84, "rr": 34 },
+      "drift": { "sbp": -3.5, "hr": -2.0, "spo2": -1.5 },
+      "sprite": { "pallor": 0.85, "distension": 0.8, "distress": 0.9, "io": "tibia" },
+      "note": "Rate increased — girth expanding, pressure falling",
+      "resolve": { "after": 4, "goto": "arrest" }
+    },
+    "arrest": {
+      "vitals": { "hr": 0, "sbp": 0, "dbp": 0, "spo2": 0, "rr": 0 },
+      "drift": {},
+      "sprite": { "pallor": 1.0, "distension": 0.85, "distress": 0.0, "arrest": true },
+      "note": "PEA arrest",
+      "resolve": { "after": 3, "outcome": "died" }
+    },
+    "humerus_run": {
+      "vitals": { "hr": 118, "sbp": 92, "dbp": 54, "spo2": 95, "rr": 24 },
+      "drift": { "sbp": 1.2, "hr": -1.5 },
+      "sprite": { "pallor": 0.3, "distension": 0.2, "distress": 0.4, "io": "humerus" },
+      "note": "MTP via proximal humerus IO — delivering above the diaphragm",
+      "resolve": { "after": 8, "outcome": "survived" }
+    },
+    "humerus_rescue": {
+      "vitals": { "hr": 126, "sbp": 84, "dbp": 48, "spo2": 92, "rr": 26 },
+      "drift": { "sbp": 0.9, "hr": -1.0 },
+      "sprite": { "pallor": 0.5, "distension": 0.5, "distress": 0.5, "io": "humerus" },
+      "note": "Access moved to proximal humerus — pressure stabilizing",
+      "resolve": { "after": 8, "outcome": "survived_late" }
+    }
+  },
+  "start": { "state": "arrival", "decision": "access_choice", "delay": 2 },
+  "decisions": {
+    "access_choice": {
+      "prompt": "Where do you obtain access for the massive transfusion?",
+      "options": [
+        {
+          "id": "tibia",
+          "label": "Proximal tibia IO",
+          "detail": "Fast, familiar landmark",
+          "goto": "tibia_run",
+          "log": "IO placed — left proximal tibia. MTP running wide open.",
+          "next": { "decision": "tibia_recognize", "delay": 5 }
+        },
+        {
+          "id": "humerus",
+          "label": "Proximal humerus IO",
+          "detail": "Above the diaphragm",
+          "goto": "humerus_run",
+          "log": "IO placed — right proximal humerus. MTP running; blood delivering to the SVC."
+        },
+        {
+          "id": "iv_again",
+          "label": "One more peripheral IV attempt",
+          "detail": "Stay with what you know",
+          "goto": "iv_delay",
+          "log": "Third peripheral IV attempt... failed. Ninety seconds lost.",
+          "next": { "decision": "access_choice", "delay": 4 }
+        }
+      ]
+    },
+    "tibia_recognize": {
+      "prompt": "Pressure keeps falling and the abdomen is visibly distending — your resuscitation is running wide open. What now?",
+      "options": [
+        {
+          "id": "switch_humerus",
+          "label": "Move access to the proximal humerus",
+          "detail": "Suspect the infusion is feeding the belly",
+          "goto": "humerus_rescue",
+          "log": "Recognized: lower-extremity infusion extravasating at the injured vessel. Humeral IO placed."
+        },
+        {
+          "id": "increase_rate",
+          "label": "Squeeze the bags — increase the rate",
+          "detail": "The pressure just needs volume",
+          "goto": "tibia_crash",
+          "log": "Rate increased through the tibial IO. Every unit is pouring into the abdomen."
+        }
+      ]
+    }
+  },
+  "outcomes": {
+    "survived": {
+      "label": "Survived to OR",
+      "tone": "good",
+      "debrief": "Blood delivered via the proximal humerus reaches the SVC and the heart — above the injury. Pressure recovered and the patient reached the OR alive.",
+      "teaching": [
+        "Penetrating abdominal or pelvic trauma raises the possibility of infra-diaphragmatic vascular injury (iliac veins, IVC). Volume given through lower-extremity access can extravasate at the injury instead of reaching the heart.",
+        "When the belly or pelvis is the problem, resuscitate ABOVE the diaphragm: proximal humerus IO (or supra-diaphragmatic central access).",
+        "Humeral IO also outperforms tibial IO on flow rate — it is the preferred site when minutes and units matter."
+      ]
+    },
+    "survived_late": {
+      "label": "Salvaged — late recognition",
+      "tone": "warn",
+      "debrief": "The distending abdomen while your infusion ran wide open WAS the diagnosis: the tibial line was feeding the injury. Moving access above the diaphragm salvaged the resuscitation — several units late.",
+      "teaching": [
+        "A patient who worsens during rapid infusion through lower-extremity access, with a filling abdomen, is telling you where the fluid is going.",
+        "With penetrating abdominal/pelvic trauma, choose above-the-diaphragm access FIRST: proximal humerus IO delivers to the SVC.",
+        "Escalating the rate through the same line escalates the extravasation, not the blood pressure."
+      ]
+    },
+    "died": {
+      "label": "Death from hemorrhagic shock",
+      "tone": "bad",
+      "debrief": "Every unit given through the tibial IO traveled up the injured iliac system and poured into the abdomen — the resuscitation never reached the heart. The abdomen filled while the pressure fell, and the patient arrested.",
+      "teaching": [
+        "With penetrating abdominal/pelvic trauma, lower-extremity access can deliver the entire resuscitation into the injury. Choose the proximal humerus IO — above the diaphragm, into the SVC.",
+        "A distending abdomen + falling pressure during wide-open infusion through a leg line is recognizable and rescuable: move the access, don't raise the rate.",
+        "This failure mode is invisible on the monitor until it's late — site selection is the decision that matters, and it happens in the first minute."
+      ]
+    }
+  }
+}

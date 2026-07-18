@@ -31,6 +31,7 @@ where = ["src"]
 [tool.setuptools.package-data]
 halo = ["static/*"]
 "halo.edu" = ["content/*.json"]
+"halo.sim" = ["cases/*.json"]
 
 [tool.ruff]
 line-length = 100

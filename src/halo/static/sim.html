@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HALO — Simulation Lab</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#101826; --muted:#5A6472; --line:#D7DCE3;
+    --board:#0F1B2D; --board-ink:#E8EDF4; --alert:#C1121F; --accent:#1D4ED8;
+    --good:#166534; --warn:#B45309; --bad:#B91C1C;
+    --mon-bg:#081120; --mon-hr:#38E07B; --mon-bp:#F4B740; --mon-spo2:#4CC9F0; --mon-rr:#E8EDF4;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+       font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+  button{font:inherit}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  header{background:var(--board);color:var(--board-ink);padding:12px 20px;display:flex;
+         gap:14px;align-items:baseline;flex-wrap:wrap;border-bottom:3px solid var(--alert)}
+  header .brand{font-weight:700;letter-spacing:.14em}
+  header .sub{color:#9FB0C7;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+  header .ribbon{margin-left:auto;font-size:11px;font-weight:700;letter-spacing:.1em;
+       text-transform:uppercase;color:#E4B04A;border:1px solid #E4B04A;border-radius:999px;padding:3px 10px}
+  header a{color:#9FB0C7;font-size:13px}
+  main{max-width:1180px;margin:18px auto;padding:0 20px}
+  .brief{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);
+         border-radius:10px;padding:14px 18px;margin-bottom:14px}
+  .brief h1{margin:0 0 4px;font-size:17px}
+  .brief p{margin:4px 0;font-size:13.5px}
+  .brief .draft{color:var(--warn);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+  .stage{display:grid;grid-template-columns:340px 1fr;gap:14px}
+  @media (max-width:860px){.stage{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .panel h2{margin:0 0 8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  /* monitor */
+  .monitor{background:var(--mon-bg);border-radius:8px;padding:10px 12px}
+  .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+  .num .v{font:700 30px/1 var(--mono)}
+  .num .l{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#7C8CA5;margin-top:2px}
+  .num.hr .v{color:var(--mon-hr)} .num.bp .v{color:var(--mon-bp)}
+  .num.spo2 .v{color:var(--mon-spo2)} .num.rr .v{color:var(--mon-rr)}
+  .mon-note{color:#9FB0C7;font:12px/1.4 var(--mono);margin-top:8px;min-height:18px}
+  .clock{color:#7C8CA5;font:12px var(--mono);float:right}
+  /* decision + log */
+  .decision{border:1.5px solid var(--accent);border-radius:10px;padding:14px 16px;margin-top:14px;background:#F8FAFF}
+  .decision .q{font-weight:700;font-size:15px;margin-bottom:10px}
+  .optbtn{display:block;width:100%;text-align:left;margin:8px 0;border:1px solid var(--line);
+          background:#fff;border-radius:8px;padding:11px 14px;cursor:pointer;font-size:14px}
+  .optbtn:hover{border-color:var(--accent)}
+  .optbtn b{display:block}
+  .optbtn span{color:var(--muted);font-size:12.5px}
+  .log{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:10px;
+       padding:12px 16px;max-height:180px;overflow-y:auto}
+  .log li{font:12px/1.8 var(--mono);color:var(--muted);list-style:none}
+  .log li.latest{color:var(--ink);font-weight:600}
+  /* outcome overlay */
+  .outcome{border-radius:10px;padding:16px 20px;margin-top:14px;color:#fff}
+  .outcome.good{background:var(--good)} .outcome.warn{background:var(--warn)} .outcome.bad{background:var(--bad)}
+  .outcome h2{margin:0 0 6px;font-size:20px;color:#fff;letter-spacing:.02em}
+  .outcome p{margin:4px 0;font-size:14px}
+  .outcome ol{margin:10px 0 4px;padding-left:20px}
+  .outcome li{margin:6px 0;font-size:13.5px}
+  .outcome .again{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}
+  .outcome button, .outcome a{background:#fff;border:0;border-radius:8px;padding:10px 16px;
+       font-weight:700;cursor:pointer;color:var(--ink);text-decoration:none;font-size:14px}
+  .pick{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+  .pickcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;
+            text-align:left;cursor:pointer}
+  .pickcard:hover{border-color:var(--accent)}
+  .pickcard b{font-size:15px}
+  .pickcard p{color:var(--muted);font-size:13px;margin:6px 0 0}
+  footer{max-width:1180px;margin:10px auto 40px;padding:0 20px;color:var(--muted);font-size:12px}
+  @media (prefers-reduced-motion:reduce){.ecg-scroll{animation:none !important}}
+  .iopulse{animation:iopulse 1.2s ease-in-out infinite}
+  @media (prefers-reduced-motion:reduce){.iopulse{animation:none}}
+  @keyframes iopulse{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+</head>
+<body>
+<header>
+  <span class="brand">HALO</span>
+  <span class="sub">Simulation lab — module 3</span>
+  <a href="/?tab=edu">Back to EHR view</a>
+  <span class="ribbon">Simulation · synthetic · draft content</span>
+</header>
+
+<main>
+  <div id="picker" class="pick" hidden></div>
+
+  <div id="run" hidden>
+    <div class="brief">
+      <h1 id="title"></h1>
+      <p class="draft">Draft content — pending physician review · simplified training physiology,
+        not clinical guidance</p>
+      <p id="briefing"></p>
+    </div>
+    <div class="stage">
+      <section class="panel" aria-label="Patient">
+        <h2>Patient</h2>
+        <svg id="patient" viewBox="0 0 260 430" width="100%" role="img"
+             aria-label="Simulated patient illustration">
+          <!-- stretcher -->
+          <rect x="20" y="392" width="220" height="10" rx="5" fill="#C7CDD6"/>
+          <!-- legs -->
+          <rect id="legL" x="96" y="268" width="26" height="120" rx="13" fill="#D9B08C"/>
+          <rect id="legR" x="138" y="268" width="26" height="120" rx="13" fill="#D9B08C"/>
+          <!-- arms -->
+          <rect id="armL" x="52" y="128" width="24" height="104" rx="12" fill="#D9B08C" transform="rotate(14 64 128)"/>
+          <rect id="armR" x="184" y="128" width="24" height="104" rx="12" fill="#D9B08C" transform="rotate(-14 196 128)"/>
+          <!-- torso + gown -->
+          <rect id="torso" x="82" y="112" width="96" height="164" rx="26" fill="#B9D0E8"/>
+          <!-- abdomen (distension overlay) -->
+          <ellipse id="abd" cx="130" cy="238" rx="44" ry="30" fill="#A8C4E2"/>
+          <!-- wound marker -->
+          <g id="wound" style="display:none">
+            <circle cx="106" cy="228" r="9" fill="#B91C1C"/>
+            <rect x="99" y="226" width="14" height="4" rx="2" fill="#fff"/>
+          </g>
+          <!-- head + face -->
+          <circle id="head" cx="130" cy="70" r="32" fill="#D9B08C"/>
+          <g id="eyesOpen"><circle cx="118" cy="64" r="3.2" fill="#101826"/><circle cx="142" cy="64" r="3.2" fill="#101826"/></g>
+          <g id="eyesShut" style="display:none">
+            <path d="M113 64 h10" stroke="#101826" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M137 64 h10" stroke="#101826" stroke-width="2.4" stroke-linecap="round"/>
+          </g>
+          <path id="mouth" d="M118 84 Q130 90 142 84" stroke="#7A4A21" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+          <!-- secretions (case 2) -->
+          <g id="drool" style="display:none">
+            <path d="M138 90 q3 8 0 14" stroke="#4CC9F0" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M124 92 q-2 7 0 12" stroke="#4CC9F0" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          </g>
+          <!-- IO sites -->
+          <g id="io_humerus" class="iopulse" style="display:none">
+            <circle cx="196" cy="140" r="7" fill="#6B21A8"/>
+            <text x="208" y="145" font-size="11" font-family="var(--mono)" fill="#6B21A8">IO</text>
+          </g>
+          <g id="io_tibia" class="iopulse" style="display:none">
+            <circle cx="151" cy="330" r="7" fill="#6B21A8"/>
+            <text x="163" y="335" font-size="11" font-family="var(--mono)" fill="#6B21A8">IO</text>
+          </g>
+          <!-- decon shower (case 2) -->
+          <g id="decon" style="display:none">
+            <path d="M36 30 h34" stroke="#4CC9F0" stroke-width="4" stroke-linecap="round"/>
+            <path d="M40 38 l-3 12 M52 38 l0 12 M64 38 l3 12" stroke="#4CC9F0" stroke-width="2.6" stroke-linecap="round"/>
+          </g>
+          <!-- staff figures (case 2) -->
+          <g id="staff" style="display:none">
+            <g id="staff1"><circle cx="30" cy="330" r="10" fill="#D9B08C"/><rect x="20" y="342" width="20" height="34" rx="8" fill="#3E5C76"/></g>
+            <g id="staff2"><circle cx="60" cy="330" r="10" fill="#D9B08C"/><rect x="50" y="342" width="20" height="34" rx="8" fill="#3E5C76"/></g>
+            <text x="18" y="392" font-size="10" font-family="var(--mono)" fill="#5A6472">RN · Tech</text>
+          </g>
+        </svg>
+      </section>
+      <section>
+        <div class="panel">
+          <h2>Monitor <span class="clock" id="clock">00:00</span></h2>
+          <div class="monitor">
+            <svg id="ecg" viewBox="0 0 560 90" width="100%" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <path id="beat" d="M0 60 h18 q2 -6 4 0 h10 l4 -34 l5 46 l4 -18 h10 q3 -8 6 0 h19" fill="none"/>
+              </defs>
+              <g id="trace" stroke="#38E07B" stroke-width="2.2" fill="none"></g>
+              <line id="flatline" x1="0" y1="60" x2="560" y2="60" stroke="#38E07B" stroke-width="2.2" style="display:none"/>
+            </svg>
+            <div class="nums">
+              <div class="num hr"><div class="v" id="v-hr">--</div><div class="l">HR</div></div>
+              <div class="num bp"><div class="v" id="v-bp">--/--</div><div class="l">NIBP</div></div>
+              <div class="num spo2"><div class="v" id="v-spo2">--</div><div class="l">SpO2 %</div></div>
+              <div class="num rr"><div class="v" id="v-rr">--</div><div class="l">RR</div></div>
+            </div>
+            <div class="mon-note" id="mon-note"></div>
+          </div>
+        </div>
+        <div class="decision" id="decision" hidden>
+          <div class="q" id="q"></div>
+          <div id="opts"></div>
+        </div>
+        <div class="outcome" id="outcome" hidden></div>
+        <ol class="log" id="log" aria-live="polite"></ol>
+      </section>
+    </div>
+  </div>
+</main>
+<footer>Deterministic training simulation — every branch is authored, reviewable content; no model
+in the loop. Synthetic patients only. Debrief teaching points are draft pending physician review.</footer>
+
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+const esc = (x) => String(x ?? "").replace(/[&<>"']/g,
+  (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+let CASE = null, vitals = {}, state = null, tick = 0, timer = null;
+let pendingDecision = null, pendingOutcomeTick = null, pendingStateTick = null;
+let autoPath = [], done = false;
+
+/* ---------- case picker ---------- */
+async function init() {
+  const q = new URLSearchParams(location.search);
+  const caseId = q.get("case");
+  autoPath = (q.get("auto") || "").split(",").filter(Boolean);
+  if (!caseId) {
+    const r = await fetch("/sim/cases");
+    const cases = (await r.json()).cases;
+    const picker = $("#picker");
+    picker.hidden = false;
+    picker.innerHTML = cases.map((c) => `
+      <button class="pickcard" data-id="${esc(c.id)}">
+        <b>${esc(c.title)}</b>
+        <p>${esc(c.briefing.slice(0, 140))}&hellip;</p>
+      </button>`).join("");
+    for (const b of picker.querySelectorAll(".pickcard"))
+      b.addEventListener("click", () => location.search = `?case=${b.dataset.id}`);
+    return;
+  }
+  CASE = await (await fetch(`/sim/cases/${encodeURIComponent(caseId)}`)).json();
+  startRun();
+}
+
+/* ---------- engine ---------- */
+const svgShow = (id, on) => { $(id).style.display = on ? "" : "none"; };
+function startRun() {
+  $("#run").hidden = false;
+  $("#title").textContent = CASE.title;
+  $("#briefing").textContent = CASE.briefing;
+  if (CASE.sprite?.wound === "abdomen") svgShow("#wound", true);
+  if ((CASE.sprite?.props || []).includes("staff")) svgShow("#staff", true);
+  vitals = { ...CASE.states[CASE.start.state].vitals };
+  enterState(CASE.start.state);
+  scheduleDecision(CASE.start.decision, CASE.start.delay);
+  timer = setInterval(onTick, 1000);
+  onTick();
+}
+function enterState(name) {
+  state = CASE.states[name];
+  state._name = name;
+  if (state.sprite?.arrest) vitals = { ...state.vitals };  // arrest is instant, not a lerp
+  pendingStateTick = state.resolve ? tick + state.resolve.after : null;
+  $("#mon-note").textContent = state.note || "";
+  addLog(state.note ? `[monitor] ${state.note}` : null, false);
+}
+function scheduleDecision(name, delay) {
+  pendingDecision = { name, at: tick + (delay ?? 2) };
+}
+function onTick() {
+  if (done) return;
+  tick += 1;
+  // vitals move toward state targets, plus authored drift
+  for (const k of ["hr", "sbp", "dbp", "spo2", "rr"]) {
+    const target = state.vitals[k];
+    vitals[k] = vitals[k] + (target - vitals[k]) * 0.25 + (state.drift?.[k] || 0);
+    if (k === "spo2") vitals[k] = Math.min(100, vitals[k]);
+    vitals[k] = Math.max(0, vitals[k]);
+  }
+  renderVitals();
+  renderSprite();
+  const secs = tick * (CASE.clock_seconds_per_tick || 5);
+  $("#clock").textContent =
+    `${String(Math.floor(secs / 60)).padStart(2, "0")}:${String(secs % 60).padStart(2, "0")}`;
+  if (pendingDecision && tick >= pendingDecision.at) {
+    showDecision(pendingDecision.name);
+    pendingDecision = null;
+  }
+  if (pendingStateTick !== null && tick >= pendingStateTick) {
+    const r = state.resolve;
+    pendingStateTick = null;
+    if (r.goto) enterState(r.goto);
+    if (r.outcome) finish(r.outcome);
+  }
+}
+function showDecision(name) {
+  const d = CASE.decisions[name];
+  $("#decision").hidden = false;
+  $("#q").textContent = d.prompt;
+  $("#opts").innerHTML = d.options.map((o) => `
+    <button class="optbtn" data-id="${esc(o.id)}">
+      <b>${esc(o.label)}</b>${o.detail ? `<span>${esc(o.detail)}</span>` : ""}
+    </button>`).join("");
+  for (const b of $("#opts").querySelectorAll(".optbtn"))
+    b.addEventListener("click", () => choose(d, b.dataset.id));
+  if (autoPath.length) {
+    const next = autoPath.shift();
+    setTimeout(() => choose(d, next), 1500);
+  }
+}
+function choose(decision, optId) {
+  const o = decision.options.find((x) => x.id === optId);
+  if (!o) return;
+  $("#decision").hidden = true;
+  addLog(o.log, true);
+  enterState(o.goto);
+  if (o.next) scheduleDecision(o.next.decision, o.next.delay);
+}
+function finish(outcomeId) {
+  done = true;
+  clearInterval(timer);
+  $("#decision").hidden = true;
+  const oc = CASE.outcomes[outcomeId];
+  const el = $("#outcome");
+  el.hidden = false;
+  el.className = `outcome ${esc(oc.tone)}`;
+  el.innerHTML = `
+    <h2>${esc(oc.label)}</h2>
+    <p>${esc(oc.debrief)}</p>
+    <ol>${oc.teaching.map((t) => `<li>${esc(t)}</li>`).join("")}</ol>
+    <p style="font-size:12px;opacity:.85">Teaching points are draft — pending physician review.</p>
+    <div class="again">
+      <button onclick="location.reload()">Run again</button>
+      <a href="/sim">All cases</a>
+      <a href="/edu/" target="_blank">Procedure cards (CME)</a>
+    </div>`;
+  el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+function addLog(text, latest) {
+  if (!text) return;
+  const li = document.createElement("li");
+  if (latest) li.className = "latest";
+  const secs = tick * (CASE.clock_seconds_per_tick || 5);
+  li.textContent = `${String(Math.floor(secs / 60)).padStart(2, "0")}:${String(secs % 60).padStart(2, "0")}  ${text}`;
+  const log = $("#log");
+  for (const other of log.querySelectorAll(".latest")) other.classList.remove("latest");
+  log.prepend(li);
+}
+
+/* ---------- rendering ---------- */
+function renderVitals() {
+  const hr = Math.round(vitals.hr);
+  $("#v-hr").textContent = hr > 0 ? hr : "--";
+  $("#v-bp").textContent = vitals.sbp > 5 ? `${Math.round(vitals.sbp)}/${Math.round(vitals.dbp)}` : "--/--";
+  $("#v-spo2").textContent = vitals.spo2 > 5 ? Math.round(vitals.spo2) : "--";
+  $("#v-rr").textContent = vitals.rr > 0 ? Math.round(vitals.rr) : "--";
+  renderTrace(hr);
+}
+let lastHrBucket = null;
+function renderTrace(hr) {
+  const flat = hr <= 0;
+  svgShow("#flatline", flat);
+  $("#trace").style.display = flat ? "none" : "";
+  if (flat) return;
+  const bucket = Math.round(hr / 8);
+  if (bucket === lastHrBucket) return;
+  lastHrBucket = bucket;
+  const beatW = 80;
+  const n = Math.ceil(560 / beatW) + 2;
+  let uses = "";
+  for (let i = 0; i < n; i++) uses += `<use href="#beat" x="${i * beatW}"></use>`;
+  const trace = $("#trace");
+  trace.innerHTML = `<g class="ecg-scroll">${uses}</g>`;
+  const beatSec = 60 / Math.max(hr, 20);
+  const g = trace.firstElementChild;
+  g.animate(
+    [{ transform: "translateX(0px)" }, { transform: `translateX(-${beatW}px)` }],
+    { duration: beatSec * 1000, iterations: Infinity }
+  );
+}
+function lerpColor(a, b, t) {
+  const pa = [1, 3, 5].map((i) => parseInt(a.slice(i, i + 2), 16));
+  const pb = [1, 3, 5].map((i) => parseInt(b.slice(i, i + 2), 16));
+  return "#" + pa.map((v, i) => Math.round(v + (pb[i] - v) * t).toString(16).padStart(2, "0")).join("");
+}
+function renderSprite() {
+  const s = state.sprite || {};
+  const skin = lerpColor("#D9B08C", "#B9C2CC", Math.min(1, s.pallor ?? 0));
+  for (const id of ["head", "legL", "legR", "armL", "armR"]) $("#" + id).setAttribute("fill", skin);
+  // abdomen distension
+  const d = s.distension ?? 0;
+  const abd = $("#abd");
+  abd.setAttribute("rx", 44 + d * 26);
+  abd.setAttribute("ry", 30 + d * 22);
+  abd.setAttribute("fill", lerpColor("#A8C4E2", "#7E9CC0", d));
+  // face
+  const arrest = !!s.arrest;
+  svgShow("#eyesOpen", !arrest);
+  svgShow("#eyesShut", arrest);
+  const distress = arrest ? 0 : (s.distress ?? 0.3);
+  // mouth from slight smile to open grimace
+  const bend = 6 - distress * 14;
+  $("#mouth").setAttribute("d", `M118 84 Q130 ${84 + bend} 142 84`);
+  svgShow("#drool", (s.secretions ?? 0) > 0.4);
+  svgShow("#io_tibia", s.io === "tibia");
+  svgShow("#io_humerus", s.io === "humerus");
+  svgShow("#decon", !!s.decon);
+  if ($("#staff").style.display !== "none") {
+    const sick = !!s.staff_sick;
+    for (const id of ["staff1", "staff2"]) {
+      $("#" + id).querySelector("circle").setAttribute("fill", sick ? "#A6C48A" : "#D9B08C");
+    }
+  }
+}
+init();
+</script>
+</body>
+</html>

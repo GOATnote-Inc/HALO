@@ -1,0 +1,171 @@
+{
+  "id": "organophosphate_decon",
+  "title": "Organophosphate exposure — decon and antidote",
+  "synthetic": true,
+  "draft": true,
+  "clock_seconds_per_tick": 5,
+  "briefing": "Worker from the plant floor, clothing soaked with an unknown liquid. Pinpoint pupils, drooling, sweating, muscle fasciculations. RR 34 with copious secretions. The crew is rolling toward your doors right now.",
+  "sprite": { "wound": "none", "props": ["staff"] },
+  "states": {
+    "inbound": {
+      "vitals": { "hr": 58, "sbp": 104, "dbp": 62, "spo2": 90, "rr": 34 },
+      "drift": { "spo2": -0.5, "hr": -0.4 },
+      "sprite": { "pallor": 0.35, "distress": 0.7, "secretions": 0.7 },
+      "note": "Cholinergic toxidrome — secretions flooding the airway"
+    },
+    "contaminated_resus": {
+      "vitals": { "hr": 54, "sbp": 100, "dbp": 60, "spo2": 88, "rr": 36 },
+      "drift": { "spo2": -0.6, "hr": -0.5 },
+      "sprite": { "pallor": 0.4, "distress": 0.8, "secretions": 0.85, "staff_sick": true },
+      "note": "In resus — wet clothing still on. Staff exposed."
+    },
+    "decon_run": {
+      "vitals": { "hr": 52, "sbp": 98, "dbp": 58, "spo2": 86, "rr": 36 },
+      "drift": { "spo2": -0.7, "hr": -0.5 },
+      "sprite": { "pallor": 0.45, "distress": 0.8, "secretions": 0.9, "decon": true },
+      "note": "Hot-zone decon — two minutes that protect the whole department"
+    },
+    "atropine_titrate": {
+      "vitals": { "hr": 88, "sbp": 112, "dbp": 68, "spo2": 95, "rr": 22 },
+      "drift": { "spo2": 0.5, "hr": 0.5 },
+      "sprite": { "pallor": 0.2, "distress": 0.3, "secretions": 0.2 },
+      "note": "Atropine doubling q3-5min — secretions drying",
+      "resolve": { "after": 7, "outcome": "survived" }
+    },
+    "atropine_titrate_contaminated": {
+      "vitals": { "hr": 86, "sbp": 110, "dbp": 66, "spo2": 94, "rr": 24 },
+      "drift": { "spo2": 0.5, "hr": 0.5 },
+      "sprite": { "pallor": 0.25, "distress": 0.35, "secretions": 0.25, "staff_sick": true },
+      "note": "Patient improving — two staff now symptomatic next door",
+      "resolve": { "after": 7, "outcome": "survived_contaminated" }
+    },
+    "under_dosed": {
+      "vitals": { "hr": 48, "sbp": 92, "dbp": 54, "spo2": 82, "rr": 38 },
+      "drift": { "spo2": -1.5, "hr": -1.0 },
+      "sprite": { "pallor": 0.6, "distress": 0.9, "secretions": 1.0 },
+      "note": "Secretions winning — airway flooding"
+    },
+    "drowned": {
+      "vitals": { "hr": 30, "sbp": 60, "dbp": 34, "spo2": 58, "rr": 40 },
+      "drift": { "hr": -3, "spo2": -3 },
+      "sprite": { "pallor": 0.9, "distress": 0.9, "secretions": 1.0 },
+      "note": "Bradycardic, hypoxic — secretions unopposed",
+      "resolve": { "after": 3, "outcome": "died" }
+    }
+  },
+  "start": { "state": "inbound", "decision": "door_choice", "delay": 2 },
+  "decisions": {
+    "door_choice": {
+      "prompt": "The crew is at the doors with the patient still in soaked clothing. What happens next?",
+      "options": [
+        {
+          "id": "decon_first",
+          "label": "Hot-zone decon first",
+          "detail": "Strip, wash, then enter — two minutes",
+          "goto": "decon_run",
+          "log": "Clothing stripped and bagged outside; skin decon running. Staff in PPE.",
+          "next": { "decision": "antidote_choice", "delay": 4 }
+        },
+        {
+          "id": "straight_in",
+          "label": "Straight to resus — he's crashing",
+          "detail": "No time for a shower",
+          "goto": "contaminated_resus",
+          "log": "Patient rolled into resus in soaked clothing. Six minutes later: an RN reports blurred vision and salivation. A tech follows. Two staff are now patients.",
+          "next": { "decision": "antidote_choice_contaminated", "delay": 4 }
+        }
+      ]
+    },
+    "antidote_choice": {
+      "prompt": "Atropine 2 mg given — minimal response, secretions still copious. Next move?",
+      "options": [
+        {
+          "id": "double_repeat",
+          "label": "Double the dose and repeat q3-5 min until secretions dry",
+          "detail": "Titrate to dry chest — there is no maximum",
+          "goto": "atropine_titrate",
+          "log": "Atropine 4 mg... 8 mg... chest drying. Pralidoxime infusion started early."
+        },
+        {
+          "id": "wait_effect",
+          "label": "Wait for the first dose to take full effect",
+          "detail": "Avoid over-atropinization",
+          "goto": "under_dosed",
+          "log": "Waiting on 2 mg. The toxidrome is not waiting.",
+          "next": { "decision": "antidote_rescue", "delay": 3 }
+        }
+      ]
+    },
+    "antidote_choice_contaminated": {
+      "prompt": "Atropine 2 mg given — minimal response, secretions still copious. Next move?",
+      "options": [
+        {
+          "id": "double_repeat_c",
+          "label": "Double the dose and repeat q3-5 min until secretions dry",
+          "detail": "Titrate to dry chest — there is no maximum",
+          "goto": "atropine_titrate_contaminated",
+          "log": "Atropine 4 mg... 8 mg... chest drying. Next door, two exposed staff are being decontaminated and dosed."
+        },
+        {
+          "id": "wait_effect_c",
+          "label": "Wait for the first dose to take full effect",
+          "detail": "Avoid over-atropinization",
+          "goto": "under_dosed",
+          "log": "Waiting on 2 mg. The toxidrome is not waiting.",
+          "next": { "decision": "antidote_rescue", "delay": 3 }
+        }
+      ]
+    },
+    "antidote_rescue": {
+      "prompt": "SpO2 falling through the 80s, secretions flooding. Last window.",
+      "options": [
+        {
+          "id": "aggressive_now",
+          "label": "Escalate now — doubling doses until dry",
+          "detail": "Titrate to effect",
+          "goto": "atropine_titrate",
+          "log": "Aggressive titration started — late, but the chest is drying."
+        },
+        {
+          "id": "keep_waiting",
+          "label": "Give it another few minutes",
+          "detail": "",
+          "goto": "drowned",
+          "log": "The secretions never stopped."
+        }
+      ]
+    }
+  },
+  "outcomes": {
+    "survived": {
+      "label": "Survived — clean department",
+      "tone": "good",
+      "debrief": "Decon protected your staff; atropine titrated to dry secretions (doubling, no ceiling) with early pralidoxime treated the patient.",
+      "teaching": [
+        "Decontamination is not a delay of care — it IS care. An exposed department turns one patient into many.",
+        "Atropine is titrated to dry secretions and adequate oxygenation, doubling every 3-5 minutes. There is no maximum dose; under-dosing is the classic error.",
+        "Give pralidoxime (2-PAM) early and slowly, before aging fixes the enzyme."
+      ]
+    },
+    "survived_contaminated": {
+      "label": "Patient survived — two staff became casualties",
+      "tone": "warn",
+      "debrief": "The medicine was right; the door decision was wrong. Skipping decon converted an RN and a tech into patients and contaminated your resus bay during an MCI.",
+      "teaching": [
+        "Decon before the doors — the department is a resource you are also triaging.",
+        "Secondary contamination of staff is a documented, preventable failure mode of chemical incidents.",
+        "Atropine titration was correct: doubling q3-5 min to dry secretions, no ceiling."
+      ]
+    },
+    "died": {
+      "label": "Death — under-dosed antidote",
+      "tone": "bad",
+      "debrief": "Two milligrams was a starting dose, not a treatment. Cholinergic secretions flooded the airway while the team waited politely for a dose that was never going to be enough.",
+      "teaching": [
+        "Atropine in organophosphate poisoning is titrated to effect — dry secretions — doubling every 3-5 minutes, with no maximum dose.",
+        "The airway threat is the secretions; suction and oxygenation buy time only while the atropine climbs.",
+        "Under-dosing atropine is the classic, lethal error in cholinergic poisoning."
+      ]
+    }
+  }
+}

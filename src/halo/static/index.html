@@ -269,13 +269,17 @@
 
   <section id="tab-edu" role="tabpanel" aria-labelledby="tabbtn-edu" hidden>
     <div class="plan" style="border-left-color:var(--accent)">
-      <b>Staff readiness (CME)</b> — just-in-time procedure cards and drills for the
-      high-acuity, low-occurrence events this module exists for. Cards also surface
+      <b>Staff readiness (CME)</b> — just-in-time procedure cards, drills, and the simulation
+      lab for the high-acuity, low-occurrence events this module exists for. Cards also surface
       contextually: a "?" appears wherever a note or board entry indicates one of these
-      procedures. <a href="/edu/" target="_blank">Open full page</a>.
+      procedures. <a href="/edu/" target="_blank">Open cards full page</a> ·
+      <a href="/sim" target="_blank">Open simulation lab</a>.
     </div>
+    <h3 class="sec">Simulation lab — decide, watch the patient and monitor react, debrief</h3>
+    <div class="chips" id="simcases" style="margin-bottom:14px"></div>
+    <h3 class="sec">Procedure cards and drills</h3>
     <iframe id="eduframe" src="/edu/" title="Staff readiness — HALO education module"
-      style="width:100%;height:1200px;border:1px solid var(--line);border-radius:10px;background:#fff"></iframe>
+      style="width:100%;height:1100px;border:1px solid var(--line);border-radius:10px;background:#fff"></iframe>
   </section>
 
   <section id="tab-door" role="tabpanel" aria-labelledby="tabbtn-door" hidden>
@@ -689,8 +693,21 @@ async function run() {
 }
 $("#run").addEventListener("click", run);
 
+/* ---------- simulation lab launchers ---------- */
+async function loadSimCases() {
+  try {
+    const cases = (await (await fetch("/sim/cases")).json()).cases;
+    $("#simcases").innerHTML = cases.map((c) => `
+      <a class="chip" href="/sim?case=${esc(c.id)}" target="_blank" style="text-decoration:none">
+        <span class="t">${esc(c.title)}</span>
+        <span class="p">${esc(c.briefing.slice(0, 110))}&hellip;</span>
+      </a>`).join("");
+  } catch { /* sim lab optional */ }
+}
+
 /* ---------- init ---------- */
 loadBoard();
+loadSimCases();
 loadScenarios().then(() => {
   const q = new URLSearchParams(location.search);
   if (["door", "edu"].includes(q.get("tab"))) showTab(q.get("tab"));

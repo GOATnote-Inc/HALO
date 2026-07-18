@@ -31,6 +31,14 @@ def health() -> dict[str, str]:
     return {"status": "ok", "model": model_name()}
 
 
+@app.get("/edu/{module_id}.html", include_in_schema=False)
+def edu_html_shim(module_id: str) -> Any:
+    """The /edu/ index emits static-export-style links; redirect them to live cards."""
+    from fastapi.responses import RedirectResponse
+
+    return RedirectResponse(url=f"/edu/modules/{module_id}/card", status_code=307)
+
+
 def _census_row(entry: Any, decision: Any | None = None) -> dict[str, Any]:
     from halo.mci.edu_links import edu_links
     from halo.mci.panel import care_flags
@@ -173,6 +181,29 @@ def board_reset() -> dict[str, Any]:
 
     BOARD.reset()
     return _board_state()
+
+
+@app.get("/sim", include_in_schema=False)
+def sim_ui() -> FileResponse:
+    """Simulation lab — deterministic 2D patient sims (no model in the loop)."""
+    return FileResponse(_STATIC / "sim.html", media_type="text/html")
+
+
+@app.get("/sim/cases")
+def sim_cases() -> dict[str, Any]:
+    from halo.sim import list_cases
+
+    return {"cases": list_cases(), "synthetic_only": True}
+
+
+@app.get("/sim/cases/{case_id}")
+def sim_case(case_id: str) -> dict[str, Any]:
+    from halo.sim import load_case
+
+    try:
+        return dict(load_case(case_id))
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
 @app.get("/mci/scenarios")
