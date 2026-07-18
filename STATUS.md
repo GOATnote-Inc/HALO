@@ -13,6 +13,7 @@ it is the source of truth for who is working where.
 | demo-surface | T1 | `README.md`, `docs/`, `src/halo/static/`, `src/halo/mci/scenarios.py`, `src/halo/mci/demo.py`, `src/halo/app.py` (UI routes) | done | `make check` (62 passed); `demo --handoff` 3/3 scenarios live; UI verified in Chrome (shell + live autorun screenshots) |
 | edu-module | T2 | `src/halo/edu/`, `tests/test_edu_*.py` | done | `make check` (192 passed, 113 edu; mypy strict clean on `halo.edu`); offline `python -m halo.edu.demo` full showcase (peds dosing + refusals, critical-miss drill gate, chained CME ledger verifies, FHIR round-trip, 5 printable cards); live `demo find --llm`: keyword-free colloquial query routed to `organophosphate` via `halo.llm.structured` enum schema |
 | nurse-workflow | T1 | `src/halo/mci/` (triage/extract/panel/fhir_out), `src/halo/static/`, `docs/WORKFLOW.md`, `docs/INTEGRATION.md`, `README.md`, `tests/test_mci_*`, `tests/test_app.py` | done | `make check` (170 passed); 4/4 scenarios live; UI re-verified in Chrome (30-2-Can-Do derivation + FHIR preview) |
+| surge-trackboard | T1 | `src/halo/mci/census.py`, `src/halo/mci/surge.py`, `tests/fixtures/ed_census.json`, `src/halo/static/`, `src/halo/app.py` (surge routes), `tests/test_mci_surge.py`, docs updates | active | `make check`; track board verified in Chrome |
 
 Claim a lane: add a row with a short name, your terminal label (T1/T2/…), the exact files or
 directories you own, state `active`, and the command that proves your work. Push the claim before
