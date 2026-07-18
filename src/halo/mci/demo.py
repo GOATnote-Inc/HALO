@@ -1,9 +1,12 @@
-"""Live end-to-end MCI demo: goldset notes -> Claude extraction -> SALT triage board.
+"""Live end-to-end MCI demo. Needs ANTHROPIC_API_KEY.
 
-Needs ANTHROPIC_API_KEY. Usage: ``.venv/bin/python -m halo.mci.demo``
+Two modes:
 
-Prints per-patient results and the eval that matters: extraction accuracy against
-gold observations and the under-triage false-negative count (target 0).
+``python -m halo.mci.demo``            goldset eval — extraction accuracy vs gold
+                                       observations and the under-triage FN gate (target 0).
+``python -m halo.mci.demo --handoff``  three scripted scenarios mirroring published MCI
+                                       failure modes (Route 91 / Beirut / Boston patterns):
+                                       triage + identity reconciliation + care flags.
 """
 
 from __future__ import annotations
@@ -28,7 +31,63 @@ UNSAFE_FOR_IMMEDIATE = {
 }
 
 
+def _rule(title: str) -> None:
+    print(f"\n{'=' * 78}\n{title}\n{'=' * 78}")
+
+
+def run_handoff_scenarios() -> int:
+    """Three scripted end-to-end scenarios — the judged demo path."""
+    from halo.mci.panel import care_flags
+    from halo.mci.reconcile import reconcile
+    from halo.mci.scenarios import INCIDENT_DATE, SCENARIOS
+
+    print(f"[model: {model_name()}] {len(SCENARIOS)} synthetic scenarios", file=sys.stderr)
+    for i, sc in enumerate(SCENARIOS, 1):
+        _rule(f"SCENARIO {i}/{len(SCENARIOS)} — {sc.title}")
+        print(f"Pattern:  {sc.pattern}")
+        print(f"Expected: {sc.expect}")
+        print(f"\nNote: {sc.note}\n")
+
+        try:
+            obs, evidence = extract_observations(sc.note)
+        except LLMFailure as exc:
+            print(f"TRIAGE:   EXTRACTION FAILED CLOSED ({exc}) -> unable_to_triage")
+            continue
+        result = salt_triage(obs)
+        print(f"TRIAGE:   {result.category.value.upper()}")
+        print(f"          {result.rationale}")
+        for name, quote in evidence.items():
+            print(f'          {name}: "{quote}"')
+
+        try:
+            recon = reconcile(sc.note, on_date=INCIDENT_DATE)
+        except LLMFailure as exc:
+            print(f"IDENTITY: RECONCILIATION FAILED CLOSED ({exc}) -> unknown patient")
+            continue
+        print(f"\nIDENTITY: {recon.status} ({recon.method} path) — human must adjudicate")
+        for c in recon.candidates:
+            print(f"  candidate: {c.patient.display_name}  match={c.score:.2f}")
+            print(f"             {'; '.join(c.reasons)}")
+            rationale = recon.agent_rationales.get(c.patient.patient_id)
+            if rationale:
+                print(f"             agent corroboration: {rationale[:220]}")
+            for f in care_flags(c.patient):
+                print(f"    FLAG[{f.severity}] {f.flag_id}: {f.why}")
+                print(f"               provenance: {', '.join(f.provenance)}")
+        if recon.trail:
+            print("  agent trail:")
+            for step in recon.trail:
+                print(f"    {step['tool']}({json.dumps(step['input'])[:120]})")
+    _rule(
+        "All scenarios synthetic. Identity is never confirmed by software; EXPECTANT "
+        "requires a human decision."
+    )
+    return 0
+
+
 def main() -> int:
+    if "--handoff" in sys.argv[1:]:
+        return run_handoff_scenarios()
     goldset = json.loads(GOLDSET_PATH.read_text())
     cases: list[dict[str, Any]] = goldset["cases"]
     print(f"[model: {model_name()}] {len(cases)} synthetic cases\n", file=sys.stderr)

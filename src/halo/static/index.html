@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HALO — MCI Triage Support</title>
+<style>
+  :root{
+    --bg:#F4F5F7; --card:#FFFFFF; --ink:#182230; --muted:#5B6572; --line:#D8DDE4;
+    --accent:#1D4ED8; --accent-ink:#FFFFFF;
+    --immediate:#B91C1C; --delayed-bg:#FDE68A; --delayed-ink:#5B3A00;
+    --minimal:#15803D; --expectant:#4B5563; --dead:#111827; --escalate:#C2410C;
+    --flag-high:#B91C1C; --flag-mod:#B45309;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+  header{background:var(--card);border-bottom:1px solid var(--line);padding:14px 24px;
+         display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  header h1{margin:0;font-size:20px;letter-spacing:.06em}
+  header .sub{color:var(--muted);font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+  .badges{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .badge{font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;
+         border:1px solid var(--line);border-radius:999px;color:var(--muted);background:#FAFBFC}
+  .badge.warn{border-color:var(--escalate);color:var(--escalate);font-weight:600}
+  main{max-width:1280px;margin:22px auto;padding:0 24px;display:grid;
+       grid-template-columns:minmax(360px,5fr) 7fr;gap:20px}
+  @media (max-width:960px){main{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+  .card h2{margin:0 0 4px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+           color:var(--muted);font-weight:600}
+  .hint{color:var(--muted);font-size:13px;margin:2px 0 12px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .chip{border:1px solid var(--line);background:#FAFBFC;border-radius:8px;padding:7px 11px;
+        font-size:13px;cursor:pointer;text-align:left;color:var(--ink)}
+  .chip:hover{border-color:var(--accent)}
+  .chip .t{display:block;font-weight:600}
+  .chip .p{display:block;color:var(--muted);font-size:12px}
+  textarea{width:100%;min-height:170px;border:1px solid var(--line);border-radius:8px;
+           padding:11px 12px;font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+           color:var(--ink);resize:vertical}
+  textarea:focus,input:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .row{display:flex;gap:14px;align-items:center;margin-top:12px;flex-wrap:wrap}
+  label{font-size:13px;color:var(--muted)}
+  input[type=date]{border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:14px}
+  fieldset{border:1px solid var(--line);border-radius:8px;margin:14px 0 0;padding:10px 14px 12px}
+  legend{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 6px}
+  fieldset label{display:block;color:var(--ink);font-size:13.5px;margin:5px 0;cursor:pointer}
+  fieldset .warn-note{color:var(--escalate);font-size:12.5px;margin:6px 0 0}
+  button.run{margin-top:16px;width:100%;background:var(--accent);color:var(--accent-ink);
+             border:0;border-radius:8px;padding:12px;font-size:15px;font-weight:600;cursor:pointer}
+  button.run:disabled{background:#93A6D8;cursor:wait}
+  .status{margin-top:10px;font-size:13.5px;color:var(--muted);min-height:20px}
+  .error{margin-top:10px;border:1px solid var(--immediate);border-radius:8px;background:#FEF2F2;
+         color:#7F1D1D;padding:10px 12px;font-size:13.5px}
+  .banner{border-radius:10px;padding:16px 20px;margin-bottom:14px}
+  .banner .cat{font-size:24px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+  .banner .why{margin-top:4px;font-size:14px}
+  .banner.immediate{background:var(--immediate);color:#fff}
+  .banner.delayed{background:var(--delayed-bg);color:var(--delayed-ink)}
+  .banner.minimal{background:var(--minimal);color:#fff}
+  .banner.expectant{background:var(--expectant);color:#fff}
+  .banner.dead{background:var(--dead);color:#fff}
+  .banner.unable_to_triage{background:var(--escalate);color:#fff}
+  .banner .act{display:inline-block;margin-bottom:6px;font-size:12px;font-weight:700;
+               letter-spacing:.12em;text-transform:uppercase;border:1.5px solid rgba(255,255,255,.85);
+               border-radius:6px;padding:2px 8px}
+  .missing{margin-top:8px;font-size:13px}
+  .missing span{display:inline-block;border:1px solid rgba(255,255,255,.6);border-radius:6px;
+                padding:1px 8px;margin:2px 4px 0 0}
+  .banner.delayed .missing span{border-color:rgba(91,58,0,.45)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+  td.v-yes{color:var(--minimal);font-weight:600}
+  td.v-no{color:var(--immediate);font-weight:600}
+  td.v-null{color:var(--muted)}
+  td.ev{color:var(--muted);font-style:italic}
+  .idstat{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+  .pill{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+        border-radius:999px;padding:4px 12px}
+  .pill.strong_candidate{background:#DBEAFE;color:#1E3A8A;border:1px solid #93C5FD}
+  .pill.possible{background:#FEF3C7;color:#78350F;border:1px solid #FCD34D}
+  .pill.no_match{background:#F3F4F6;color:#374151;border:1px solid var(--line)}
+  .pill.unconfirmed{background:#FFF;color:var(--escalate);border:1.5px solid var(--escalate)}
+  .pill.method{background:#F3F4F6;color:var(--muted);border:1px solid var(--line);font-weight:600}
+  .cand{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:10px 0}
+  .cand .nm{font-weight:700;font-size:15px}
+  .cand .demo{color:var(--muted);font-size:13px}
+  .scorebar{height:6px;background:#EDF0F3;border-radius:4px;margin:8px 0;overflow:hidden}
+  .scorebar i{display:block;height:100%;background:var(--accent)}
+  .reasons{color:var(--muted);font-size:12.5px}
+  .rationale{border-left:3px solid var(--accent);background:#F8FAFF;padding:8px 12px;
+             margin:10px 0;font-size:13.5px}
+  .rationale b{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+  .flag{border-left:4px solid var(--flag-mod);background:#FFFBF3;border-radius:0 8px 8px 0;
+        padding:9px 12px;margin:8px 0;font-size:13.5px}
+  .flag.high{border-left-color:var(--flag-high);background:#FEF5F5}
+  .flag .fid{font-weight:700;letter-spacing:.03em}
+  .flag .sev{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+             margin-left:8px}
+  .flag.high .sev{color:var(--flag-high)} .flag .sev{color:var(--flag-mod)}
+  .flag .prov{color:var(--muted);font-size:12.5px;margin-top:3px}
+  details{margin-top:12px;border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+  summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);
+          letter-spacing:.06em;text-transform:uppercase}
+  .trail li{font:12.5px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-all}
+  pre{overflow:auto;font-size:12px;background:#F8F9FB;border-radius:8px;padding:12px;max-height:340px}
+  footer{max-width:1280px;margin:8px auto 40px;padding:0 24px;color:var(--muted);font-size:12.5px}
+  footer a{color:var(--accent)}
+  .placeholder{color:var(--muted);font-size:14px;padding:26px 0;text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <h1>HALO</h1>
+  <span class="sub">MCI Triage Support — Module 1</span>
+  <div class="badges">
+    <span class="badge warn">Synthetic data only</span>
+    <span class="badge">Research demo — not a medical device</span>
+    <span class="badge">Fail-closed</span>
+  </div>
+</header>
+
+<main>
+  <section class="card" aria-labelledby="in-h">
+    <h2 id="in-h">Field note</h2>
+    <p class="hint">Paste a free-text field/EMS note, or load a scripted scenario. Each scenario
+    mirrors a failure mode from published MCI after-action reports.</p>
+    <div class="chips" id="chips" role="group" aria-label="Sample scenarios"></div>
+    <textarea id="note" aria-label="Field note" spellcheck="false"></textarea>
+    <div class="row">
+      <label for="idate">Incident date</label>
+      <input type="date" id="idate" value="2026-07-18">
+    </div>
+    <fieldset>
+      <legend>Human resource decision</legend>
+      <label><input type="radio" name="ls" value="null" checked>
+        No human decision recorded (default)</label>
+      <label><input type="radio" name="ls" value="true">
+        Clinician judges patient survivable with current resources</label>
+      <label><input type="radio" name="ls" value="false">
+        Clinician judges patient NOT survivable with current resources</label>
+      <p class="warn-note">EXPECTANT can only result from the explicit clinician decision above.
+      The software never makes that judgment on its own.</p>
+    </fieldset>
+    <button class="run" id="run">Run triage + chart reconciliation</button>
+    <div class="status" id="status" role="status"></div>
+    <div id="errbox"></div>
+  </section>
+
+  <section class="card" aria-labelledby="out-h">
+    <h2 id="out-h">Handoff</h2>
+    <div id="results" aria-live="polite">
+      <p class="placeholder">Results appear here. The agent path (garbled identity) can take
+      one to two minutes — the model is searching the panel and corroborating charts.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Deterministic SALT triage over Claude-extracted observations; identity is never confirmed by
+  software; EXPECTANT requires a human decision. Evidence, regulatory posture, and AI risk
+  register: <a href="https://github.com/GOATnote-Inc/HALO/blob/main/docs/GOVERNANCE.md">docs/GOVERNANCE.md</a>.
+  All data on this page is synthetic.
+</footer>
+
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+const esc = (x) => String(x ?? "").replace(/[&<>"']/g,
+  (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+const CATEGORY_ACTION = {
+  immediate: "First priority — life threat identified",
+  delayed: "Second priority — treatment can safely wait",
+  minimal: "Third priority — minor injuries",
+  expectant: "Human resource decision recorded",
+  dead: "No spontaneous respirations after airway opening",
+  unable_to_triage: "Action required — assess in person now",
+};
+const FIELD_LABELS = {
+  breathing: "Breathing", obeys_commands: "Obeys commands",
+  peripheral_pulse: "Peripheral pulse", respiratory_distress: "Respiratory distress",
+  major_hemorrhage_uncontrolled: "Uncontrolled major hemorrhage",
+  minor_injuries_only: "Minor injuries only", can_walk: "Ambulatory",
+};
+
+let scenarios = [];
+
+async function loadScenarios() {
+  try {
+    const r = await fetch("/mci/scenarios");
+    scenarios = (await r.json()).scenarios;
+  } catch { scenarios = []; }
+  const chips = $("#chips");
+  chips.innerHTML = "";
+  for (const s of scenarios) {
+    const b = document.createElement("button");
+    b.className = "chip"; b.type = "button";
+    b.innerHTML = `<span class="t">${esc(s.title)}</span><span class="p">${esc(s.pattern.split(":")[0])}</span>`;
+    b.addEventListener("click", () => { $("#note").value = s.note; });
+    chips.appendChild(b);
+  }
+  if (scenarios.length && !$("#note").value) $("#note").value = scenarios[0].note;
+}
+
+function obsRow(name, value, evidence) {
+  const cls = value === true ? "v-yes" : value === false ? "v-no" : "v-null";
+  const shown = value === true ? "Yes" : value === false ? "No" : "Not documented";
+  const ev = evidence ? `&ldquo;${esc(evidence)}&rdquo;` : "&mdash;";
+  return `<tr><td>${esc(FIELD_LABELS[name] || name)}</td>
+    <td class="${cls}">${shown}</td><td class="ev">${ev}</td></tr>`;
+}
+
+function flagBlock(f) {
+  return `<div class="flag ${esc(f.severity)}">
+    <span class="fid">${esc(f.flag.replace(/_/g, " "))}</span>
+    <span class="sev">${esc(f.severity)}</span>
+    <div>${esc(f.why)}</div>
+    <div class="prov">Chart provenance: ${f.provenance.map(esc).join(" · ")}</div>
+  </div>`;
+}
+
+function candidateBlock(c, rationaleHtml) {
+  const pct = Math.round(c.match_score * 100);
+  const flags = c.care_flags_if_matched.length
+    ? c.care_flags_if_matched.map(flagBlock).join("")
+    : `<p class="reasons">No care-modifier flags in this chart.</p>`;
+  return `<div class="cand">
+    <div class="nm">${esc(c.name)} <span class="pill unconfirmed">Unconfirmed</span></div>
+    <div class="demo">${esc(c.gender)} · DOB ${esc(c.birth_date)} · panel ID ${esc(c.patient_id.slice(0, 8))}&hellip;</div>
+    <div class="scorebar" aria-hidden="true"><i style="width:${pct}%"></i></div>
+    <div class="reasons">Deterministic match ${pct}% — ${c.match_reasons.map(esc).join("; ")}</div>
+    ${rationaleHtml}
+    <h3 style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:12px 0 2px">
+      Care-modifier flags if this match is confirmed</h3>
+    ${flags}
+  </div>`;
+}
+
+function render(data) {
+  const t = data.triage, idn = data.identity;
+  const act = CATEGORY_ACTION[t.category] || "";
+  const missing = t.missing_fields.length
+    ? `<div class="missing">Not documented: ${t.missing_fields.map((m) => `<span>${esc(m)}</span>`).join("")}</div>`
+    : "";
+  const obsRows = Object.entries(t.observations)
+    .map(([k, v]) => obsRow(k, v, t.evidence[k])).join("");
+
+  const candidates = idn.candidates.length
+    ? idn.candidates.map((c) => {
+        const r = c.agent_rationale
+          ? `<div class="rationale"><b>Agent corroboration</b><div>${esc(c.agent_rationale)}</div></div>`
+          : "";
+        return candidateBlock(c, r);
+      }).join("")
+    : `<p class="reasons">No plausible panel match — treat as unknown patient and follow the
+       unidentified-patient protocol.</p>`;
+
+  const trail = idn.agent_trail.length
+    ? `<details><summary>Agent tool trail (${idn.agent_trail.length} calls)</summary>
+       <ol class="trail">${idn.agent_trail.map((s) =>
+         `<li>${esc(s.tool)}(${esc(JSON.stringify(s.input))})</li>`).join("")}</ol></details>`
+    : "";
+
+  $("#results").innerHTML = `
+    <div class="banner ${esc(t.category)}">
+      <span class="act">${esc(act)}</span>
+      <div class="cat">${esc(t.category.replace(/_/g, " "))}</div>
+      <div class="why">${esc(t.rationale)}</div>
+      ${missing}
+    </div>
+    <h3 style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">
+      Extracted observations (verbatim evidence)</h3>
+    <table><thead><tr><th>Observation</th><th>Value</th><th>Evidence from note</th></tr></thead>
+      <tbody>${obsRows}</tbody></table>
+    <h3 style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:20px">
+      Identity reconciliation</h3>
+    <div class="idstat">
+      <span class="pill ${esc(idn.status)}">${esc(idn.status.replace(/_/g, " "))}</span>
+      <span class="pill method">${esc(idn.method)} path</span>
+      <span class="pill unconfirmed">Human must adjudicate</span>
+    </div>
+    ${candidates}
+    ${trail}
+    <details><summary>Raw handoff JSON</summary><pre>${esc(JSON.stringify(data, null, 2))}</pre></details>`;
+}
+
+async function run() {
+  const note = $("#note").value.trim();
+  if (!note) return;
+  const lsRaw = document.querySelector("input[name=ls]:checked").value;
+  const body = {
+    note,
+    incident_date: $("#idate").value,
+    likely_survivable: lsRaw === "null" ? null : lsRaw === "true",
+  };
+  const btn = $("#run");
+  btn.disabled = true;
+  $("#errbox").innerHTML = "";
+  const t0 = Date.now();
+  const tick = setInterval(() => {
+    $("#status").textContent =
+      `Running — extraction, SALT, and reconciliation (${Math.round((Date.now() - t0) / 1000)}s). ` +
+      "The agent path can take one to two minutes.";
+  }, 1000);
+  try {
+    const r = await fetch("/mci/handoff", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!r.ok) {
+      const detail = (await r.json().catch(() => ({}))).detail || `HTTP ${r.status}`;
+      throw new Error(detail);
+    }
+    render(await r.json());
+    $("#status").textContent = `Done in ${Math.round((Date.now() - t0) / 1000)}s.`;
+  } catch (e) {
+    $("#errbox").innerHTML = `<div class="error">Failed closed: ${esc(e.message)}.
+      No category was assigned — assess the patient in person.</div>`;
+    $("#status").textContent = "";
+  } finally {
+    clearInterval(tick);
+    btn.disabled = false;
+  }
+}
+
+$("#run").addEventListener("click", run);
+loadScenarios().then(() => {
+  const q = new URLSearchParams(location.search);
+  const sid = q.get("scenario");
+  if (sid) {
+    const s = scenarios.find((x) => x.scenario_id === sid);
+    if (s) $("#note").value = s.note;
+  }
+  if (q.get("autorun") === "1") run();
+});
+</script>
+</body>
+</html>

@@ -1,21 +1,50 @@
-"""Minimal API surface. Run locally: ``make serve`` -> http://127.0.0.1:8000/health"""
+"""API surface + demo UI. Run locally: ``make serve`` -> http://127.0.0.1:8000"""
 
 from dataclasses import asdict
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from halo.llm import LLMFailure, model_name
 from halo.mci import Observations, salt_triage
 from halo.mci.extract import extract_observations
+from halo.mci.scenarios import SCENARIOS
 
 app = FastAPI(title="HALO")
+
+_STATIC = Path(__file__).parent / "static"
+
+
+@app.get("/", include_in_schema=False)
+def ui() -> FileResponse:
+    """Dependency-free demo UI — works on a hospital intranet with no internet."""
+    return FileResponse(_STATIC / "index.html", media_type="text/html")
 
 
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "model": model_name()}
+
+
+@app.get("/mci/scenarios")
+def scenarios() -> dict[str, Any]:
+    """Scripted scenarios (synthetic) — one source of truth with the CLI demo."""
+    return {
+        "scenarios": [
+            {
+                "scenario_id": s.scenario_id,
+                "title": s.title,
+                "pattern": s.pattern,
+                "expect": s.expect,
+                "note": s.note,
+                "synthetic": s.synthetic,
+            }
+            for s in SCENARIOS
+        ]
+    }
 
 
 class TriageNoteRequest(BaseModel):
