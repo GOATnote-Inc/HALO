@@ -67,3 +67,55 @@ def triage_observations(req: TriageObservationsRequest) -> dict[str, Any]:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     result = salt_triage(observations, likely_survivable=req.likely_survivable)
     return _result_payload(result, observations, {})
+
+
+class HandoffRequest(BaseModel):
+    """Full MCI handoff: triage + chart reconciliation against the panel."""
+
+    note: str = Field(min_length=1)
+    incident_date: str = Field(default="2026-07-18", pattern=r"^\d{4}-\d{2}-\d{2}$")
+    likely_survivable: bool | None = None
+
+
+@app.post("/mci/handoff")
+def handoff(req: HandoffRequest) -> dict[str, Any]:
+    from halo.mci.panel import care_flags
+    from halo.mci.reconcile import reconcile
+
+    try:
+        observations, evidence = extract_observations(req.note)
+        recon = reconcile(req.note, on_date=req.incident_date)
+    except LLMFailure as exc:
+        raise HTTPException(status_code=502, detail=f"failed closed: {exc}") from exc
+    triage = salt_triage(observations, likely_survivable=req.likely_survivable)
+    return {
+        "triage": _result_payload(triage, observations, evidence),
+        "identity": {
+            "status": recon.status,  # never "confirmed" — human adjudicates
+            "method": recon.method,
+            "cues": recon.cues.__dict__,
+            "candidates": [
+                {
+                    "patient_id": c.patient.patient_id,
+                    "name": c.patient.display_name,
+                    "gender": c.patient.gender,
+                    "birth_date": c.patient.birth_date,
+                    "match_score": round(c.score, 2),
+                    "match_reasons": list(c.reasons),
+                    "agent_rationale": recon.agent_rationales.get(c.patient.patient_id),
+                    "care_flags_if_matched": [
+                        {
+                            "flag": f.flag_id,
+                            "severity": f.severity,
+                            "why": f.why,
+                            "provenance": list(f.provenance),
+                        }
+                        for f in care_flags(c.patient)
+                    ],
+                }
+                for c in recon.candidates
+            ],
+            "agent_trail": list(recon.trail),
+        },
+        "synthetic_only": True,
+    }

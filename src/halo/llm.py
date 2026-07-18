@@ -57,6 +57,45 @@ def generate(prompt: str, *, system: str | None = None, max_tokens: int = 16000)
     return _text(response)
 
 
+def agent_loop(
+    prompt: str,
+    tools: list[Any],
+    *,
+    system: str | None = None,
+    max_tokens: int = 16000,
+    max_iterations: int = 8,
+) -> tuple[str, list[dict[str, Any]]]:
+    """Bounded agentic loop via the SDK tool runner.
+
+    Returns ``(final_text, trail)`` where ``trail`` records every tool call the
+    model made (name + input) for transparency. Fail-closed on refusal or
+    truncation of the final turn.
+    """
+    kwargs: dict[str, Any] = {
+        "model": model_name(),
+        "max_tokens": max_tokens,
+        "thinking": {"type": "adaptive"},
+        "tools": tools,
+        "max_iterations": max_iterations,
+        "messages": [{"role": "user", "content": prompt}],
+    }
+    if system is not None:
+        kwargs["system"] = system
+    runner = client().beta.messages.tool_runner(**kwargs)
+    trail: list[dict[str, Any]] = []
+    last = None
+    for message in runner:
+        last = message
+        for block in message.content:
+            if block.type == "tool_use":
+                trail.append({"tool": block.name, "input": block.input})
+    if last is None:
+        raise LLMFailure("fail-closed: agent loop produced no message")
+    if last.stop_reason in ("refusal", "max_tokens", "pause_turn"):
+        raise LLMFailure(f"fail-closed: stop_reason={last.stop_reason}")
+    return _text(last), trail
+
+
 def structured(
     prompt: str,
     schema: dict[str, Any],
