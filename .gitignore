@@ -1,3 +1,8 @@
 # Abridge-provided dataset: commit canonical jsonl + docs; skip the big duplicates
 synthetic-ambient-fhir-25/index.html
 synthetic-ambient-fhir-25/synthetic-ambient-fhir-25.json
+
+# Build/demo artifacts
+__pycache__/
+*.egg-info/
+out/
