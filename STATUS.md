@@ -11,6 +11,7 @@ it is the source of truth for who is working where.
 | mci-module | T1 | `src/halo/mci/`, `tests/test_mci_*.py`, `tests/fixtures/`, `src/halo/app.py` (add routes only) | done | `make check` (38 passed); live `python -m halo.mci.demo`: 11/12 agreement, 0 under-triage FNs, N=12 synthetic |
 | mci-reconcile | T1 | `src/halo/mci/panel.py`, `src/halo/mci/reconcile.py`, `src/halo/llm.py` (agent_loop), `synthetic-ambient-fhir-25/` | done | `make check` (55 passed); live agent path verified (variant search + chart corroboration -> 'possible') |
 | demo-surface | T1 | `README.md`, `docs/`, `src/halo/static/`, `src/halo/mci/scenarios.py`, `src/halo/mci/demo.py`, `src/halo/app.py` (UI routes) | active | `make check`; UI verified in Chrome |
+| edu-module | T2 | `src/halo/edu/`, `tests/test_edu_*.py`, `tests/fixtures/edu_*` | active | `make check`; `python -m halo.edu.demo` (offline drill + card render) |
 
 Claim a lane: add a row with a short name, your terminal label (T1/T2/…), the exact files or
 directories you own, state `active`, and the command that proves your work. Push the claim before
@@ -29,6 +30,15 @@ you start. Set state to `done` (with the verify command's result) when you finis
   EXPECTANT only via explicit human `likely_survivable=false`. Live e2e on the 12-case synthetic
   goldset (claude-opus-4-8): 11/12 category agreement, 0 under-triage FNs; sole miss is
   safe-direction over-triage.
+- 2026-07-18: Module 3 locked — **readiness & CME** (`halo.edu`): just-in-time procedure cards +
+  drill engine for HALO procedures a general ED must perform without the specialist (perimortem
+  cesarean, imminent breech delivery, lateral canthotomy, organophosphate/2-PAM response). Same
+  doctrine as MCI: a curated, versioned corpus and deterministic dosing/grading decide; Claude only
+  routes free-text queries to cards and adjudicates drill answers (fail-closed to deterministic
+  keyword match; no credit on uncertainty). EHR seams: FHIR bundle -> patient context for
+  weight-based dosing; completed drills -> hash-chained CME evidence records (JSONL);
+  crisis-session log -> draft FHIR MedicationAdministration/Procedure/Composition. All clinical
+  content ships `review.status="draft"` until physician sign-off — rendered on every card.
 - 2026-07-18: Module 2 locked — **agentic chart reconciliation** over the Abridge
   synthetic-ambient-fhir-25 panel. Simplest-pattern-first: deterministic cue scoring resolves
   clean identities; the SDK beta tool runner handles garbled ones (name-variant search + chart
