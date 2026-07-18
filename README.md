@@ -40,7 +40,16 @@ chart-bloat contract): [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
 ## What it does
 
-Three capabilities, one pipeline, every decision fail-closed:
+Four capabilities, one pipeline, every decision fail-closed:
+
+0. **Surge bed clearance (the track board)** — before the first casualty arrives, reverse
+   triage of the *existing* census (Kelen et al., *Lancet* 2006): a deterministic rule table
+   classifies every occupied bed as discharge now / move to chairs / expedite admission /
+   hold. The 23 synthetic panel patients populate the board; the demo plan frees 17 beds by
+   ED action alone and 4 more by inpatient pull (the NSTEMI on heparin and the post-tPA
+   stroke leave with their monitors), while anything undetermined holds — never move a
+   patient on missing data. No model call; the board sorts in milliseconds. Demoed as a
+   module inside the EHR surface EDs already live in: the track board.
 
 1. **Structured extraction** — Claude turns a free-text field/EMS note (or ambient-style
    transcript) into SALT triage observations. Every value carries a verbatim evidence quote;
@@ -108,13 +117,16 @@ Live surfaces (need `ANTHROPIC_API_KEY`):
 
 ```sh
 .venv/bin/python -m halo.mci.demo            # goldset eval: extraction + triage + FN gate
-.venv/bin/python -m halo.mci.demo --handoff  # 3 scripted end-to-end scenarios (see below)
+.venv/bin/python -m halo.mci.demo --handoff  # 4 scripted end-to-end scenarios (see below)
+.venv/bin/python -m halo.mci.demo --surge    # offline: reverse-triage the census, print plan
 make serve                                    # then open http://127.0.0.1:8000
 ```
 
 The web UI at `/` is a single dependency-free HTML page (works on a hospital intranet with no
-internet): paste or pick a field note, run the handoff, and read the triage banner,
-evidence-quoted observations, identity candidates with care flags, and the agent's tool trail.
+internet), presented the way an ED actually works: an **ED track board** (the census, ESI,
+care tethers, and the surge action per bed) plus a **door triage** tab (paste or pick a field
+note, run the handoff, read the evidence-quoted observations, identity candidates with care
+flags, the agent tool trail, and the FHIR write-back preview).
 
 The three scripted scenarios mirror the published failure modes:
 
@@ -130,7 +142,7 @@ The three scripted scenarios mirror the published failure modes:
 | Path | What it is |
 |---|---|
 | `src/halo/llm.py` | The only Claude seam: model knob (`HALO_MODEL`, default `claude-opus-4-8`), adaptive thinking, structured outputs, bounded agent loop, fail-closed policy. |
-| `src/halo/mci/` | Module 1: `extract` (note → observations), `triage` (deterministic SALT + 30-2-Can-Do derivation), `panel` (FHIR panel, scoring, flag rules), `reconcile` (agentic identity), `fhir_out` (FHIR R4 write-back bundle), `scenarios`, `demo`. |
+| `src/halo/mci/` | Module 1: `extract` (note → observations), `triage` (deterministic SALT + 30-2-Can-Do derivation), `panel` (FHIR panel, scoring, flag rules), `reconcile` (agentic identity), `census` + `surge` (track board, reverse triage), `fhir_out` (FHIR R4 write-back bundle), `scenarios`, `demo`. |
 | `src/halo/app.py` | FastAPI: web UI at `/`, `POST /mci/handoff`, `POST /mci/triage/*`. |
 | `src/halo/static/` | The dependency-free demo UI. |
 | `synthetic-ambient-fhir-25/` | Abridge-provided fully synthetic FHIR R4 panel (25 patients). |

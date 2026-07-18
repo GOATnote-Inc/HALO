@@ -36,6 +36,16 @@ command. That decision never belongs to the door, and never to software.
 
 ## Step by step
 
+0. **Charge nurse clears the board first.** Before the first casualty arrives, the battle is
+   the department you already have: 23 occupied beds and a wave inbound. HALO reverse-triages
+   the existing census (Kelen et al., *Lancet* 2006;368:1984-90) with a deterministic rule
+   table — no model call, results in milliseconds: **discharge now** (workup complete, safe),
+   **move to chairs** (stable, untethered, vertical care), **expedite admission** (the NSTEMI
+   on heparin, the post-tPA stroke, the hypoxemic pneumonia — their beds free when the floor
+   pulls them, so escalate the pull), **hold bed** (monitor/O2/infusion tethers, or anything
+   undetermined — never move a patient on missing data). On the demo census that yields
+   17 beds freed by ED action alone and 4 more on inpatient pull. The comfort-care hospice
+   patient routes to a quiet inpatient bed with a goals-of-care check — never to a hallway.
 1. **Charge nurse activates the MCI plan.** Zones stand up (red/yellow/green), downtime
    packets and alias registrations are ready.
 2. **Triage nurse at the door** — 15-second look, speaks or types one line per patient. HALO

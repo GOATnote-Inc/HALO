@@ -3,31 +3,115 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HALO — MCI Triage Support</title>
+<title>HALO — ED Track Board (MCI)</title>
 <style>
   :root{
-    --bg:#F4F5F7; --card:#FFFFFF; --ink:#182230; --muted:#5B6572; --line:#D8DDE4;
-    --accent:#1D4ED8; --accent-ink:#FFFFFF;
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#101826; --muted:#5A6472; --line:#D7DCE3;
+    --board:#0F1B2D; --board-ink:#E8EDF4; --board-line:#2A3B54;
+    --alert:#C1121F; --accent:#1D4ED8;
+    --act-dc:#166534; --act-chairs:#1D4ED8; --act-admit:#6B21A8; --act-hold:#B45309;
     --immediate:#B91C1C; --delayed-bg:#FDE68A; --delayed-ink:#5B3A00;
     --minimal:#15803D; --expectant:#4B5563; --dead:#111827; --escalate:#C2410C;
-    --flag-high:#B91C1C; --flag-mod:#B45309;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);
-       font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
-  header{background:var(--card);border-bottom:1px solid var(--line);padding:14px 24px;
-         display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
-  header h1{margin:0;font-size:20px;letter-spacing:.06em}
-  header .sub{color:var(--muted);font-size:13px;letter-spacing:.14em;text-transform:uppercase}
-  .badges{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
-  .badge{font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;
-         border:1px solid var(--line);border-radius:999px;color:var(--muted);background:#FAFBFC}
-  .badge.warn{border-color:var(--escalate);color:var(--escalate);font-weight:600}
-  main{max-width:1280px;margin:22px auto;padding:0 24px;display:grid;
-       grid-template-columns:minmax(360px,5fr) 7fr;gap:20px}
-  @media (max-width:960px){main{grid-template-columns:1fr}}
+  body{margin:0;background:var(--paper);color:var(--ink);
+       font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+  button{font:inherit}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media (prefers-reduced-motion:no-preference){
+    .banner-pulse{animation:pulse 2.4s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+  }
+
+  /* EHR chrome */
+  .chrome{background:var(--board);color:var(--board-ink);display:flex;align-items:stretch;
+          gap:0;border-bottom:3px solid var(--alert)}
+  .chrome .brand{padding:12px 20px;font-weight:700;letter-spacing:.14em;font-size:15px}
+  .chrome .brand small{display:block;font-weight:400;letter-spacing:.08em;font-size:10px;
+                       color:#9FB0C7;text-transform:uppercase}
+  .tabs{display:flex;align-items:flex-end;margin-left:8px}
+  .tab{background:none;border:0;color:#9FB0C7;padding:14px 18px 12px;font-size:13px;
+       letter-spacing:.06em;text-transform:uppercase;cursor:pointer;
+       border-bottom:3px solid transparent;margin-bottom:-3px}
+  .tab[aria-selected="true"]{color:#fff;border-bottom-color:#fff;font-weight:600}
+  .chrome .badges{margin-left:auto;display:flex;gap:8px;align-items:center;padding:0 20px}
+  .badge{font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;
+         border:1px solid var(--board-line);border-radius:999px;color:#9FB0C7}
+  .badge.syn{border-color:#E4B04A;color:#E4B04A;font-weight:600}
+
+  /* MCI banner */
+  .mci{background:var(--board);color:var(--board-ink);padding:14px 20px;display:flex;
+       gap:16px;align-items:center;flex-wrap:wrap}
+  .mci .declared{background:var(--alert);color:#fff;font-weight:700;font-size:12px;
+                 letter-spacing:.14em;text-transform:uppercase;padding:6px 12px;border-radius:4px}
+  .mci .event{font-size:14px}
+  .mci .event b{font-family:var(--mono)}
+  .mci .spacer{flex:1}
+  .mci button.surge-run{background:#fff;color:var(--board);border:0;border-radius:6px;
+       padding:10px 18px;font-weight:700;font-size:14px;cursor:pointer}
+  .mci button.surge-run:disabled{opacity:.55;cursor:wait}
+
+  main{max-width:1360px;margin:0 auto;padding:18px 20px 40px}
+  [hidden]{display:none !important}
+
+  /* capacity tiles */
+  .tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:10px}
+  @media (max-width:900px){.tiles{grid-template-columns:repeat(3,1fr)}}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+  .tile .n{font:700 26px/1.1 var(--mono)}
+  .tile .l{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+  .tile.freed .n{color:var(--act-dc)} .tile.pull .n{color:var(--act-admit)}
+  .tile.held .n{color:var(--act-hold)} .tile.inbound .n{color:var(--alert)}
+  .plan{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--act-dc);
+        border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13.5px}
+  .plan b{font-family:var(--mono)}
+
+  /* board table */
+  .boardwrap{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+  table.tb{width:100%;border-collapse:collapse;font-size:12.5px;min-width:980px}
+  .tb th{position:sticky;top:0;background:#EEF1F5;color:var(--muted);text-align:left;
+         font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:8px 10px;
+         border-bottom:1px solid var(--line)}
+  .tb td{padding:7px 10px;border-bottom:1px solid #E8EBF0;vertical-align:middle}
+  .tb tr.row{cursor:pointer;border-left:4px solid transparent}
+  .tb tr.row:hover td{background:#F4F7FB}
+  .tb tr.row.a-discharge_now{border-left-color:var(--act-dc)}
+  .tb tr.row.a-vertical_chairs{border-left-color:var(--act-chairs)}
+  .tb tr.row.a-expedite_admit{border-left-color:var(--act-admit)}
+  .tb tr.row.a-hold_bed{border-left-color:var(--act-hold)}
+  .tb .bed,.tb .agesex{font-family:var(--mono);font-weight:600}
+  .tb .pt{font-weight:600}
+  .tb .status{color:var(--muted);max-width:340px}
+  .esi{display:inline-block;min-width:22px;text-align:center;border-radius:4px;
+       font:700 11.5px/1 var(--mono);padding:4px 5px}
+  .esi-1{background:#B91C1C;color:#fff} .esi-2{background:#C2410C;color:#fff}
+  .esi-3{background:#FDE68A;color:#5B3A00} .esi-4{background:#DCFCE7;color:#14532D}
+  .esi-5{background:#F3F4F6;color:#374151;border:1px solid var(--line)}
+  .need{display:inline-block;font:600 10px/1 var(--mono);letter-spacing:.06em;
+        border:1px solid var(--line);border-radius:4px;padding:3px 5px;margin-right:3px;
+        color:var(--muted);background:#FAFBFC}
+  .need.hot{border-color:var(--act-hold);color:var(--act-hold)}
+  .act{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;
+       text-transform:uppercase;border-radius:5px;padding:5px 9px;color:#fff;white-space:nowrap}
+  .act-discharge_now{background:var(--act-dc)} .act-vertical_chairs{background:var(--act-chairs)}
+  .act-expedite_admit{background:var(--act-admit)} .act-hold_bed{background:var(--act-hold)}
+  .act-pending{background:none;color:var(--muted);border:1px dashed var(--line);font-weight:600}
+  tr.detail td{background:#F8FAFD;border-bottom:1px solid var(--line);padding:12px 16px}
+  .detail .why{font-size:13px;margin-bottom:6px}
+  .detail .steps{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .detail .fl{margin-top:8px;font-size:12.5px}
+  .detail .fl b{color:var(--immediate)}
+  .flagchip{display:inline-block;border:1px solid var(--line);border-left:3px solid var(--act-hold);
+            border-radius:4px;padding:3px 8px;margin:2px 6px 2px 0;font-size:11.5px;background:#FFFBF3}
+  .flagchip.high{border-left-color:var(--immediate);background:#FEF5F5}
+  .boardfoot{padding:10px 14px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+
+  /* door triage tab (input + results) */
+  .door{display:grid;grid-template-columns:minmax(340px,5fr) 7fr;gap:18px}
+  @media (max-width:960px){.door{grid-template-columns:1fr}}
   .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
-  .card h2{margin:0 0 4px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+  .card h2{margin:0 0 4px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
            color:var(--muted);font-weight:600}
   .hint{color:var(--muted);font-size:13px;margin:2px 0 12px}
   .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
@@ -36,23 +120,21 @@
   .chip:hover{border-color:var(--accent)}
   .chip .t{display:block;font-weight:600}
   .chip .p{display:block;color:var(--muted);font-size:12px}
-  textarea{width:100%;min-height:170px;border:1px solid var(--line);border-radius:8px;
-           padding:11px 12px;font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
-           color:var(--ink);resize:vertical}
-  textarea:focus,input:focus{outline:2px solid var(--accent);outline-offset:1px}
-  .row{display:flex;gap:14px;align-items:center;margin-top:12px;flex-wrap:wrap}
+  textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:8px;
+           padding:11px 12px;font:13.5px/1.5 var(--mono);color:var(--ink);resize:vertical}
+  .formrow{display:flex;gap:14px;align-items:center;margin-top:12px;flex-wrap:wrap}
   label{font-size:13px;color:var(--muted)}
   input[type=date]{border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:14px}
-  fieldset{border:1px solid var(--line);border-radius:8px;margin:14px 0 0;padding:10px 14px 12px}
-  legend{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 6px}
-  fieldset label{display:block;color:var(--ink);font-size:13.5px;margin:5px 0;cursor:pointer}
-  fieldset .warn-note{color:var(--escalate);font-size:12.5px;margin:6px 0 0}
-  button.run{margin-top:16px;width:100%;background:var(--accent);color:var(--accent-ink);
-             border:0;border-radius:8px;padding:12px;font-size:15px;font-weight:600;cursor:pointer}
-  button.run:disabled{background:#93A6D8;cursor:wait}
+  button.run{margin-top:14px;width:100%;background:var(--board);color:#fff;
+             border:0;border-radius:8px;padding:12px;font-size:15px;font-weight:700;cursor:pointer}
+  button.run:disabled{opacity:.55;cursor:wait}
   .status{margin-top:10px;font-size:13.5px;color:var(--muted);min-height:20px}
   .error{margin-top:10px;border:1px solid var(--immediate);border-radius:8px;background:#FEF2F2;
          color:#7F1D1D;padding:10px 12px;font-size:13.5px}
+  details.phys{margin-top:12px;border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+  details.phys .warn-note{color:var(--escalate);font-size:12.5px}
+  summary{cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);
+          letter-spacing:.06em;text-transform:uppercase}
   .banner{border-radius:10px;padding:16px 20px;margin-bottom:14px}
   .banner .cat{font-size:24px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
   .banner .why{margin-top:4px;font-size:14px}
@@ -62,22 +144,20 @@
   .banner.expectant{background:var(--expectant);color:#fff}
   .banner.dead{background:var(--dead);color:#fff}
   .banner.unable_to_triage{background:var(--escalate);color:#fff}
-  .banner .act{display:inline-block;margin-bottom:6px;font-size:12px;font-weight:700;
+  .banner .actlbl{display:inline-block;margin-bottom:6px;font-size:11px;font-weight:700;
                letter-spacing:.12em;text-transform:uppercase;border:1.5px solid rgba(255,255,255,.85);
                border-radius:6px;padding:2px 8px}
   .missing{margin-top:8px;font-size:13px}
   .missing span{display:inline-block;border:1px solid rgba(255,255,255,.6);border-radius:6px;
                 padding:1px 8px;margin:2px 4px 0 0}
   .banner.delayed .missing span{border-color:rgba(91,58,0,.45)}
-  table{width:100%;border-collapse:collapse;font-size:13.5px}
-  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-  th{color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
-  td.v-yes{color:var(--minimal);font-weight:600}
-  td.v-no{color:var(--immediate);font-weight:600}
-  td.v-null{color:var(--muted)}
-  td.ev{color:var(--muted);font-style:italic}
+  table.obs{width:100%;border-collapse:collapse;font-size:13px}
+  .obs th,.obs td{text-align:left;padding:7px 10px;border-bottom:1px solid #E8EBF0;vertical-align:top}
+  .obs th{color:var(--muted);font-weight:600;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
+  td.v-yes{color:var(--minimal);font-weight:600} td.v-no{color:var(--immediate);font-weight:600}
+  td.v-null{color:var(--muted)} td.ev{color:var(--muted);font-style:italic}
   .idstat{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
-  .pill{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  .pill{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
         border-radius:999px;padding:4px 12px}
   .pill.strong_candidate{background:#DBEAFE;color:#1E3A8A;border:1px solid #93C5FD}
   .pill.possible{background:#FEF3C7;color:#78350F;border:1px solid #FCD34D}
@@ -92,79 +172,108 @@
   .reasons{color:var(--muted);font-size:12.5px}
   .rationale{border-left:3px solid var(--accent);background:#F8FAFF;padding:8px 12px;
              margin:10px 0;font-size:13.5px}
-  .rationale b{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
-  .flag{border-left:4px solid var(--flag-mod);background:#FFFBF3;border-radius:0 8px 8px 0;
-        padding:9px 12px;margin:8px 0;font-size:13.5px}
-  .flag.high{border-left-color:var(--flag-high);background:#FEF5F5}
-  .flag .fid{font-weight:700;letter-spacing:.03em}
-  .flag .sev{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-             margin-left:8px}
-  .flag.high .sev{color:var(--flag-high)} .flag .sev{color:var(--flag-mod)}
-  .flag .prov{color:var(--muted);font-size:12.5px;margin-top:3px}
-  details{margin-top:12px;border:1px solid var(--line);border-radius:8px;padding:10px 14px}
-  summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);
-          letter-spacing:.06em;text-transform:uppercase}
-  .trail li{font:12.5px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-all}
-  pre{overflow:auto;font-size:12px;background:#F8F9FB;border-radius:8px;padding:12px;max-height:340px}
-  footer{max-width:1280px;margin:8px auto 40px;padding:0 24px;color:var(--muted);font-size:12.5px}
-  footer a{color:var(--accent)}
+  .rationale b{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+  .flag{border-left:4px solid var(--act-hold);background:#FFFBF3;border-radius:0 8px 8px 0;
+        padding:9px 12px;margin:8px 0;font-size:13px}
+  .flag.high{border-left-color:var(--immediate);background:#FEF5F5}
+  .flag .fid{font-weight:700} .flag .sev{font-size:10.5px;font-weight:700;letter-spacing:.1em;
+             text-transform:uppercase;margin-left:8px;color:var(--act-hold)}
+  .flag.high .sev{color:var(--immediate)}
+  .flag .prov{color:var(--muted);font-size:12px;margin-top:3px}
+  details.out{margin-top:12px;border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+  .trail li{font:12px/1.7 var(--mono);word-break:break-all}
+  pre{overflow:auto;font-size:11.5px;background:#F8F9FB;border-radius:8px;padding:12px;max-height:320px}
   .placeholder{color:var(--muted);font-size:14px;padding:26px 0;text-align:center}
+  h3.sec{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:18px 0 6px}
+  footer{max-width:1360px;margin:6px auto 40px;padding:0 20px;color:var(--muted);font-size:12px}
+  footer a{color:var(--accent)}
 </style>
 </head>
 <body>
-<header>
-  <h1>HALO</h1>
-  <span class="sub">MCI Nurse Triage Support — Module 1</span>
+<header class="chrome">
+  <div class="brand">HALO<small>High acuity, low occurrence</small></div>
+  <nav class="tabs" role="tablist" aria-label="Module views">
+    <button class="tab" id="tabbtn-board" role="tab" aria-selected="true" aria-controls="tab-board">Track board</button>
+    <button class="tab" id="tabbtn-door" role="tab" aria-selected="false" aria-controls="tab-door">Door triage</button>
+  </nav>
   <div class="badges">
-    <span class="badge warn">Synthetic data only</span>
+    <span class="badge syn">Synthetic data</span>
     <span class="badge">Research demo — not a medical device</span>
-    <span class="badge">Fail-closed</span>
   </div>
 </header>
 
+<div class="mci" id="mcibanner">
+  <span class="declared banner-pulse">MCI declared</span>
+  <span class="event">Factory explosion, 2.1 mi — EMS estimates <b>100+</b> inbound ·
+    first arrivals <b>~12 min</b></span>
+  <span class="spacer"></span>
+  <button class="surge-run" id="surgebtn">Run surge assessment</button>
+</div>
+
 <main>
-  <section class="card" aria-labelledby="in-h">
-    <h2 id="in-h">Door triage note</h2>
-    <p class="hint">Speak or type what you see — 15 seconds, numbers beat judgments
-    ("RR 38, radial present, follows commands"). Or load a scripted scenario; each mirrors a
-    failure mode from published MCI after-action reports.</p>
-    <div class="chips" id="chips" role="group" aria-label="Sample scenarios"></div>
-    <textarea id="note" aria-label="Door triage note" spellcheck="false"
-      placeholder="e.g. Pt 12: male ~40s, RR 38, radial present, follows commands, bleeding controlled, name unknown"></textarea>
-    <div class="row">
-      <label for="idate">Incident date</label>
-      <input type="date" id="idate" value="2026-07-18">
+  <section id="tab-board" role="tabpanel" aria-labelledby="tabbtn-board">
+    <div class="tiles" id="tiles"></div>
+    <div class="plan" id="plan" hidden></div>
+    <div class="boardwrap">
+      <table class="tb" aria-label="ED track board">
+        <thead><tr>
+          <th>Bed</th><th>Patient</th><th>Age/Sex</th><th>ESI</th><th>Complaint</th>
+          <th>Status</th><th>Needs</th><th>Surge action</th>
+        </tr></thead>
+        <tbody id="board"></tbody>
+      </table>
+      <div class="boardfoot">Reverse triage of the existing census (Kelen et al., Lancet 2006).
+      Deterministic rule table — no model call; the board sorts in milliseconds. Undetermined
+      patients HOLD: never move anyone on missing data. Row click shows rationale, required
+      steps, and chart flags.</div>
     </div>
-    <button class="run" id="run">Run triage + chart reconciliation</button>
-    <details>
-      <summary>Physician secondary triage (not part of door triage)</summary>
-      <p class="hint" style="margin-top:10px">Door triage is a nursing workflow and never sets
-      this. EXPECTANT exists only downstream, when a physician at secondary triage documents a
-      resource-based survivability decision — the software cannot make that judgment.</p>
-      <label style="display:block;font-size:13.5px;margin:4px 0">
-        <input type="radio" name="ls" value="null" checked> No physician decision recorded (door triage default)</label>
-      <label style="display:block;font-size:13.5px;margin:4px 0">
-        <input type="radio" name="ls" value="true"> Physician documented: survivable with current resources</label>
-      <label style="display:block;font-size:13.5px;margin:4px 0">
-        <input type="radio" name="ls" value="false"> Physician documented: NOT survivable with current resources</label>
-    </details>
-    <div class="status" id="status" role="status"></div>
-    <div id="errbox"></div>
   </section>
 
-  <section class="card" aria-labelledby="out-h">
-    <h2 id="out-h">Handoff</h2>
-    <div id="results" aria-live="polite">
-      <p class="placeholder">Results appear here. The agent path (garbled identity) can take
-      one to two minutes — the model is searching the panel and corroborating charts.</p>
+  <section id="tab-door" role="tabpanel" aria-labelledby="tabbtn-door" hidden>
+    <div class="door">
+      <section class="card" aria-labelledby="in-h">
+        <h2 id="in-h">Door triage note</h2>
+        <p class="hint">Speak or type what you see — 15 seconds, numbers beat judgments
+        ("RR 38, radial present, follows commands"). Or load a scripted scenario.</p>
+        <div class="chips" id="chips" role="group" aria-label="Sample scenarios"></div>
+        <textarea id="note" aria-label="Door triage note" spellcheck="false"
+          placeholder="e.g. Pt 12: male ~40s, RR 38, radial present, follows commands, bleeding controlled, name unknown"></textarea>
+        <div class="formrow">
+          <label for="idate">Incident date</label>
+          <input type="date" id="idate" value="2026-07-18">
+        </div>
+        <button class="run" id="run">Run triage + chart reconciliation</button>
+        <details class="phys">
+          <summary>Physician secondary triage (not part of door triage)</summary>
+          <p class="hint" style="margin-top:10px">Door triage never sets this. EXPECTANT exists
+          only downstream, when a physician documents a resource-based survivability decision —
+          the software cannot make that judgment.</p>
+          <label style="display:block;font-size:13.5px;margin:4px 0;color:var(--ink)">
+            <input type="radio" name="ls" value="null" checked> No physician decision recorded (door triage default)</label>
+          <label style="display:block;font-size:13.5px;margin:4px 0;color:var(--ink)">
+            <input type="radio" name="ls" value="true"> Physician documented: survivable with current resources</label>
+          <label style="display:block;font-size:13.5px;margin:4px 0;color:var(--ink)">
+            <input type="radio" name="ls" value="false"> Physician documented: NOT survivable with current resources</label>
+          <p class="warn-note">EXPECTANT can only result from that explicit physician decision.</p>
+        </details>
+        <div class="status" id="status" role="status"></div>
+        <div id="errbox"></div>
+      </section>
+      <section class="card" aria-labelledby="out-h">
+        <h2 id="out-h">Handoff</h2>
+        <div id="results" aria-live="polite">
+          <p class="placeholder">Results appear here. The agent path (garbled identity) can take
+          one to two minutes — the model is searching the panel and corroborating charts.</p>
+        </div>
+      </section>
     </div>
   </section>
 </main>
 
 <footer>
-  Built for the triage nurse: deterministic SALT / 30-2-Can Do over Claude-extracted
-  observations. Identity is never confirmed by software; EXPECTANT exists only as a physician
-  decision at secondary triage. Evidence, workflow, EHR integration, and AI risk register:
+  Built for the triage nurse and the charge nurse: deterministic SALT / 30-2-Can Do at the door,
+  reverse triage (Kelen 2006) on the board. Identity is never confirmed by software; EXPECTANT
+  exists only as a physician decision at secondary triage.
   <a href="https://github.com/GOATnote-Inc/HALO/blob/main/docs/GOVERNANCE.md">GOVERNANCE</a> ·
   <a href="https://github.com/GOATnote-Inc/HALO/blob/main/docs/WORKFLOW.md">WORKFLOW</a> ·
   <a href="https://github.com/GOATnote-Inc/HALO/blob/main/docs/INTEGRATION.md">INTEGRATION</a>.
@@ -177,11 +286,127 @@ const $ = (s) => document.querySelector(s);
 const esc = (x) => String(x ?? "").replace(/[&<>"']/g,
   (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
+/* ---------- tabs ---------- */
+function showTab(which) {
+  for (const t of ["board", "door"]) {
+    $(`#tab-${t}`).hidden = t !== which;
+    $(`#tabbtn-${t}`).setAttribute("aria-selected", String(t === which));
+  }
+  $("#mcibanner").style.display = which === "board" ? "" : "none";
+}
+$("#tabbtn-board").addEventListener("click", () => showTab("board"));
+$("#tabbtn-door").addEventListener("click", () => showTab("door"));
+
+/* ---------- track board ---------- */
+const ACTION_LABEL = {
+  discharge_now: "Discharge now",
+  vertical_chairs: "Move to chairs",
+  expedite_admit: "Expedite admission",
+  hold_bed: "Hold bed",
+};
+let boardRows = [];
+
+function ageOf(birthDate) {
+  const b = new Date(birthDate), now = new Date("2026-07-18");
+  let a = now.getFullYear() - b.getFullYear();
+  if (now < new Date(now.getFullYear(), b.getMonth(), b.getDate())) a--;
+  return a;
+}
+function needChips(f) {
+  const chips = [];
+  if (f.cardiac_monitor_required) chips.push('<span class="need hot">MON</span>');
+  if (f.oxygen_required) chips.push('<span class="need hot">O2</span>');
+  if (f.continuous_infusion) chips.push('<span class="need hot">IV</span>');
+  if (f.post_thrombolytic) chips.push('<span class="need hot">tPA</span>');
+  return chips.join("") || '<span class="need">&mdash;</span>';
+}
+function tiles(data) {
+  const t = [
+    { n: data.occupied, l: "Beds occupied", cls: "" },
+    { n: data.open_beds, l: "Open now", cls: "" },
+    { n: data.freed_now ?? "—", l: "Freed by ED action", cls: "freed" },
+    { n: data.freed_by_admission_pull ?? "—", l: "Freed by inpatient pull", cls: "pull" },
+    { n: data.held ?? "—", l: "Hold — do not move", cls: "held" },
+    { n: "100+", l: "Est. inbound", cls: "inbound" },
+  ];
+  $("#tiles").innerHTML = t.map((x) =>
+    `<div class="tile ${x.cls}"><div class="n">${esc(x.n)}</div><div class="l">${esc(x.l)}</div></div>`).join("");
+}
+function renderBoard(rows) {
+  boardRows = rows;
+  $("#board").innerHTML = rows.map((r, i) => {
+    const a = r.surge?.action;
+    const chip = a
+      ? `<span class="act act-${esc(a)}">${esc(ACTION_LABEL[a] || a)}</span>`
+      : `<span class="act act-pending">awaiting assessment</span>`;
+    const sex = r.gender === "male" ? "M" : "F";
+    return `<tr class="row ${a ? "a-" + esc(a) : ""}" data-i="${i}" tabindex="0"
+      aria-expanded="false">
+      <td class="bed">${esc(r.bed)}</td>
+      <td class="pt">${esc(r.name)}</td>
+      <td class="agesex">${ageOf(r.birth_date)}${sex}</td>
+      <td><span class="esi esi-${r.esi}">${r.esi}</span></td>
+      <td>${esc(r.chief_complaint)}</td>
+      <td class="status">${esc(r.status)}</td>
+      <td>${needChips(r.features)}</td>
+      <td>${chip}</td>
+    </tr>`;
+  }).join("");
+  for (const tr of document.querySelectorAll("tr.row")) {
+    tr.addEventListener("click", () => toggleDetail(tr));
+    tr.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDetail(tr); }
+    });
+  }
+}
+function toggleDetail(tr) {
+  const open = tr.nextElementSibling?.classList.contains("detail");
+  if (open) { tr.nextElementSibling.remove(); tr.setAttribute("aria-expanded", "false"); return; }
+  const r = boardRows[Number(tr.dataset.i)];
+  const s = r.surge;
+  const flags = r.care_flags.length
+    ? r.care_flags.map((f) =>
+        `<span class="flagchip ${esc(f.severity)}">${esc(f.flag.replace(/_/g, " "))}</span>`).join("")
+    : '<span class="reasons">none</span>';
+  const detail = document.createElement("tr");
+  detail.className = "detail";
+  detail.innerHTML = `<td colspan="8">
+    ${s ? `<div class="why"><b>${esc(ACTION_LABEL[s.action])}:</b> ${esc(s.rationale)}</div>
+    <div class="steps">${s.required_steps.map((x) => "&#9633; " + esc(x)).join(" &nbsp; ")}</div>` :
+    `<div class="why">Run the surge assessment to classify this bed.</div>`}
+    <div class="fl">Chart flags (from longitudinal record): ${flags}</div>
+  </td>`;
+  tr.after(detail);
+  tr.setAttribute("aria-expanded", "true");
+}
+async function loadBoard() {
+  const r = await fetch("/mci/census");
+  const data = await r.json();
+  tiles(data);
+  renderBoard(data.rows);
+}
+async function runSurge() {
+  const btn = $("#surgebtn");
+  btn.disabled = true;
+  try {
+    const r = await fetch("/mci/surge", { method: "POST" });
+    const data = await r.json();
+    tiles(data);
+    renderBoard(data.rows);
+    const plan = $("#plan");
+    plan.hidden = false;
+    plan.innerHTML = `<b>Plan:</b> ${esc(data.summary)}`;
+    btn.textContent = "Re-run surge assessment";
+  } finally { btn.disabled = false; }
+}
+$("#surgebtn").addEventListener("click", runSurge);
+
+/* ---------- door triage ---------- */
 const CATEGORY_ACTION = {
   immediate: "First priority — life threat identified",
   delayed: "Second priority — treatment can safely wait",
   minimal: "Third priority — minor injuries",
-  expectant: "Human resource decision recorded",
+  expectant: "Physician resource decision recorded",
   dead: "No spontaneous respirations after airway opening",
   unable_to_triage: "Action required — assess in person now",
 };
@@ -192,7 +417,6 @@ const FIELD_LABELS = {
   major_hemorrhage_uncontrolled: "Uncontrolled major hemorrhage",
   minor_injuries_only: "Minor injuries only", can_walk: "Ambulatory",
 };
-
 let scenarios = [];
 
 async function loadScenarios() {
@@ -211,7 +435,6 @@ async function loadScenarios() {
   }
   if (scenarios.length && !$("#note").value) $("#note").value = scenarios[0].note;
 }
-
 function obsRow(name, value, evidence) {
   let cls, shown;
   if (typeof value === "number") { cls = ""; shown = esc(value); }
@@ -222,7 +445,6 @@ function obsRow(name, value, evidence) {
   return `<tr><td>${esc(FIELD_LABELS[name] || name)}</td>
     <td class="${cls}">${shown}</td><td class="ev">${ev}</td></tr>`;
 }
-
 function flagBlock(f) {
   return `<div class="flag ${esc(f.severity)}">
     <span class="fid">${esc(f.flag.replace(/_/g, " "))}</span>
@@ -231,7 +453,6 @@ function flagBlock(f) {
     <div class="prov">Chart provenance: ${f.provenance.map(esc).join(" · ")}</div>
   </div>`;
 }
-
 function candidateBlock(c, rationaleHtml) {
   const pct = Math.round(c.match_score * 100);
   const nFlags = c.care_flags_if_matched.length;
@@ -250,12 +471,10 @@ function candidateBlock(c, rationaleHtml) {
     <div class="reasons">Deterministic match ${pct}% — ${c.match_reasons.map(esc).join("; ")}</div>
     ${rationaleHtml}
     ${bloat}
-    <h3 style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:12px 0 2px">
-      Care-modifier flags if this match is confirmed</h3>
+    <h3 class="sec">Care-modifier flags if this match is confirmed</h3>
     ${flags}
   </div>`;
 }
-
 function render(data) {
   const t = data.triage, idn = data.identity;
   const act = CATEGORY_ACTION[t.category] || "";
@@ -267,7 +486,6 @@ function render(data) {
     : "";
   const obsRows = Object.entries(t.observations)
     .map(([k, v]) => obsRow(k, v, t.evidence[k])).join("");
-
   const candidates = idn.candidates.length
     ? idn.candidates.map((c) => {
         const r = c.agent_rationale
@@ -277,27 +495,23 @@ function render(data) {
       }).join("")
     : `<p class="reasons">No plausible panel match — treat as unknown patient and follow the
        unidentified-patient protocol.</p>`;
-
   const trail = idn.agent_trail.length
-    ? `<details><summary>Agent tool trail (${idn.agent_trail.length} calls)</summary>
+    ? `<details class="out"><summary>Agent tool trail (${idn.agent_trail.length} calls)</summary>
        <ol class="trail">${idn.agent_trail.map((s) =>
          `<li>${esc(s.tool)}(${esc(JSON.stringify(s.input))})</li>`).join("")}</ol></details>`
     : "";
-
   $("#results").innerHTML = `
     <div class="banner ${esc(t.category)}">
-      <span class="act">${esc(act)}</span>
+      <span class="actlbl">${esc(act)}</span>
       <div class="cat">${esc(t.category.replace(/_/g, " "))}</div>
       <div class="why">${esc(t.rationale)}</div>
       ${derived}
       ${missing}
     </div>
-    <h3 style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">
-      Extracted observations (verbatim evidence)</h3>
-    <table><thead><tr><th>Observation</th><th>Value</th><th>Evidence from note</th></tr></thead>
+    <h3 class="sec">Extracted observations (verbatim evidence)</h3>
+    <table class="obs"><thead><tr><th>Observation</th><th>Value</th><th>Evidence from note</th></tr></thead>
       <tbody>${obsRows}</tbody></table>
-    <h3 style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:20px">
-      Identity reconciliation</h3>
+    <h3 class="sec">Identity reconciliation</h3>
     <div class="idstat">
       <span class="pill ${esc(idn.status)}">${esc(idn.status.replace(/_/g, " "))}</span>
       <span class="pill method">${esc(idn.method)} path</span>
@@ -305,14 +519,13 @@ function render(data) {
     </div>
     ${candidates}
     ${trail}
-    <details><summary>FHIR R4 write-back preview (Observation on the MCI alias record)</summary>
+    <details class="out"><summary>FHIR R4 write-back preview (Observation on the MCI alias record)</summary>
       <p class="hint" style="margin-top:8px">One structured Observation, no narrative bloat.
       Candidate flags are deliberately excluded — identity is unconfirmed until a human merges
       records through the EHR's identity-governance process.</p>
       <pre>${esc(JSON.stringify(data.fhir, null, 2))}</pre></details>
-    <details><summary>Raw handoff JSON</summary><pre>${esc(JSON.stringify(data, null, 2))}</pre></details>`;
+    <details class="out"><summary>Raw handoff JSON</summary><pre>${esc(JSON.stringify(data, null, 2))}</pre></details>`;
 }
-
 async function run() {
   const note = $("#note").value.trim();
   if (!note) return;
@@ -351,16 +564,20 @@ async function run() {
     btn.disabled = false;
   }
 }
-
 $("#run").addEventListener("click", run);
+
+/* ---------- init ---------- */
+loadBoard();
 loadScenarios().then(() => {
   const q = new URLSearchParams(location.search);
+  if (q.get("tab") === "door") showTab("door");
   const sid = q.get("scenario");
   if (sid) {
     const s = scenarios.find((x) => x.scenario_id === sid);
-    if (s) $("#note").value = s.note;
+    if (s) { $("#note").value = s.note; showTab("door"); }
   }
   if (q.get("autorun") === "1") run();
+  if (q.get("surge") === "1") runSurge();
 });
 </script>
 </body>

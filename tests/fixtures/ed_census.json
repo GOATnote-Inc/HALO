@@ -1,0 +1,399 @@
+{
+  "synthetic": true,
+  "description": "Synthetic ED census: 23 of the 25 panel patients cast into ED beds at the moment an MCI is declared. Wilkinson and Macejkovic are deliberately absent - they are in the community and arrive with the incident (see mci scenarios). Presentations are chart-consistent with each patient's longitudinal record.",
+  "department_beds": 30,
+  "census": [
+    {
+      "bed": "A01",
+      "patient_id": "74919836-2db2-2f73-d2cf-5287a180b0ff",
+      "esi": 2,
+      "chief_complaint": "Chest pain — NSTEMI",
+      "status": "Troponin positive, heparin infusion running, cardiology accepted, awaiting tele bed",
+      "features": {
+        "admission_indicated": true,
+        "comfort_focused": false,
+        "cardiac_monitor_required": true,
+        "oxygen_required": false,
+        "continuous_infusion": true,
+        "ambulatory": false,
+        "workup_complete": true,
+        "safe_for_discharge": false
+      }
+    },
+    {
+      "bed": "A02",
+      "patient_id": "4c893b3e-df6f-a2f0-5d03-98714cbad61a",
+      "esi": 1,
+      "chief_complaint": "Acute stroke — thrombolytic given",
+      "status": "tPA completed 40 min ago, q15min neuro checks, ICU accepted, awaiting bed",
+      "features": {
+        "admission_indicated": true,
+        "comfort_focused": false,
+        "cardiac_monitor_required": true,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "post_thrombolytic": true,
+        "ambulatory": false,
+        "workup_complete": true,
+        "safe_for_discharge": false
+      }
+    },
+    {
+      "bed": "A03",
+      "patient_id": "7bd9e5b0-5d4b-f10d-9579-f4813faf9cdc",
+      "esi": 2,
+      "chief_complaint": "Pneumonia, hypoxemia",
+      "status": "On 4L O2, admission ordered, awaiting med bed",
+      "features": {
+        "admission_indicated": true,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": true,
+        "continuous_infusion": false,
+        "ambulatory": false,
+        "workup_complete": true,
+        "safe_for_discharge": false
+      }
+    },
+    {
+      "bed": "A04",
+      "patient_id": "25fb1227-d194-b15e-e099-7cffcd6081ec",
+      "esi": 2,
+      "chief_complaint": "Hospice patient — symptom crisis",
+      "status": "End-stage colon cancer, comfort medications, family at bedside; inpatient hospice bed requested",
+      "features": {
+        "admission_indicated": true,
+        "comfort_focused": true,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": false,
+        "workup_complete": true,
+        "safe_for_discharge": false
+      }
+    },
+    {
+      "bed": "A05",
+      "patient_id": "6b716621-5454-68ec-2017-362939ab6f36",
+      "esi": 3,
+      "chief_complaint": "Chest pain — rule-out ACS",
+      "status": "First troponin negative, second pending, on monitor",
+      "features": {
+        "admission_indicated": null,
+        "comfort_focused": false,
+        "cardiac_monitor_required": true,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": false,
+        "safe_for_discharge": false
+      }
+    },
+    {
+      "bed": "A06",
+      "patient_id": "d57244c4-df7d-9ce7-7878-38361fc0087b",
+      "esi": 3,
+      "chief_complaint": "COPD exacerbation",
+      "status": "Third nebulizer, still on 2L O2, disposition undecided",
+      "features": {
+        "admission_indicated": null,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": true,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": false,
+        "safe_for_discharge": false
+      }
+    },
+    {
+      "bed": "B01",
+      "patient_id": "3a3a1f26-ed23-f65c-a7df-c96fac56f464",
+      "esi": 4,
+      "chief_complaint": "Migraine",
+      "status": "IV metoclopramide complete, saline-locked, improving",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": false,
+        "safe_for_discharge": false
+      }
+    },
+    {
+      "bed": "B02",
+      "patient_id": "4b4735a2-ee12-ec86-041f-3ba4d5c81ec9",
+      "esi": 3,
+      "chief_complaint": "Asymptomatic hypertension",
+      "status": "BP 195/105, oral meds given, recheck pending",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": false,
+        "safe_for_discharge": false
+      }
+    },
+    {
+      "bed": "B03",
+      "patient_id": "73043f9e-3254-a1d3-aa45-b82f0fc6d502",
+      "esi": 3,
+      "chief_complaint": "Fall, hip pain",
+      "status": "X-ray negative, PT evaluation pending, wheelchair-capable",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": false,
+        "safe_for_discharge": false
+      }
+    },
+    {
+      "bed": "B04",
+      "patient_id": "256bea3d-7833-e7f8-74b4-0e4f7e299c73",
+      "esi": 4,
+      "chief_complaint": "Urticaria",
+      "status": "Antihistamines given, observation for progression",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": false,
+        "safe_for_discharge": false
+      }
+    },
+    {
+      "bed": "B05",
+      "patient_id": "c2cbc55e-34dc-73c6-5ee4-cabe0c40fc32",
+      "esi": 3,
+      "chief_complaint": "Abdominal pain",
+      "status": "CT done, awaiting radiology read, pain controlled",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": false,
+        "safe_for_discharge": false
+      }
+    },
+    {
+      "bed": "B06",
+      "patient_id": "b504cdf2-e13b-979e-9c4a-95456823e3dd",
+      "esi": 3,
+      "chief_complaint": "Generalized weakness",
+      "status": "Labs pending, ambulating with steady gait",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": false,
+        "safe_for_discharge": false
+      }
+    },
+    {
+      "bed": "C01",
+      "patient_id": "b342f27e-56bc-08ac-347c-323279c0d595",
+      "esi": 4,
+      "chief_complaint": "First-trimester spotting",
+      "status": "Ultrasound normal, quantitative hCG resulted, stable",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": true,
+        "safe_for_discharge": true
+      }
+    },
+    {
+      "bed": "C02",
+      "patient_id": "966e9818-9cf6-8d71-74bc-36aef6643618",
+      "esi": 3,
+      "chief_complaint": "Allergic reaction",
+      "status": "2h observation post-epinephrine complete, symptoms resolved",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": true,
+        "safe_for_discharge": true
+      }
+    },
+    {
+      "bed": "C03",
+      "patient_id": "374e68b2-ee15-0852-cd48-3c7b6fd8e114",
+      "esi": 4,
+      "chief_complaint": "Ankle injury",
+      "status": "X-ray negative, splint applied, crutch-trained",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": true,
+        "safe_for_discharge": true
+      }
+    },
+    {
+      "bed": "C04",
+      "patient_id": "1ba8eeb9-bc93-7129-4390-0d2ddd560616",
+      "esi": 4,
+      "chief_complaint": "Low back strain",
+      "status": "Exam benign, analgesia effective, discharge instructions ready",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": true,
+        "safe_for_discharge": true
+      }
+    },
+    {
+      "bed": "C05",
+      "patient_id": "40cb7be2-9c26-6328-3aa0-71db4ed81e06",
+      "esi": 3,
+      "chief_complaint": "Hyperemesis of pregnancy",
+      "status": "Fluids complete, tolerating oral intake, symptoms resolved",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": true,
+        "safe_for_discharge": true
+      }
+    },
+    {
+      "bed": "C06",
+      "patient_id": "be1b73f7-b0f0-0ca3-b24b-28369ce68943",
+      "esi": 4,
+      "chief_complaint": "Forearm laceration",
+      "status": "Repaired, tetanus updated, wound care taught",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": true,
+        "safe_for_discharge": true
+      }
+    },
+    {
+      "bed": "C07",
+      "patient_id": "6d4fd363-1ddb-74f8-516f-2fdc861cb736",
+      "esi": 3,
+      "chief_complaint": "Renal colic",
+      "status": "CT shows 4mm stone, pain controlled on orals, strainer given",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": true,
+        "safe_for_discharge": true
+      }
+    },
+    {
+      "bed": "C08",
+      "patient_id": "e1a7c2af-1e7f-300b-44f6-012ae75bbab1",
+      "esi": 5,
+      "chief_complaint": "Dental pain",
+      "status": "Block performed, dental follow-up arranged",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": true,
+        "safe_for_discharge": true
+      }
+    },
+    {
+      "bed": "C09",
+      "patient_id": "a3292ec4-64b6-20fc-480e-39e1f7f51e50",
+      "esi": 4,
+      "chief_complaint": "Pelvic pain, first trimester",
+      "status": "Ultrasound normal, pain resolved on oral analgesia",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": true,
+        "safe_for_discharge": true
+      }
+    },
+    {
+      "bed": "C10",
+      "patient_id": "01573895-dbf5-29c6-4ef9-cd09aecc51f6",
+      "esi": 3,
+      "chief_complaint": "Shoulder dislocation",
+      "status": "Reduced under sedation, recovery complete, sling fitted",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": true,
+        "safe_for_discharge": true
+      }
+    },
+    {
+      "bed": "C11",
+      "patient_id": "5e93dd7e-1639-0886-8d0e-80ac11f2785c",
+      "esi": 3,
+      "chief_complaint": "Diverticulitis",
+      "status": "CT mild uncomplicated, tolerating oral intake, antibiotics prescribed",
+      "features": {
+        "admission_indicated": false,
+        "comfort_focused": false,
+        "cardiac_monitor_required": false,
+        "oxygen_required": false,
+        "continuous_infusion": false,
+        "ambulatory": true,
+        "workup_complete": true,
+        "safe_for_discharge": true
+      }
+    }
+  ]
+}

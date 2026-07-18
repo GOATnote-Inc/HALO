@@ -92,7 +92,28 @@ def run_handoff_scenarios() -> int:
     return 0
 
 
+def run_surge() -> int:
+    """Offline reverse-triage of the census — deterministic, no API key needed."""
+    from halo.mci.census import load_census
+    from halo.mci.surge import surge_plan
+
+    census = load_census()
+    plan = surge_plan(census)
+    _rule("SURGE BED CLEARANCE — reverse triage of the existing census (Kelen 2006)")
+    for d in plan.decisions:
+        e = d.entry
+        print(
+            f"{e.bed}  {e.patient.display_name:<28} ESI {e.esi}  "
+            f"{d.action.value.upper():<15} {e.chief_complaint}"
+        )
+        print(f"     {d.rationale}")
+    print(f"\n{plan.summary()}")
+    return 0
+
+
 def main() -> int:
+    if "--surge" in sys.argv[1:]:
+        return run_surge()
     if "--handoff" in sys.argv[1:]:
         return run_handoff_scenarios()
     goldset = json.loads(GOLDSET_PATH.read_text())

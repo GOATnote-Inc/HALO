@@ -15,8 +15,9 @@ def test_ui_served_at_root() -> None:
     assert "text/html" in r.headers["content-type"]
     body = r.text
     assert "HALO" in body
-    assert "Synthetic data only" in body
+    assert "Synthetic data" in body
     assert "not a medical device" in body
+    assert "Track board" in body and "Door triage" in body
 
 
 def test_health() -> None:
@@ -32,6 +33,28 @@ def test_scenarios_endpoint() -> None:
     assert len(scenarios) == 4
     assert all(s["synthetic"] is True for s in scenarios)
     assert all(s["note"] and s["title"] and s["pattern"] for s in scenarios)
+
+
+def test_census_endpoint_offline() -> None:
+    r = client.get("/mci/census")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["occupied"] == 23
+    assert data["open_beds"] == 7
+    assert data["synthetic_only"] is True
+    assert all("surge" not in row for row in data["rows"])
+
+
+def test_surge_endpoint_offline_and_deterministic() -> None:
+    r = client.post("/mci/surge")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["freed_now"] == 17
+    assert data["freed_by_admission_pull"] == 4
+    assert data["held"] == 2
+    assert all("surge" in row for row in data["rows"])
+    # Deterministic: a second run returns the identical plan.
+    assert client.post("/mci/surge").json() == data
 
 
 def test_triage_observations_offline() -> None:

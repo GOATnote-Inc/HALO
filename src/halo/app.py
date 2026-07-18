@@ -29,6 +29,71 @@ def health() -> dict[str, str]:
     return {"status": "ok", "model": model_name()}
 
 
+def _census_row(entry: Any, decision: Any | None = None) -> dict[str, Any]:
+    from halo.mci.panel import care_flags
+
+    row: dict[str, Any] = {
+        "bed": entry.bed,
+        "patient_id": entry.patient.patient_id,
+        "name": entry.patient.display_name,
+        "gender": entry.patient.gender,
+        "birth_date": entry.patient.birth_date,
+        "esi": entry.esi,
+        "chief_complaint": entry.chief_complaint,
+        "status": entry.status,
+        "features": {k: v for k, v in entry.features.__dict__.items() if v is not None},
+        "care_flags": [
+            {"flag": f.flag_id, "severity": f.severity, "why": f.why}
+            for f in care_flags(entry.patient)
+        ],
+    }
+    if decision is not None:
+        row["surge"] = {
+            "action": decision.action.value,
+            "rationale": decision.rationale,
+            "required_steps": list(decision.required_steps),
+            "frees_bed_now": decision.frees_bed_now,
+        }
+    return row
+
+
+@app.get("/mci/census")
+def census() -> dict[str, Any]:
+    """The department at the moment of declaration — synthetic, chart-linked."""
+    from halo.mci.census import load_census
+
+    c = load_census()
+    return {
+        "department_beds": c.department_beds,
+        "occupied": len(c.entries),
+        "open_beds": c.open_beds,
+        "rows": [_census_row(e) for e in c.entries],
+        "synthetic_only": True,
+    }
+
+
+@app.post("/mci/surge")
+def surge() -> dict[str, Any]:
+    """Reverse-triage the census (Kelen et al. 2006). Deterministic — no model call."""
+    from halo.mci.census import load_census
+    from halo.mci.surge import surge_plan
+
+    c = load_census()
+    plan = surge_plan(c)
+    return {
+        "department_beds": c.department_beds,
+        "occupied": len(c.entries),
+        "open_beds": c.open_beds,
+        "freed_now": plan.freed_now,
+        "freed_by_admission_pull": plan.freed_by_admission_pull,
+        "held": plan.held,
+        "monitors_freed": plan.monitors_freed,
+        "summary": plan.summary(),
+        "rows": [_census_row(d.entry, d) for d in plan.decisions],
+        "synthetic_only": True,
+    }
+
+
 @app.get("/mci/scenarios")
 def scenarios() -> dict[str, Any]:
     """Scripted scenarios (synthetic) — one source of truth with the CLI demo."""
