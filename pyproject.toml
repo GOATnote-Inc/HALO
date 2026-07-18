@@ -29,10 +29,8 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools.package-data]
-"halo.edu" = ["content/*.json"]
-
-[tool.setuptools.package-data]
 halo = ["static/*"]
+"halo.edu" = ["content/*.json"]
 
 [tool.ruff]
 line-length = 100
