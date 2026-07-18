@@ -11,19 +11,40 @@ Grading contract:
   the miss in place (no credit on uncertainty).
 - ``passed`` requires both the score threshold AND zero critical misses — a
   perfect score on everything else does not excuse pulling on a breech.
+
+Known limit (by design, documented rather than hidden): keyword grading is
+self-attestation, not proctoring — pasting a bag of keywords into every prompt
+would pass. The CME ledger records the raw answers (``events``) precisely so a
+human reviewer can spot that.
 """
 
 from __future__ import annotations
 
+import re
+
 from halo.edu.corpus import module_version
 from halo.edu.models import DecisionPoint, DrillResult, ProcedureModule, StepGrade
+
+
+def _phrase_hits(phrase: str, text: str) -> bool:
+    """Left word boundary always; right boundary for digit-final or short phrases.
+
+    Long alpha stems may grow a suffix so "clamp" credits "clamped" and "decon"
+    credits "decontamination". But "now" can no longer hide inside "know", "3"
+    inside "30 minutes", or "mci" inside "mcintosh" — abbreviations (<= 3
+    chars) and numbers match exact words only (red-team fix: raw substring
+    matching let wrong answers score critical hits).
+    """
+    exact = phrase[-1].isdigit() or len(phrase) <= 3
+    pattern = r"\b" + re.escape(phrase) + (r"\b" if exact else "")
+    return re.search(pattern, text) is not None
 
 
 def match_answer(accept: tuple[tuple[str, ...], ...], answer: str) -> tuple[str, ...] | None:
     """First accept group whose phrases ALL appear in the answer, else None."""
     normalized = " ".join(answer.lower().split())
     for group in accept:
-        if all(phrase in normalized for phrase in group):
+        if all(_phrase_hits(phrase, normalized) for phrase in group):
             return group
     return None
 

@@ -82,6 +82,24 @@ class TestInbound:
         ctx = patient_context_from_bundle(_bundle(), on_date=ON_DATE)
         assert ctx == PatientContext()
 
+    def test_malformed_entries_are_skipped_not_fatal(self) -> None:
+        bundle = {
+            "resourceType": "Bundle",
+            "synthetic": True,
+            "entry": ["garbage", 42, {"resource": "also garbage"}, {"resource": WEIGHT_22KG}],
+        }
+        ctx = patient_context_from_bundle(bundle, on_date=ON_DATE)
+        assert ctx.weight_kg == 22  # the one valid resource still counts
+
+    def test_non_list_entry_is_empty_context(self) -> None:
+        ctx = patient_context_from_bundle({"entry": "not-a-list"}, on_date=ON_DATE)
+        assert ctx == PatientContext()
+
+    def test_future_birthdate_yields_no_age(self) -> None:
+        unborn = {"resourceType": "Patient", "birthDate": "2030-01-01"}
+        ctx = patient_context_from_bundle(_bundle(unborn, WEIGHT_22KG), on_date=ON_DATE)
+        assert ctx.age_years is None  # bad data is not an age; dosing decides by weight
+
 
 class TestBundleToBedside:
     """The integration the module exists for: EHR bundle -> computed peds antidotes."""
@@ -118,6 +136,22 @@ class TestOutbound:
         composition = bundle["entry"][0]["resource"]
         assert composition["status"] == "preliminary"
         assert composition["title"].startswith("DRAFT")
+
+    def test_composition_narrative_is_escaped(self) -> None:
+        from halo.edu.models import DoseResult
+
+        module = get_module("organophosphate")
+        hostile = DoseResult(
+            status=DoseStatus.COMPUTED,
+            med="Atropine<script>alert(1)</script>",
+            route="IV",
+            text='2 mg IV <img src=x onerror="x">',
+        )
+        bundle = draft_bundle(module, [hostile], when_iso="2026-07-18T12:00:00Z")
+        div = bundle["entry"][0]["resource"]["section"][0]["text"]["div"]
+        assert "<script>" not in div
+        assert "<img" not in div
+        assert "&lt;script&gt;" in div
 
     def test_refused_doses_never_documented(self) -> None:
         module = get_module("organophosphate")

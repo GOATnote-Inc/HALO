@@ -70,8 +70,7 @@
       "n": 4,
       "action": "Pralidoxime (2-PAM) early, WITH atropine, SLOWLY",
       "detail": "Adult 1-2 g in 100 mL NS IV over 15-30 min (WHO: 30 mg/kg), then 8 mg/kg/h infusion. Pediatric 25-50 mg/kg (max 2 g) then 10-20 mg/kg/h. Reactivates acetylcholinesterase before aging; rapid push causes hypertension and laryngospasm. Give even if presentation is delayed — aging windows vary by agent.",
-      "critical": true,
-      "media": "autoinjector"
+      "critical": true
     },
     {
       "n": 5,

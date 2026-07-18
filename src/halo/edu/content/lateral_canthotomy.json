@@ -56,15 +56,13 @@
       "n": 3,
       "action": "Crush the canthus",
       "detail": "Straight hemostat horizontally across the lateral canthus to the orbital rim; clamp 1-2 minutes. This devascularizes and marks the cut line.",
-      "critical": false,
-      "media": "canthotomy"
+      "critical": false
     },
     {
       "n": 4,
       "action": "Canthotomy: cut the crush line",
       "detail": "Iris scissors: full-thickness horizontal cut ~1 cm from the canthal angle laterally to the rim.",
-      "critical": false,
-      "media": "canthotomy"
+      "critical": false
     },
     {
       "n": 5,
@@ -93,6 +91,10 @@
       "route": "SC",
       "adult": {
         "text": "1-2 mL SC at the lateral canthus, needle directed away from the globe",
+        "unit": "mL"
+      },
+      "peds": {
+        "text": "1-2 mL SC as for adults; stay well under lidocaine max 4.5 mg/kg (7 mg/kg with epi)",
         "unit": "mL"
       }
     },

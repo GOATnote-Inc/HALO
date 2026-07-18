@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from halo.edu import DoseStatus, PatientContext, get_module
 from halo.edu.dosing import dose, dose_all
 from halo.edu.models import Med
@@ -130,6 +132,28 @@ class TestAllergySurfacing:
         ctx = PatientContext(weight_kg=80, age_years=40, allergies=("penicillin",))
         result = dose(_med(CANTH, "Acetazolamide"), ctx)
         assert result.warnings == ()
+
+
+class TestImplausibleContext:
+    """Red-team regressions: garbage context must refuse, never compute '0 mg'."""
+
+    @pytest.mark.parametrize("weight", [0, -5, 501])
+    def test_implausible_weight_refuses(self, weight: float) -> None:
+        result = dose(_med(OP, "Rocuronium"), PatientContext(weight_kg=weight, age_years=30))
+        assert result.status is DoseStatus.REFUSED
+        assert result.reason is not None and "implausible weight" in result.reason
+
+    @pytest.mark.parametrize("age", [-1, 131])
+    def test_implausible_age_refuses(self, age: float) -> None:
+        result = dose(_med(OP, "Atropine"), PatientContext(weight_kg=70, age_years=age))
+        assert result.status is DoseStatus.REFUSED
+        assert result.reason is not None and "implausible age" in result.reason
+
+
+def test_peds_lidocaine_is_reference_not_refusal() -> None:
+    result = dose(_med(CANTH, "Lidocaine"), CHILD_22KG)
+    assert result.status is DoseStatus.REFERENCE
+    assert "4.5 mg/kg" in result.text
 
 
 def test_dose_all_covers_every_med() -> None:

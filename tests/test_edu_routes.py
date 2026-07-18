@@ -91,3 +91,8 @@ def test_drill_grade_critical_miss_fails() -> None:
 def test_drill_grade_wrong_answer_count_is_422() -> None:
     body = {"module_id": "organophosphate", "answers": ["one"]}
     assert client.post("/edu/drill/grade", json=body).status_code == 422
+
+
+def test_drill_grade_oversized_answer_is_422() -> None:
+    body = {"module_id": "organophosphate", "answers": ["x" * 6000] + ["ok"] * 6}
+    assert client.post("/edu/drill/grade", json=body).status_code == 422

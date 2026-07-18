@@ -86,8 +86,25 @@ def _allergy_warnings(med: Med, ctx: PatientContext) -> tuple[str, ...]:
     )
 
 
+def _implausible(ctx: PatientContext) -> str | None:
+    if ctx.weight_kg is not None and not 0 < ctx.weight_kg <= 500:
+        return f"implausible weight {_fmt(ctx.weight_kg)} kg — re-enter before dosing"
+    if ctx.age_years is not None and not 0 <= ctx.age_years <= 130:
+        return f"implausible age {_fmt(ctx.age_years)} y — re-enter before dosing"
+    return None
+
+
 def dose(med: Med, ctx: PatientContext) -> DoseResult:
     """Dose one med for one patient. Total function — every input maps to a result."""
+    bad = _implausible(ctx)
+    if bad is not None:
+        return DoseResult(
+            status=DoseStatus.REFUSED,
+            med=med.name,
+            route=med.route,
+            text=_spec_texts(med),
+            reason=bad,
+        )
     picked = _pick_population(med, ctx)
     if isinstance(picked, DoseResult):
         return picked

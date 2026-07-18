@@ -14,6 +14,7 @@ a clinician attests in the EHR, not in HALO.
 
 from __future__ import annotations
 
+import html
 from datetime import date
 from typing import Any
 
@@ -31,10 +32,15 @@ _TAGS = [
 
 
 def _resources(bundle: dict[str, Any], resource_type: str) -> list[dict[str, Any]]:
+    entries = bundle.get("entry", [])
+    if not isinstance(entries, list):
+        return []
     out = []
-    for entry in bundle.get("entry", []):
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue  # malformed entry: skip, never crash at the bedside
         resource = entry.get("resource", {})
-        if resource.get("resourceType") == resource_type:
+        if isinstance(resource, dict) and resource.get("resourceType") == resource_type:
             out.append(resource)
     return out
 
@@ -80,10 +86,11 @@ def _age_years(patient: dict[str, Any], on_date: date) -> float | None:
     if not birth:
         return None
     try:
-        born = date.fromisoformat(birth[:10])
+        born = date.fromisoformat(str(birth)[:10])
     except ValueError:
         return None
-    return round((on_date - born).days / 365.25, 2)
+    age = round((on_date - born).days / 365.25, 2)
+    return age if age >= 0 else None  # future birthDate: bad data, not an age
 
 
 def patient_context_from_bundle(
@@ -149,7 +156,7 @@ def draft_bundle(
             "performedDateTime": when_iso,
         }
     )
-    med_lines = "".join(f"<li>{d.med}: {d.text}</li>" for d in computed)
+    med_lines = "".join(f"<li>{html.escape(d.med)}: {html.escape(d.text)}</li>" for d in computed)
     composition = _tagged(
         {
             "resourceType": "Composition",

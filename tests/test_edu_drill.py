@@ -61,6 +61,27 @@ def test_match_answer_requires_all_phrases_in_group() -> None:
     assert match_answer(accept, "AVOID succinylcholine, plasma cholinesterase is gone")
 
 
+class TestBoundaryMatching:
+    """Red-team regressions: substring matching let wrong answers score hits."""
+
+    def test_now_does_not_hide_inside_know(self) -> None:
+        assert match_answer((("now",),), "i don't know") is None
+        assert match_answer((("now",),), "decide now, cut now") is not None
+
+    def test_digit_phrases_need_exact_boundaries(self) -> None:
+        assert match_answer((("3",),), "give it over 30 minutes") is None
+        assert match_answer((("3",),), "use 3 injectors") is not None
+        assert match_answer((("3",),), "grab three, i.e. 3") is not None
+
+    def test_alpha_phrases_may_grow_a_suffix(self) -> None:
+        assert match_answer((("clamp", "cord"),), "clamped the cord twice") is not None
+        assert match_answer((("decon",),), "decontaminate outside first") is not None
+
+    def test_left_boundary_is_strict(self) -> None:
+        assert match_answer((("mci",),), "dr mcintosh will see them") is None
+        assert match_answer((("mci",),), "declare an MCI") is not None
+
+
 class TestLLMAdjudication:
     ATROPINE_POINT = next(
         p for p in (OP.drill.decision_points if OP.drill else ()) if "First antidote" in p.prompt

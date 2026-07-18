@@ -5,16 +5,20 @@ A self-contained ``APIRouter`` — mounting into ``halo.app`` is one line
 demo-surface lane owner; everything here is exercised standalone via
 TestClient. All GET paths and the default POST paths are offline and
 deterministic; LLM assistance is opt-in per request and fails closed.
+
+Deployment note (red-team): ``find?llm=true`` and ``llm_adjudicate`` trigger a
+paid Claude call with no auth on this router — fine for a research demo on an
+intranet, but gate or strip them before any exposed deployment.
 """
 
 from __future__ import annotations
 
 from dataclasses import asdict
-from typing import Any
+from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StringConstraints
 
 from halo.edu.corpus import load_corpus, module_version
 from halo.edu.dosing import dose_all
@@ -113,7 +117,7 @@ def compute_doses(body: DoseRequest) -> dict[str, Any]:
 
 class DrillGradeRequest(BaseModel):
     module_id: str
-    answers: list[str]
+    answers: list[Annotated[str, StringConstraints(max_length=5000)]] = Field(max_length=64)
     trainee: str | None = None
     elapsed_s: float | None = None
     llm_adjudicate: bool = False

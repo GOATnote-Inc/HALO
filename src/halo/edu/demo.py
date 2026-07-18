@@ -194,8 +194,12 @@ def cmd_drill(module_id: str, interactive: bool, trainee: str, use_llm: bool) ->
         print(f"\n  time: {elapsed}s")
     print(f"  score {result.score:.0%}, critical misses {len(result.critical_misses)}, ")
     print(f"  PASSED: {result.passed}")
-    record = append_record(LEDGER, result, trainee=trainee)
-    print(f"  CME evidence appended to {LEDGER} (record {record['record_hash'][:12]}...)")
+    if interactive:
+        record = append_record(LEDGER, result, trainee=trainee)
+        print(f"  CME evidence appended to {LEDGER} (record {record['record_hash'][:12]}...)")
+    else:
+        # Red-team fix: a scripted self-pass must never mint attestation evidence.
+        print("  scripted run — no CME record written (interactive runs only)")
     return 0 if result.passed else 1
 
 

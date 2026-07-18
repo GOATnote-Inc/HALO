@@ -14,7 +14,7 @@
     "4 minute rule"
   ],
   "indications": [
-    "Maternal cardiac arrest with fundal height at or above the umbilicus (~>= 20 weeks)",
+    "Maternal cardiac arrest with fundal height at or above the umbilicus (about 20 weeks or beyond)",
     "No sustained ROSC within the first minutes of high-quality ACLS — begin preparing at arrest recognition, not after a failed code"
   ],
   "contraindications": [
@@ -194,7 +194,7 @@
       {
         "prompt": "When do you decide to perform the hysterotomy, and what triggers it?",
         "ideal": "The decision is NOW, at arrest recognition: fundus at/above umbilicus + arrest. Goal incision by minute 4, delivery by minute 5 — do not wait for OB or imaging.",
-        "accept": [["four"], ["4 min"], ["minute 4"], ["by 4"], ["immediate"], ["now"]],
+        "accept": [["four"], ["4 min"], ["minute 4"], ["by 4"], ["immediate"], ["right away"], ["at arrest recognition"]],
         "critical": true,
         "expected_step": 1
       },
