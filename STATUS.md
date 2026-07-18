@@ -12,7 +12,7 @@ it is the source of truth for who is working where.
 | mci-reconcile | T1 | `src/halo/mci/panel.py`, `src/halo/mci/reconcile.py`, `src/halo/llm.py` (agent_loop), `synthetic-ambient-fhir-25/` | done | `make check` (55 passed); live agent path verified (variant search + chart corroboration -> 'possible') |
 | demo-surface | T1 | `README.md`, `docs/`, `src/halo/static/`, `src/halo/mci/scenarios.py`, `src/halo/mci/demo.py`, `src/halo/app.py` (UI routes) | done | `make check` (62 passed); `demo --handoff` 3/3 scenarios live; UI verified in Chrome (shell + live autorun screenshots) |
 | edu-module | T2 | `src/halo/edu/`, `tests/test_edu_*.py`, `tests/fixtures/edu_*` | active | `make check`; `python -m halo.edu.demo` (offline drill + card render) |
-| nurse-workflow | T1 | `src/halo/mci/` (triage/extract/panel/fhir_out), `src/halo/static/`, `docs/WORKFLOW.md`, `docs/INTEGRATION.md`, `README.md`, `tests/test_mci_*`, `tests/test_app.py` | active | `make check`; UI re-verified in Chrome |
+| nurse-workflow | T1 | `src/halo/mci/` (triage/extract/panel/fhir_out), `src/halo/static/`, `docs/WORKFLOW.md`, `docs/INTEGRATION.md`, `README.md`, `tests/test_mci_*`, `tests/test_app.py` | done | `make check` (170 passed); 4/4 scenarios live; UI re-verified in Chrome (30-2-Can-Do derivation + FHIR preview) |
 
 Claim a lane: add a row with a short name, your terminal label (T1/T2/…), the exact files or
 directories you own, state `active`, and the command that proves your work. Push the claim before
@@ -52,3 +52,12 @@ you start. Set state to `done` (with the verify command's result) when you finis
   and `demo --handoff` (3 scripted scenarios, one source of truth with the UI via
   /mci/scenarios). Mission framing: open-source the MCI layer every ED currently handles with a
   binder, a vendor black box, or one staff member.
+- 2026-07-18: Workflow corrected to nurse-first — door MCI triage is nursing work (START
+  30-2-Can-Do + SALT); new deterministic RR>=30 derivation with open reporting; EXPECTANT
+  demoted to a collapsed physician-secondary-triage control; agent-latency gate (agent only on
+  a real identity lead). FHIR R4 write-back Observation on the MCI alias record (candidate
+  flags excluded — identity unconfirmed); anti-bloat metric surfaced (live: 12,669 chart
+  resources -> 4 care-modifying facts). docs/WORKFLOW.md + docs/INTEGRATION.md added.
+- 2026-07-18 (T1 note for T2): my `make fmt` incidentally reformatted your uncommitted
+  `src/halo/edu/diagrams.py` (ruff format only, no semantic change) — apologies; it was
+  untracked so I could not revert it.
