@@ -11,7 +11,7 @@ it is the source of truth for who is working where.
 | mci-module | T1 | `src/halo/mci/`, `tests/test_mci_*.py`, `tests/fixtures/`, `src/halo/app.py` (add routes only) | done | `make check` (38 passed); live `python -m halo.mci.demo`: 11/12 agreement, 0 under-triage FNs, N=12 synthetic |
 | mci-reconcile | T1 | `src/halo/mci/panel.py`, `src/halo/mci/reconcile.py`, `src/halo/llm.py` (agent_loop), `synthetic-ambient-fhir-25/` | done | `make check` (55 passed); live agent path verified (variant search + chart corroboration -> 'possible') |
 | demo-surface | T1 | `README.md`, `docs/`, `src/halo/static/`, `src/halo/mci/scenarios.py`, `src/halo/mci/demo.py`, `src/halo/app.py` (UI routes) | done | `make check` (62 passed); `demo --handoff` 3/3 scenarios live; UI verified in Chrome (shell + live autorun screenshots) |
-| edu-module | T2 | `src/halo/edu/`, `tests/test_edu_*.py`, `tests/fixtures/edu_*` | active | `make check`; `python -m halo.edu.demo` (offline drill + card render) |
+| edu-module | T2 | `src/halo/edu/`, `tests/test_edu_*.py` | done | `make check` (192 passed, 113 edu; mypy strict clean on `halo.edu`); offline `python -m halo.edu.demo` full showcase (peds dosing + refusals, critical-miss drill gate, chained CME ledger verifies, FHIR round-trip, 5 printable cards); live `demo find --llm`: keyword-free colloquial query routed to `organophosphate` via `halo.llm.structured` enum schema |
 | nurse-workflow | T1 | `src/halo/mci/` (triage/extract/panel/fhir_out), `src/halo/static/`, `docs/WORKFLOW.md`, `docs/INTEGRATION.md`, `README.md`, `tests/test_mci_*`, `tests/test_app.py` | done | `make check` (170 passed); 4/4 scenarios live; UI re-verified in Chrome (30-2-Can-Do derivation + FHIR preview) |
 
 Claim a lane: add a row with a short name, your terminal label (T1/T2/…), the exact files or
@@ -61,3 +61,14 @@ you start. Set state to `done` (with the verify command's result) when you finis
 - 2026-07-18 (T1 note for T2): my `make fmt` incidentally reformatted your uncommitted
   `src/halo/edu/diagrams.py` (ruff format only, no semantic change) — apologies; it was
   untracked so I could not revert it.
+- 2026-07-18: Module 3 shipped (`halo.edu`) — 4 draft cards (perimortem cesarean, imminent
+  breech, lateral canthotomy, organophosphate/2-PAM), each cited and content-addressed
+  (`id@v1+sha`); deterministic dosing (refuses on missing weight/age — never guesses);
+  drills with a critical-miss gate (86% score still FAILS if decon was skipped); CME
+  evidence records hash-chain in JSONL and verify; FHIR both ways (bundle -> peds doses;
+  session -> draft MedAdmin/Procedure/Composition, all tagged synthetic+draft). 2D
+  schematics ship inline; a `model3d:` media slot is reserved, no fake assets. Claude's
+  only roles: query routing + conservative drill adjudication, both fail-closed and
+  opt-in per call. `halo.edu.routes` is a ready APIRouter — mounting into `halo.app` is
+  one line, left to the app-owning lane (no cross-lane edit). T2 ack re fmt note: no
+  harm done, files were formatted before commit.
