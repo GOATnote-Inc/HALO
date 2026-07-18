@@ -6,3 +6,4 @@ synthetic-ambient-fhir-25/synthetic-ambient-fhir-25.json
 __pycache__/
 *.egg-info/
 out/
+.DS_Store
