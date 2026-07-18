@@ -11,6 +11,7 @@ it is the source of truth for who is working where.
 | mci-module | T1 | `src/halo/mci/`, `tests/test_mci_*.py`, `tests/fixtures/`, `src/halo/app.py` (add routes only) | done | `make check` (38 passed); live `python -m halo.mci.demo`: 11/12 agreement, 0 under-triage FNs, N=12 synthetic |
 | mci-reconcile | T1 | `src/halo/mci/panel.py`, `src/halo/mci/reconcile.py`, `src/halo/llm.py` (agent_loop), `synthetic-ambient-fhir-25/` | done | `make check` (55 passed); live agent path verified (variant search + chart corroboration -> 'possible') |
 | demo-surface | T1 | `README.md`, `docs/`, `src/halo/static/`, `src/halo/mci/scenarios.py`, `src/halo/mci/demo.py`, `src/halo/app.py` (UI routes) | done | `make check` (62 passed); `demo --handoff` 3/3 scenarios live; UI verified in Chrome (shell + live autorun screenshots) |
+| edu-brief | T2 | `src/halo/edu/`, `tests/test_edu_*.py`, `src/halo/app.py` (one mount line — all lanes done, note below) | active | `make check`; live `/edu/brief/card?incident=...` verified in Chrome against the running server |
 | edu-module | T2 | `src/halo/edu/`, `tests/test_edu_*.py` | done | `make check` (128 edu tests; mypy strict clean on `halo.edu`); offline `python -m halo.edu.demo` full showcase (peds dosing + refusals, critical-miss drill gate, chained CME ledger verifies, FHIR round-trip, 5 printable cards); live `demo find --llm`: keyword-free colloquial query routed to `organophosphate` via `halo.llm.structured` enum schema; red-team pass: all 4 cards Chrome-verified (headless screenshots), 6 finding classes fixed w/ regressions (see decisions log) |
 | nurse-workflow | T1 | `src/halo/mci/` (triage/extract/panel/fhir_out), `src/halo/static/`, `docs/WORKFLOW.md`, `docs/INTEGRATION.md`, `README.md`, `tests/test_mci_*`, `tests/test_app.py` | done | `make check` (170 passed); 4/4 scenarios live; UI re-verified in Chrome (30-2-Can-Do derivation + FHIR preview) |
 | surge-trackboard | T1 | `src/halo/mci/census.py`, `src/halo/mci/surge.py`, `tests/fixtures/ed_census.json`, `src/halo/static/`, `src/halo/app.py` (surge routes), `tests/test_mci_surge.py`, docs updates | done | `make check` (219 passed); board + door tabs verified in Chrome; plan: 11 dc + 6 chairs + 4 admit-pull + 2 hold of 23 |
@@ -92,3 +93,17 @@ you start. Set state to `done` (with the verify command's result) when you finis
   ledger detects edits/deletions of records but not deletion of the whole file (anchor the
   head hash externally); llm=true knobs are unauthenticated cost triggers — strip or gate
   before any exposed deployment. 219 passed.
+- 2026-07-18: MCI <-> EDU integration (T2, `edu-brief` lane) — the surge board readies the
+  BEDS; `halo.edu` readies the HANDS. New `halo.edu.brief`: incident text -> deterministic
+  event profiles (blast/chemical/obstetric) -> ranked cards with per-incident "why"
+  (conditionals carried honestly: OP card on a factory explosion says "treat miosis +
+  secretions as OP until proven otherwise"), prep-now checklist derived from card content
+  (first critical steps + team-calls), explicit corpus gaps ("blast lung — no HALO card"),
+  and team drill history from the verified CME ledger ("never drilled" is the readiness
+  gap made visible). `GET /edu/brief?incident=` (JSON) + `/edu/brief/card` (printable).
+  Cross-lane touch: ONE `include_router` line in `src/halo/app.py` — all lanes were done at
+  claim time; T1, if you object, revert the line and the router stands alone again.
+  Suggested T1 follow-up (your lane, your call): the MCI banner on the track board links to
+  `/edu/brief/card?incident=<banner text>` — one anchor tag; also the door-triage view can
+  call `POST /edu/dose` with weight/age for bedside antidote math. Dependency direction
+  stays clean: edu imports nothing from mci.
