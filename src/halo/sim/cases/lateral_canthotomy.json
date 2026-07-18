@@ -1,0 +1,206 @@
+{
+  "id": "lateral_canthotomy",
+  "title": "Orbital compartment syndrome — lateral canthotomy",
+  "synthetic": true,
+  "draft": true,
+  "clock_seconds_per_tick": 5,
+  "edu_module": "lateral_canthotomy",
+  "briefing": "You are handed the next patient from the factory-explosion MCI: blast facial trauma, left periorbital swelling worse by the minute. The left eye is proptotic and rock-hard to gentle palpation over the closed lid, and the patient reports the vision on that side is fading. Ophthalmology is at least 90 minutes away. The rest of the primary survey is intact.",
+  "references": [
+    {
+      "citation": "Rowh AD, Ufberg JW, Chan TC, Vilke GM, Harrigan RA. Lateral canthotomy and cantholysis: emergency management of orbital compartment syndrome. J Emerg Med. 2015;48(3):325-330.",
+      "note": "Indications and bedside technique — including division of the inferior crus of the lateral canthal tendon — and the time-critical ischemic window (roughly 90-120 minutes) for orbital compartment syndrome."
+    },
+    {
+      "citation": "Ballard SR, Enzenauer RW, O'Donnell T, Fleming JC, Risk G, Waite AN. Emergency lateral canthotomy and cantholysis: a simple procedure to preserve vision from sight threatening orbital hemorrhage. J Spec Oper Med. 2009;9(3):26-32.",
+      "note": "The procedure is simple enough to be performed by non-ophthalmologists at the point of injury when vision is threatened and specialist care is not immediately available."
+    }
+  ],
+  "cme": {
+    "audiences": ["physician", "nursing", "ems"],
+    "objectives": {
+      "physician": [
+        "Recognize orbital compartment syndrome at the bedside: proptosis, a tense orbit, markedly elevated intraocular pressure, afferent pupillary defect, and falling visual acuity after facial trauma.",
+        "Decide to perform lateral canthotomy with inferior cantholysis emergently when vision is threatened and ophthalmology is not immediately available.",
+        "Explain why the inferior crus cantholysis — not the skin incision alone — is the step that decompresses the orbit."
+      ],
+      "nursing": [
+        "Set up the bedside canthotomy tray, provide procedural analgesia and local anesthetic support, and keep the patient still with the head of bed elevated.",
+        "Perform and document serial vision checks and intraocular pressure readings so the trend — not a single number — drives escalation.",
+        "Recognize that a rock-hard proptotic eye with fading vision is a minutes-level emergency requiring the physician at the bedside now."
+      ],
+      "ems": [
+        "Recognize proptosis with fading vision after blast or blunt facial trauma as a time-critical, vision-threatening emergency.",
+        "Avoid any pressure on the globe — no compressive dressings or patches over a suspected orbital compartment syndrome — and elevate the head of the bed.",
+        "Prioritize urgent transport with clear pre-arrival notification, because the treatment window is measured in about 90-120 minutes."
+      ]
+    },
+    "note": "Draft content structured to CME/CE-style learning objectives; not accredited."
+  },
+  "sprite": { "wound": "eye", "props": [] },
+  "states": {
+    "arrival": {
+      "vitals": { "hr": 104, "sbp": 138, "dbp": 84, "spo2": 98, "rr": 18 },
+      "drift": { "hr": 0.2 },
+      "sprite": { "pallor": 0.1, "distress": 0.5 },
+      "note": "Left orbit tense, globe proptotic — patient: 'it's going gray on that side'"
+    },
+    "exam_confirmed": {
+      "vitals": { "hr": 108, "sbp": 140, "dbp": 86, "spo2": 98, "rr": 18 },
+      "drift": { "hr": 0.2 },
+      "sprite": { "pallor": 0.1, "distress": 0.6 },
+      "note": "IOP 58 mmHg — afferent pupillary defect, acuity counting-fingers. Ischemia clock running: ~90-120 min window"
+    },
+    "ct_scanner": {
+      "vitals": { "hr": 110, "sbp": 142, "dbp": 86, "spo2": 98, "rr": 18 },
+      "drift": { "hr": 0.3 },
+      "sprite": { "pallor": 0.12, "distress": 0.7 },
+      "note": "In the scanner — retrobulbar hematoma confirmed, 30 minutes gone. Left vision now hand-motion only"
+    },
+    "ophtho_holding": {
+      "vitals": { "hr": 110, "sbp": 140, "dbp": 86, "spo2": 98, "rr": 18 },
+      "drift": { "hr": 0.3 },
+      "sprite": { "pallor": 0.12, "distress": 0.7 },
+      "note": "Ophthalmology paged — ETA still 90+ minutes. Acuity falling on serial checks"
+    },
+    "canthotomy_done": {
+      "vitals": { "hr": 98, "sbp": 134, "dbp": 82, "spo2": 98, "rr": 16 },
+      "drift": { "hr": -0.4 },
+      "sprite": { "pallor": 0.05, "distress": 0.3 },
+      "note": "Lateral canthotomy + inferior cantholysis — orbit soft, IOP 24 mmHg, patient counting fingers again",
+      "resolve": { "after": 6, "outcome": "vision_salvaged" }
+    },
+    "canthotomy_late": {
+      "vitals": { "hr": 102, "sbp": 136, "dbp": 82, "spo2": 98, "rr": 16 },
+      "drift": { "hr": -0.3 },
+      "sprite": { "pallor": 0.08, "distress": 0.4 },
+      "note": "Orbit released after the CT detour — IOP 26 mmHg, pupil sluggish, acuity partially returning",
+      "resolve": { "after": 6, "outcome": "vision_salvaged_late" }
+    },
+    "waiting_out": {
+      "vitals": { "hr": 112, "sbp": 142, "dbp": 88, "spo2": 98, "rr": 18 },
+      "drift": { "hr": 0.3 },
+      "sprite": { "pallor": 0.15, "distress": 0.85 },
+      "note": "Left pupil fixed, no light perception — the window has closed",
+      "resolve": { "after": 5, "outcome": "vision_lost" }
+    }
+  },
+  "start": { "state": "arrival", "decision": "workup_choice", "delay": 2 },
+  "decisions": {
+    "workup_choice": {
+      "prompt": "Proptotic, rock-hard left eye with fading vision after blast facial trauma. What is your next move?",
+      "options": [
+        {
+          "id": "bedside_exam",
+          "label": "Bedside exam now: visual acuity, pupil, tonometry",
+          "detail": "Confirm or exclude orbital compartment syndrome without leaving the resus bay",
+          "goto": "exam_confirmed",
+          "log": "Bedside exam: acuity counting-fingers OS, afferent pupillary defect, IOP 58 mmHg. Orbital compartment syndrome — clinical diagnosis made in two minutes.",
+          "next": { "decision": "release_choice", "delay": 3 }
+        },
+        {
+          "id": "ct_first",
+          "label": "Send to CT first",
+          "detail": "Image before any procedure",
+          "goto": "ct_scanner",
+          "log": "Sent to CT. The scan confirms what the exam already showed — retrobulbar hematoma — and the optic nerve spent 30 ischemic minutes acquiring it.",
+          "next": { "decision": "release_choice_late", "delay": 6 }
+        },
+        {
+          "id": "page_wait",
+          "label": "Page ophthalmology and wait",
+          "detail": "This feels like a specialist's procedure",
+          "goto": "ophtho_holding",
+          "log": "Ophthalmology paged — earliest arrival 90+ minutes. The eye is not waiting.",
+          "next": { "decision": "workup_choice", "delay": 4 }
+        }
+      ]
+    },
+    "release_choice": {
+      "prompt": "IOP 58 mmHg with an afferent pupillary defect and falling acuity — orbital compartment syndrome, roughly 90-120 minutes before the injury is permanent. Ophthalmology is 90+ minutes out.",
+      "diagram": "canthotomy",
+      "options": [
+        {
+          "id": "canthotomy_now",
+          "label": "Lateral canthotomy + inferior cantholysis now, at the bedside",
+          "detail": "Release the orbit before the optic nerve infarcts",
+          "goto": "canthotomy_done",
+          "log": "Local anesthetic, hemostat crush, lateral canthotomy — then the inferior crus of the lateral canthal tendon is cut and the orbit visibly softens. IOP falls to 24 mmHg."
+        },
+        {
+          "id": "wait_ophtho",
+          "label": "Wait for ophthalmology (90 min)",
+          "detail": "Let the specialist do the procedure",
+          "goto": "waiting_out",
+          "log": "Holding for ophthalmology. Serial checks: hand motion... light perception... nothing. The nerve did not get 90 minutes."
+        },
+        {
+          "id": "repeat_tono",
+          "label": "Repeat tonometry in 30 minutes to confirm the trend",
+          "detail": "One number could be spurious",
+          "goto": "waiting_out",
+          "log": "Recheck at 30 minutes: IOP 64 mmHg, pupil now fixed. The trend was confirmed — and so was the infarct."
+        }
+      ]
+    },
+    "release_choice_late": {
+      "prompt": "Back from CT with a confirmed retrobulbar hematoma and 30 minutes spent. Vision is hand-motion only. The window is closing.",
+      "diagram": "canthotomy",
+      "options": [
+        {
+          "id": "canthotomy_late_now",
+          "label": "Lateral canthotomy + inferior cantholysis now, at the bedside",
+          "detail": "Release the orbit immediately — no more delays",
+          "goto": "canthotomy_late",
+          "log": "Canthotomy and inferior cantholysis at the bedside. The orbit softens and IOP falls — 30 minutes later than it could have."
+        },
+        {
+          "id": "wait_ophtho_late",
+          "label": "Wait for ophthalmology (90 min)",
+          "detail": "Let the specialist do the procedure",
+          "goto": "waiting_out",
+          "log": "Holding for ophthalmology after the CT detour. The optic nerve runs out of time first."
+        },
+        {
+          "id": "repeat_tono_late",
+          "label": "Repeat tonometry in 30 minutes to confirm the trend",
+          "detail": "One number could be spurious",
+          "goto": "waiting_out",
+          "log": "Another 30 minutes spent confirming a diagnosis that was already made. The pupil is fixed on recheck."
+        }
+      ]
+    }
+  },
+  "outcomes": {
+    "vision_salvaged": {
+      "label": "Vision salvaged",
+      "tone": "good",
+      "debrief": "You made the diagnosis at the bedside in minutes — elevated IOP, afferent pupillary defect, falling acuity — and released the orbit before the optic nerve infarcted. Acuity recovered to near baseline, and ophthalmology arrived to a decompressed orbit instead of a blind eye.",
+      "teaching": [
+        "Orbital compartment syndrome is a clinical, bedside diagnosis — proptosis, a tense orbit, markedly elevated IOP, afferent pupillary defect, and falling acuity. Retinal and optic nerve ischemia becomes irreversible within roughly 90-120 minutes, so imaging and consultation must never precede decompression (Rowh 2015).",
+        "The inferior crus cantholysis is the vision-saving step: cutting the lateral canthal skin alone does not release the orbit. The lateral canthal tendon's inferior crus must be divided until the lower lid pulls freely away and the orbit softens (Rowh 2015).",
+        "This is deliberately an emergency-clinician procedure: lateral canthotomy and cantholysis is a simple, low-equipment intervention designed to be performed by non-ophthalmologists at the point of injury when the alternative is permanent blindness (Ballard 2009)."
+      ]
+    },
+    "vision_salvaged_late": {
+      "label": "Salvaged — late, with deficit",
+      "tone": "warn",
+      "debrief": "The CT told you nothing the exam had not already shown, and it cost the optic nerve 30 ischemic minutes. The canthotomy still worked — the orbit softened and some acuity returned — but the patient is left with a permanent field deficit that an immediate bedside exam and release would likely have prevented.",
+      "teaching": [
+        "CT confirms but never rules in the decision: orbital compartment syndrome is diagnosed and treated clinically, and every minute in the scanner is optic nerve ischemia inside a roughly 90-120 minute window (Rowh 2015).",
+        "When you do decompress, the inferior crus cantholysis is the step that lowers orbital pressure — the skin incision alone is not enough (Rowh 2015).",
+        "Late is still better than never: canthotomy and cantholysis remains simple enough for non-ophthalmologists to perform whenever vision is still threatened, so a delay is a reason to act immediately, not to keep waiting (Ballard 2009)."
+      ]
+    },
+    "vision_lost": {
+      "label": "Permanent monocular blindness",
+      "tone": "bad",
+      "debrief": "The diagnosis was at the bedside the whole time — a rock-hard proptotic orbit, IOP in the 50s, an afferent pupillary defect, and acuity falling on serial checks. Waiting for a specialist or another number let the optic nerve pass the roughly 90-120 minute ischemic limit. The patient survived intact except for one thing that will not come back: vision in the left eye.",
+      "teaching": [
+        "Orbital compartment syndrome blinds on a clock: irreversible optic nerve and retinal injury occurs within roughly 90-120 minutes, so decompression cannot wait for ophthalmology, imaging, or a confirmatory repeat measurement (Rowh 2015).",
+        "Lateral canthotomy with inferior cantholysis is the emergency treatment, and the inferior crus release — not the skin cut — is what drops the pressure (Rowh 2015).",
+        "The procedure exists precisely so the first clinician at the bedside can save the eye: it was described for non-ophthalmologists at the point of injury, with minimal equipment, because the specialist usually cannot arrive inside the window (Ballard 2009)."
+      ]
+    }
+  }
+}

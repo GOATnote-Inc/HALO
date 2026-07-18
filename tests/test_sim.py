@@ -13,10 +13,70 @@ client = TestClient(app)
 
 def test_cases_load_and_validate() -> None:
     cases = list_cases()
-    assert len(cases) >= 2
+    assert len(cases) >= 5
     assert all(c["synthetic"] and c["draft"] for c in cases)
     for meta in cases:
         validate_case(load_case(meta["id"]))  # revalidates every branch/goto/outcome
+
+
+def test_every_case_is_evidence_based_and_cme_structured() -> None:
+    for meta in list_cases():
+        case = load_case(meta["id"])
+        assert case["references"], meta["id"]
+        for ref in case["references"]:
+            assert ref["citation"] and ref["note"]
+        cme = case["cme"]
+        assert cme["audiences"] == ["physician", "nursing", "ems"]
+        for role in ("physician", "nursing", "ems"):
+            assert len(cme["objectives"][role]) >= 2, (meta["id"], role)
+        assert "not accredited" in cme["note"].lower()
+
+
+def test_organophosphate_presents_crashing() -> None:
+    case = load_case("organophosphate_decon")
+    start = case["states"][case["start"]["state"]]
+    assert start["vitals"]["spo2"] <= 84
+    assert start["vitals"]["hr"] <= 50
+    assert start["drift"]["spo2"] <= -1.0  # untreated trajectory visibly deteriorates
+    # The oxime/paralytic teaching exists: rocuronium correct, succinylcholine consequences.
+    text = str(case["decisions"]) + str(case["outcomes"])
+    assert "rocuronium" in text.lower()
+    assert "succinylcholine" in text.lower()
+    assert any(
+        "2-PAM" in str(o) or "pralidoxime" in str(o).lower() for o in case["outcomes"].values()
+    )
+
+
+def test_io_case_shows_landmark_diagrams() -> None:
+    case = load_case("io_access_penetrating_abdomen")
+    assert case["decisions"]["access_choice"]["diagram"] == ["io_humerus", "io_tibia"]
+    assert case["decisions"]["tibia_recognize"]["diagram"] == "io_humerus"
+
+
+def test_new_cases_link_their_readiness_cards() -> None:
+    expected = {
+        "organophosphate_decon": "organophosphate",
+        "perimortem_cesarean": "perimortem_cesarean",
+        "lateral_canthotomy": "lateral_canthotomy",
+        "breech_delivery": "breech_delivery",
+    }
+    for case_id, module in expected.items():
+        assert load_case(case_id)["edu_module"] == module
+
+
+def test_diagram_templates_exist_for_every_referenced_diagram() -> None:
+    html = client.get("/sim").text
+    referenced: set[str] = set()
+    for meta in list_cases():
+        for decision in load_case(meta["id"])["decisions"].values():
+            d = decision.get("diagram")
+            if isinstance(d, str):
+                referenced.add(d)
+            elif isinstance(d, list):
+                referenced.update(d)
+    assert referenced  # diagrams are actually in use
+    for name in referenced:
+        assert f'id="dg-{name}"' in html, name
 
 
 def test_io_case_has_both_endings_and_the_lesson() -> None:

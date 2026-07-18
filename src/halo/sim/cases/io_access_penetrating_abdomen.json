@@ -4,7 +4,36 @@
   "synthetic": true,
   "draft": true,
   "clock_seconds_per_tick": 5,
+  "edu_module": null,
   "briefing": "34-year-old male from the factory explosion. Metal fragment wound to the left upper abdomen. Pale, diaphoretic, confused. Two peripheral IV attempts have already failed — veins are collapsed. The massive transfusion protocol is primed and waiting on access.",
+  "references": [
+    {
+      "citation": "Pasley J, Miller CH, DuBose JJ, et al. Intraosseous infusion rates under high pressure: a cadaveric comparison of anatomic sites. J Trauma Acute Care Surg. 2015;78(2):295-299.",
+      "note": "Humeral IO achieves substantially higher flow rates than tibial IO — the preferred site when volume matters."
+    },
+    {
+      "citation": "American College of Surgeons Committee on Trauma. Advanced Trauma Life Support (ATLS), 10th ed. 2018.",
+      "note": "Vascular access in hemorrhagic shock; physiologic rationale for delivering resuscitation to the central circulation above a suspected infra-diaphragmatic venous injury."
+    }
+  ],
+  "cme": {
+    "audiences": ["physician", "nursing", "ems"],
+    "objectives": {
+      "physician": [
+        "Select the intraosseous site in penetrating abdominal/pelvic trauma, accounting for suspected infra-diaphragmatic venous injury.",
+        "Recognize extravasating resuscitation (falling pressure with a distending abdomen during wide-open infusion) and rescue by relocating access, not raising the rate."
+      ],
+      "nursing": [
+        "Identify proximal humerus and proximal tibia IO landmarks and assist positioning (arm adducted, hand on umbilicus for humeral access).",
+        "Monitor and report the response to massive transfusion: trending pressure, girth, and infusion site integrity."
+      ],
+      "ems": [
+        "Recognize failed peripheral access in shock and escalate to IO without delay.",
+        "Choose above-the-diaphragm access when the injury is abdominal or pelvic, and communicate the site at handoff."
+      ]
+    },
+    "note": "Draft content structured to CME/CE-style learning objectives; not accredited."
+  },
   "sprite": { "wound": "abdomen", "props": [] },
   "states": {
     "arrival": {
@@ -58,6 +87,7 @@
   "decisions": {
     "access_choice": {
       "prompt": "Where do you obtain access for the massive transfusion?",
+      "diagram": ["io_humerus", "io_tibia"],
       "options": [
         {
           "id": "tibia",
@@ -86,6 +116,7 @@
     },
     "tibia_recognize": {
       "prompt": "Pressure keeps falling and the abdomen is visibly distending — your resuscitation is running wide open. What now?",
+      "diagram": "io_humerus",
       "options": [
         {
           "id": "switch_humerus",

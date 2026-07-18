@@ -16,6 +16,10 @@ from typing import Any
 CASES_DIR = Path(__file__).parent / "cases"
 
 _VITAL_KEYS = {"hr", "sbp", "dbp", "spo2", "rr"}
+_CME_AUDIENCES = ("physician", "nursing", "ems")
+_KNOWN_DIAGRAMS = {"io_humerus", "io_tibia", "canthotomy", "breech_grip", "pmcd_timeline"}
+_KNOWN_WOUNDS = {"none", "abdomen", "eye"}
+_EDU_MODULES = {"breech_delivery", "lateral_canthotomy", "organophosphate", "perimortem_cesarean"}
 
 
 def list_cases() -> list[dict[str, Any]]:
@@ -45,11 +49,47 @@ def load_case(case_id: str) -> dict[str, Any]:
 
 
 def validate_case(case: dict[str, Any]) -> None:
-    for key in ("id", "title", "briefing", "states", "start", "decisions", "outcomes"):
+    required = (
+        "id",
+        "title",
+        "briefing",
+        "states",
+        "start",
+        "decisions",
+        "outcomes",
+        "references",
+        "cme",
+    )
+    for key in required:
         if key not in case:
             raise ValueError(f"case missing required key: {key}")
     if case.get("synthetic") is not True or case.get("draft") is not True:
         raise ValueError("cases must be marked synthetic and draft")
+
+    # Evidence: at least one real citation, each with the text and what it supports.
+    refs = case["references"]
+    if not isinstance(refs, list) or not refs:
+        raise ValueError("references must be a non-empty list")
+    for ref in refs:
+        if not ref.get("citation") or not ref.get("note"):
+            raise ValueError("each reference needs citation and note")
+
+    # CME/CE framing: objectives for every role — physician, nursing, and EMS/tech.
+    cme = case["cme"]
+    if tuple(cme.get("audiences", ())) != _CME_AUDIENCES:
+        raise ValueError(f"cme.audiences must be exactly {list(_CME_AUDIENCES)}")
+    objectives = cme.get("objectives", {})
+    for role in _CME_AUDIENCES:
+        if not objectives.get(role):
+            raise ValueError(f"cme.objectives missing role: {role}")
+    if not cme.get("note"):
+        raise ValueError("cme.note required (draft / not-accredited statement)")
+
+    if case.get("edu_module") is not None and case["edu_module"] not in _EDU_MODULES:
+        raise ValueError(f"edu_module must be one of {sorted(_EDU_MODULES)} or null")
+    wound = (case.get("sprite") or {}).get("wound", "none")
+    if wound not in _KNOWN_WOUNDS:
+        raise ValueError(f"sprite.wound must be one of {sorted(_KNOWN_WOUNDS)}")
 
     states: dict[str, Any] = case["states"]
     decisions: dict[str, Any] = case["decisions"]
@@ -88,6 +128,12 @@ def validate_case(case: dict[str, Any]) -> None:
     for dname, decision in decisions.items():
         if not decision.get("options"):
             raise ValueError(f"decision {dname}: no options")
+        diagrams = decision.get("diagram")
+        if diagrams is not None:
+            names = [diagrams] if isinstance(diagrams, str) else list(diagrams)
+            unknown = set(names) - _KNOWN_DIAGRAMS
+            if unknown:
+                raise ValueError(f"decision {dname}: unknown diagram(s) {sorted(unknown)}")
         for opt in decision["options"]:
             for key in ("id", "label", "goto", "log"):
                 if key not in opt:

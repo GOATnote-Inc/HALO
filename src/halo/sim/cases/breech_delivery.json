@@ -1,0 +1,206 @@
+{
+  "id": "breech_delivery",
+  "title": "Precipitous vaginal breech delivery in the ED",
+  "synthetic": true,
+  "draft": true,
+  "clock_seconds_per_tick": 5,
+  "edu_module": "breech_delivery",
+  "briefing": "The MCI surge is still filling your hallways when EMS wheels in a laboring woman who could not make it upstairs — L&D is unreachable and the elevators are held for casualties. Membranes are ruptured and a frank breech is visible on the perineum, advancing with each contraction. No obstetrician is coming. This delivery is happening now, in your ED, with your hands.",
+  "references": [
+    {
+      "citation": "Royal College of Obstetricians and Gynaecologists. Management of Breech Presentation. Green-top Guideline No. 20b. BJOG. 2017;124(7):e151-e177.",
+      "note": "Hands off the breech during spontaneous delivery; maneuvers for extended arms and the after-coming head."
+    },
+    {
+      "citation": "Advanced Life Support in Obstetrics (ALSO) Provider Curriculum, American Academy of Family Physicians.",
+      "note": "Vaginal breech teaching for non-obstetric clinicians: touch only bone, never pull, Mauriceau-Smellie-Veit."
+    }
+  ],
+  "cme": {
+    "audiences": ["physician", "nursing", "ems"],
+    "objectives": {
+      "physician": [
+        "Apply the hands-off principle to a spontaneously delivering breech, intervening only for delay or dystocia.",
+        "Perform the maneuvers for the after-coming head: bony-pelvis grip, Mauriceau-Smellie-Veit flexion, and directed suprapubic pressure.",
+        "Recognize extended or nuchal arms as a traction-induced complication and correct them with rotational (Lovset) maneuvers before delivering the head."
+      ],
+      "nursing": [
+        "Position the mother for vaginal breech delivery and coordinate suprapubic pressure on the physician's direction.",
+        "Prepare the radiant warmer and neonatal resuscitation equipment before the head delivers.",
+        "Call out elapsed times between delivery stages so the team can act on a stalled after-coming head."
+      ],
+      "ems": [
+        "Recognize an imminent breech delivery in the field: presenting buttocks or feet at the perineum with active pushing.",
+        "Never pull on a delivering breech — support the body only and allow maternal effort to deliver it.",
+        "Make the transport decision: an actively delivering breech is managed where you are; transport between contractions only if delivery is not under way."
+      ]
+    },
+    "note": "Draft content structured to CME/CE-style learning objectives; not accredited."
+  },
+  "sprite": { "wound": "none", "props": [] },
+  "states": {
+    "arrival": {
+      "vitals": { "hr": 112, "sbp": 132, "dbp": 84, "spo2": 98, "rr": 26 },
+      "drift": { "hr": 0.3 },
+      "sprite": { "pallor": 0.1, "distension": 0.55, "distress": 0.7 },
+      "note": "Frank breech delivering to the umbilicus — fetal heart tones present by Doppler"
+    },
+    "hands_off_progress": {
+      "vitals": { "hr": 116, "sbp": 134, "dbp": 86, "spo2": 98, "rr": 28 },
+      "drift": { "hr": 0.2 },
+      "sprite": { "pallor": 0.1, "distension": 0.55, "distress": 0.8 },
+      "note": "Maternal effort delivering the trunk to the scapulae — arms flexed on the chest, cord pulsating"
+    },
+    "traction_arms": {
+      "vitals": { "hr": 122, "sbp": 138, "dbp": 88, "spo2": 97, "rr": 30 },
+      "drift": { "hr": 0.4 },
+      "sprite": { "pallor": 0.15, "distension": 0.55, "distress": 0.85 },
+      "note": "Arms now extended alongside the head — trunk delivered, head not following, cord compressed"
+    },
+    "replacement_attempt": {
+      "vitals": { "hr": 124, "sbp": 138, "dbp": 90, "spo2": 97, "rr": 30 },
+      "drift": { "hr": 0.5 },
+      "sprite": { "pallor": 0.2, "distension": 0.55, "distress": 0.9 },
+      "note": "Breech will not reduce — cord compressed at the pelvic brim, no operative team in reach",
+      "resolve": { "after": 5, "outcome": "neonatal_hypoxia" }
+    },
+    "msv_delivery": {
+      "vitals": { "hr": 104, "sbp": 126, "dbp": 80, "spo2": 98, "rr": 22 },
+      "drift": { "hr": -0.5 },
+      "sprite": { "pallor": 0.05, "distension": 0.55, "distress": 0.4 },
+      "note": "Head flexed and delivered — neonate cries after brief drying and stimulation at the warmer",
+      "resolve": { "after": 4, "outcome": "delivered_vigorous" }
+    },
+    "soft_grip_slip": {
+      "vitals": { "hr": 124, "sbp": 138, "dbp": 90, "spo2": 97, "rr": 30 },
+      "drift": { "hr": 0.4 },
+      "sprite": { "pallor": 0.2, "distension": 0.55, "distress": 0.9 },
+      "note": "Grip on the soft trunk slips — no control of the head, minutes passing",
+      "resolve": { "after": 3, "goto": "entrapment_worsens" }
+    },
+    "entrapment_worsens": {
+      "vitals": { "hr": 128, "sbp": 140, "dbp": 92, "spo2": 97, "rr": 32 },
+      "drift": { "hr": 0.5 },
+      "sprite": { "pallor": 0.25, "distension": 0.55, "distress": 0.95 },
+      "note": "After-coming head remains above the pelvic brim — cord compressed, hypoxic time accumulating",
+      "resolve": { "after": 4, "outcome": "neonatal_hypoxia" }
+    },
+    "rescue_delivery": {
+      "vitals": { "hr": 112, "sbp": 130, "dbp": 84, "spo2": 98, "rr": 24 },
+      "drift": { "hr": -0.4 },
+      "sprite": { "pallor": 0.1, "distension": 0.55, "distress": 0.6 },
+      "note": "Arms freed, head flexed and delivered — neonate slow to respond, resuscitation under way at the warmer",
+      "resolve": { "after": 5, "outcome": "delivered_after_rescue" }
+    }
+  },
+  "start": { "state": "arrival", "decision": "breech_delivering", "delay": 2 },
+  "decisions": {
+    "breech_delivering": {
+      "prompt": "The breech has delivered to the umbilicus and is advancing with each contraction. Your hands are at the perineum. What do you do?",
+      "options": [
+        {
+          "id": "hands_off",
+          "label": "Hands off the breech — support only, let maternal effort deliver to the scapulae",
+          "detail": "Touch nothing you don't have to",
+          "goto": "hands_off_progress",
+          "log": "Hands off. Maternal effort delivers the trunk to the scapulae — arms stay flexed on the chest.",
+          "next": { "decision": "after_coming_head", "delay": 4 }
+        },
+        {
+          "id": "traction",
+          "label": "Apply gentle steady traction to speed things up",
+          "detail": "The clock is running — help it along",
+          "goto": "traction_arms",
+          "log": "Traction applied. The arms extend up alongside the head — the trunk hangs, and the head does not follow.",
+          "next": { "decision": "entrapped_rescue", "delay": 3 }
+        },
+        {
+          "id": "push_back",
+          "label": "Push the breech back in and go for cesarean",
+          "detail": "This belongs in an OR",
+          "goto": "replacement_attempt",
+          "log": "Replacement attempted — the breech does not reduce, and there is no OR team to receive her."
+        }
+      ]
+    },
+    "after_coming_head": {
+      "prompt": "The trunk has delivered to the scapulae and the neonate rests supported on your forearm. The after-coming head is still in the pelvis. How do you deliver it?",
+      "diagram": "breech_grip",
+      "options": [
+        {
+          "id": "msv",
+          "label": "Grip the bony pelvis only (thumbs on sacrum), Mauriceau-Smellie-Veit: flex the head, suprapubic pressure from your nurse",
+          "detail": "Bone, not belly — flexion, not force",
+          "goto": "msv_delivery",
+          "log": "Bony-pelvis grip, fingers flexing the head, nurse applying suprapubic pressure — the head delivers with the next contraction."
+        },
+        {
+          "id": "soft_grip",
+          "label": "Grip the abdomen/soft tissue to lift",
+          "detail": "Whatever gives purchase",
+          "goto": "soft_grip_slip",
+          "log": "Fingers sink into the soft abdomen — risking visceral injury, and the grip gives no control of the head."
+        },
+        {
+          "id": "pull_trunk",
+          "label": "Pull firmly on the trunk",
+          "detail": "It just needs more force",
+          "goto": "entrapment_worsens",
+          "log": "Traction on the trunk extends the head — it wedges harder above the pelvic brim."
+        }
+      ]
+    },
+    "entrapped_rescue": {
+      "prompt": "Traction has extended the arms alongside the head and the head is not delivering. The cord is compressed between the head and the pelvis. What now?",
+      "diagram": "breech_grip",
+      "options": [
+        {
+          "id": "rotate_and_flex",
+          "label": "Rotate the trunk to sweep each arm across the chest (Lovset), then bony-pelvis grip with Mauriceau-Smellie-Veit and suprapubic pressure",
+          "detail": "Undo the arms, then flex the head",
+          "goto": "rescue_delivery",
+          "log": "Trunk rotated — each arm sweeps free across the chest. Bony-pelvis grip, head flexed, suprapubic pressure: the head delivers."
+        },
+        {
+          "id": "pull_harder",
+          "label": "Pull harder on the trunk",
+          "detail": "Commit to the traction",
+          "goto": "entrapment_worsens",
+          "log": "More traction — the head extends further and stays fixed above the brim."
+        }
+      ]
+    }
+  },
+  "outcomes": {
+    "delivered_vigorous": {
+      "label": "Delivered — vigorous neonate",
+      "tone": "good",
+      "debrief": "You kept your hands off the spontaneously delivering breech, and maternal effort did the work to the scapulae with the arms still flexed. For the after-coming head you gripped bone only and used Mauriceau-Smellie-Veit flexion with suprapubic pressure — the head delivered promptly and the neonate was vigorous after brief stimulation.",
+      "teaching": [
+        "Hands off the breech: a spontaneously delivering breech should deliver to the scapulae by maternal effort alone — traction is what creates extended arms and an extended head (RCOG Green-top No. 20b).",
+        "Touch only bone, never pull: grip the bony pelvis with thumbs on the sacrum; gripping the abdomen risks visceral injury (ALSO).",
+        "Deliver the after-coming head by flexion, not traction — Mauriceau-Smellie-Veit with suprapubic pressure from an assistant (RCOG Green-top No. 20b; ALSO)."
+      ]
+    },
+    "delivered_after_rescue": {
+      "label": "Delivered after rescue maneuvers",
+      "tone": "warn",
+      "debrief": "Traction extended the arms alongside the head and stalled the delivery with the cord compressed. Rotating the trunk swept the arms free, and the bony-pelvis grip with Mauriceau-Smellie-Veit flexion delivered the head — but the delay cost the neonate, who needed resuscitation at the warmer before responding.",
+      "teaching": [
+        "Traction on a delivering breech is the mechanism of extended and nuchal arms — the complication you then had to rescue was self-inflicted (RCOG Green-top No. 20b).",
+        "Extended arms are corrected by rotation (Lovset): rotate the trunk so each arm sweeps across the chest and delivers — do not pull them down blindly (RCOG Green-top No. 20b).",
+        "Once the arms are free, revert to the standard sequence: bony-pelvis grip, Mauriceau-Smellie-Veit flexion, suprapubic pressure — never more traction (ALSO)."
+      ]
+    },
+    "neonatal_hypoxia": {
+      "label": "Head entrapment — hypoxic neonate",
+      "tone": "bad",
+      "debrief": "Force applied to the trunk — or handling that gave no control of the head — left the after-coming head extended and fixed above the pelvic brim while the cord stayed compressed. The delivery was prolonged well past the window the neonate could tolerate, and the neonate required full resuscitation for hypoxia with an uncertain outcome.",
+      "teaching": [
+        "Never pull on a breech: traction extends the after-coming head and the arms, converting a deliverable breech into an entrapped one (RCOG Green-top No. 20b; ALSO).",
+        "The after-coming head delivers by flexion — Mauriceau-Smellie-Veit with suprapubic pressure — and by gripping bone only; soft-tissue grips risk visceral injury and control nothing (ALSO).",
+        "Once the body is out, the cord is compressed and the clock is hypoxic time: every maneuver must shorten the interval to the head, and pushing the breech back for a cesarean that cannot happen only lengthens it (RCOG Green-top No. 20b)."
+      ]
+    }
+  }
+}

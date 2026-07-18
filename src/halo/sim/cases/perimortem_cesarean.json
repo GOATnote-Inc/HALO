@@ -1,0 +1,193 @@
+{
+  "id": "perimortem_cesarean",
+  "title": "Maternal cardiac arrest — perimortem cesarean",
+  "synthetic": true,
+  "draft": true,
+  "clock_seconds_per_tick": 5,
+  "edu_module": "perimortem_cesarean",
+  "briefing": "A woman approximately 32 weeks pregnant arrives from the factory explosion with blunt abdominal trauma and ongoing hemorrhage. She is pale and barely responsive as the team moves her onto the bed in your resus bay. Before the first unit of blood is hung, she loses her pulse. The neonatal team has been paged; the OB attending is fifteen minutes out.",
+  "references": [
+    {
+      "citation": "Jeejeebhoy FM, Zelop CM, Lipman S, et al. Cardiac Arrest in Pregnancy: A Scientific Statement From the American Heart Association. Circulation. 2015;132(18):1747-1773.",
+      "note": "Continuous manual left uterine displacement during CPR; begin perimortem cesarean if no ROSC by ~4 minutes with delivery by ~5; perform the procedure where the arrest occurs — do not transport."
+    },
+    {
+      "citation": "Rose CH, Faksh A, Traynor KD, Cabrera D, Arendt KW, Brost BC. Challenging the 4- to 5-minute rule: from perimortem cesarean to resuscitative hysterotomy. Am J Obstet Gynecol. 2015;213(5):653-656, 653.e1.",
+      "note": "Resuscitative hysterotomy framing: delivery is a maternal resuscitation maneuver — do not delay it for fetal assessment."
+    }
+  ],
+  "cme": {
+    "audiences": ["physician", "nursing", "ems"],
+    "objectives": {
+      "physician": [
+        "Apply the 4-minute decision rule for resuscitative hysterotomy in maternal cardiac arrest at or beyond 20 weeks: incision by 4 minutes without ROSC, delivery by 5, performed at the site of the arrest.",
+        "Explain the physiologic rationale for delivery as a maternal resuscitation maneuver: emptying the uterus relieves aortocaval compression and restores venous return, making CPR effective.",
+        "Recognize that fetal assessment must not delay the procedure — the decision is driven by maternal arrest physiology, not fetal status."
+      ],
+      "nursing": [
+        "Call elapsed arrest time aloud at defined intervals so the team hears the 4-minute mark for the hysterotomy decision.",
+        "Perform continuous manual left uterine displacement during compressions and maintain it without interrupting CPR.",
+        "Stage the bedside equipment the moment a pregnant patient arrests: scalpel, delivery towels, cord clamps, and a warmer with the neonatal team."
+      ],
+      "ems": [
+        "Recognize the visibly pregnant trauma patient as a dual-patient resuscitation whose arrest management differs from standard ACLS.",
+        "Position and transport with manual left uterine displacement (or lateral tilt when displacement is impossible) to limit aortocaval compression.",
+        "Deliver a pre-arrival notification that names the estimated gestational age so the ED can mobilize obstetric and neonatal resources before the patient hits the door."
+      ]
+    },
+    "note": "Draft content structured to CME/CE-style learning objectives; not accredited."
+  },
+  "sprite": { "wound": "abdomen", "props": [] },
+  "states": {
+    "pre_arrest": {
+      "vitals": { "hr": 134, "sbp": 72, "dbp": 40, "spo2": 89, "rr": 32 },
+      "drift": { "sbp": -2.0, "hr": 1.0, "spo2": -0.5 },
+      "sprite": { "pallor": 0.55, "distress": 0.8, "distension": 0.55 },
+      "note": "~32 weeks pregnant — hemorrhagic shock, decompensating",
+      "resolve": { "after": 2, "goto": "arrest" }
+    },
+    "arrest": {
+      "vitals": { "hr": 0, "sbp": 0, "dbp": 0, "spo2": 0, "rr": 0 },
+      "drift": {},
+      "sprite": { "pallor": 0.9, "distress": 0.0, "distension": 0.55, "arrest": true },
+      "note": "PEA arrest — compressions started, timer running"
+    },
+    "arrest_lud": {
+      "vitals": { "hr": 0, "sbp": 0, "dbp": 0, "spo2": 0, "rr": 0 },
+      "drift": {},
+      "sprite": { "pallor": 0.9, "distress": 0.0, "distension": 0.55, "arrest": true },
+      "note": "High-quality CPR with continuous manual left uterine displacement"
+    },
+    "arrest_tilt": {
+      "vitals": { "hr": 0, "sbp": 0, "dbp": 0, "spo2": 0, "rr": 0 },
+      "drift": {},
+      "sprite": { "pallor": 0.95, "distress": 0.0, "distension": 0.55, "arrest": true },
+      "note": "Board tilted — compression depth degraded, cycles being lost"
+    },
+    "arrest_no_lud": {
+      "vitals": { "hr": 0, "sbp": 0, "dbp": 0, "spo2": 0, "rr": 0 },
+      "drift": {},
+      "sprite": { "pallor": 1.0, "distress": 0.0, "distension": 0.55, "arrest": true },
+      "note": "Standard ACLS — gravid uterus compressing the IVC, no venous return",
+      "resolve": { "after": 6, "outcome": "died_waiting" }
+    },
+    "hysterotomy": {
+      "vitals": { "hr": 0, "sbp": 0, "dbp": 0, "spo2": 0, "rr": 0 },
+      "drift": {},
+      "sprite": { "pallor": 0.9, "distress": 0.0, "distension": 0.55, "arrest": true },
+      "note": "Resuscitative hysterotomy at the bedside — compressions continue",
+      "resolve": { "after": 2, "goto": "post_rosc" }
+    },
+    "post_rosc": {
+      "vitals": { "hr": 122, "sbp": 84, "dbp": 48, "spo2": 93, "rr": 12 },
+      "drift": { "sbp": 1.2, "hr": -1.0, "spo2": 0.4 },
+      "sprite": { "pallor": 0.6, "distress": 0.2, "distension": 0.3 },
+      "note": "ROSC shortly after delivery — uterus empty, venous return restored",
+      "resolve": { "after": 6, "outcome": "rosc_after_delivery" }
+    },
+    "transport": {
+      "vitals": { "hr": 0, "sbp": 0, "dbp": 0, "spo2": 0, "rr": 0 },
+      "drift": {},
+      "sprite": { "pallor": 1.0, "distress": 0.0, "distension": 0.55, "arrest": true },
+      "note": "CPR in the corridor — compression quality falling en route to the OR",
+      "resolve": { "after": 5, "outcome": "died_transport" }
+    },
+    "arrest_waiting": {
+      "vitals": { "hr": 0, "sbp": 0, "dbp": 0, "spo2": 0, "rr": 0 },
+      "drift": {},
+      "sprite": { "pallor": 1.0, "distress": 0.0, "distension": 0.55, "arrest": true },
+      "note": "ACLS continues past eight minutes — OB still not in the department",
+      "resolve": { "after": 5, "outcome": "died_waiting" }
+    }
+  },
+  "start": { "state": "pre_arrest", "decision": "uterus_management", "delay": 3 },
+  "decisions": {
+    "uterus_management": {
+      "prompt": "She has lost her pulse and compressions have started. The uterus reaches well above the umbilicus. How do you manage it during CPR?",
+      "options": [
+        {
+          "id": "manual_lud",
+          "label": "Continuous manual left uterine displacement + standard ACLS",
+          "detail": "Assign one provider to push the uterus leftward off the great vessels while compressions stay flat and full-depth",
+          "goto": "arrest_lud",
+          "log": "Assistant assigned to continuous manual LUD. Compressions flat on the board, full depth. Fetal heart tones deferred — maternal resuscitation is the priority.",
+          "next": { "decision": "four_minute_mark", "delay": 4 }
+        },
+        {
+          "id": "full_tilt",
+          "label": "Full left-lateral tilt of the patient",
+          "detail": "Roll the whole board to get the uterus off the vessels",
+          "goto": "arrest_tilt",
+          "log": "Board tilted 30 degrees left. Compressions now angle across the chest — depth and recoil are visibly compromised. The team flattens the board to regroup.",
+          "next": { "decision": "uterus_management", "delay": 3 }
+        },
+        {
+          "id": "ignore_uterus",
+          "label": "Standard ACLS only — the uterus can wait",
+          "detail": "Run the arrest algorithm as for any adult",
+          "goto": "arrest_no_lud",
+          "log": "Standard ACLS running. No one is displacing the uterus; end-tidal CO2 stays low despite good-looking compressions. No fetal heart tones sought or heard."
+        }
+      ]
+    },
+    "four_minute_mark": {
+      "prompt": "The nurse calls it: four minutes of high-quality CPR with continuous LUD — still no ROSC, rhythm PEA. The OB attending is minutes away at best. What now?",
+      "diagram": "pmcd_timeline",
+      "options": [
+        {
+          "id": "pmcd_bedside",
+          "label": "Perimortem cesarean NOW, at the bedside",
+          "detail": "Resuscitative hysterotomy where the arrest is — scalpel from the thoracotomy tray, compressions never stop",
+          "goto": "hysterotomy",
+          "log": "Scalpel to skin at 4:20. Vertical incision, uterus opened, infant delivered at 4:55 and passed to the neonatal team at the warmer. Compressions continued throughout."
+        },
+        {
+          "id": "move_to_or",
+          "label": "Move to the OR for the cesarean",
+          "detail": "Sterile field, lights, and the right instruments are two floors up",
+          "goto": "transport",
+          "log": "Bed unlocked and rolling. Compressions from a stool during transport — shallow and interrupted at every doorway. The elevator is not there when you arrive."
+        },
+        {
+          "id": "wait_for_ob",
+          "label": "Continue ACLS and wait for OB",
+          "detail": "This is their procedure — keep the algorithm running until they arrive",
+          "goto": "arrest_waiting",
+          "log": "ACLS continues. Epinephrine every cycle, rhythm unchanged. The gravid uterus still sits on the vena cava; each minute past four costs both patients."
+        }
+      ]
+    }
+  },
+  "outcomes": {
+    "rosc_after_delivery": {
+      "label": "ROSC after bedside delivery",
+      "tone": "good",
+      "debrief": "Continuous manual left uterine displacement kept compressions effective, the four-minute mark was called aloud, and the hysterotomy happened where the arrest was. Emptying the uterus relieved aortocaval compression, venous return recovered, and ROSC followed within about ninety seconds of delivery — the pattern the procedure exists to produce.",
+      "teaching": [
+        "In maternal arrest at or beyond ~20 weeks, run standard ACLS with continuous manual left uterine displacement — displacement, not patient tilt, preserves compression quality (AHA 2015 statement).",
+        "If there is no ROSC by ~4 minutes, begin the perimortem cesarean immediately with the goal of delivery by ~5 minutes, and perform it at the site of the arrest (AHA 2015 statement).",
+        "Think of it as resuscitative hysterotomy: delivery treats the mother by decompressing the aortocaval axis, so it is never delayed for fetal assessment (Rose et al. 2015)."
+      ]
+    },
+    "died_transport": {
+      "label": "Died in transport to the OR",
+      "tone": "bad",
+      "debrief": "The decision to operate was right; the location was fatal. Compressions degraded in the corridor, minutes passed the window, and the patient never reached a functioning resuscitation again. The bedside — with a scalpel and continued CPR — was the operating room.",
+      "teaching": [
+        "Perimortem cesarean is performed where the arrest occurs; transporting an arrested patient trades the procedure's entire time benefit for equipment that is not needed (AHA 2015 statement).",
+        "The only instrument the procedure truly requires is a scalpel — sterility and formal surgical setup are secondary to the 4-to-5-minute delivery target.",
+        "CPR quality collapses during movement: interrupted, shallow compressions in a hallway defeat the resuscitation the hysterotomy was meant to rescue."
+      ]
+    },
+    "died_waiting": {
+      "label": "Died with the uterus never emptied",
+      "tone": "bad",
+      "debrief": "Whether the failure was skipping uterine displacement or waiting for a specialist, the physiology was the same: the gravid uterus compressed the vena cava, venous return never recovered, and no amount of correctly executed ACLS could work against it. The intervention that would have changed the arrest — displacement first, delivery by five minutes — was available in the room the entire time.",
+      "teaching": [
+        "ACLS without left uterine displacement is defeated by aortocaval compression after ~20 weeks — displacing the uterus is part of the compression itself, not an optional add-on (AHA 2015 statement).",
+        "The 4-minute decision belongs to the team running the arrest: waiting for OB, or for fetal assessment, spends the window in which delivery can restore maternal circulation (AHA 2015; Rose et al. 2015).",
+        "Reframing the procedure as resuscitative hysterotomy makes the ownership clear — it is a maternal resuscitation maneuver performed by whoever is at the bedside when the clock hits four minutes (Rose et al. 2015)."
+      ]
+    }
+  }
+}

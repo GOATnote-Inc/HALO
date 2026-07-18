@@ -71,6 +71,21 @@
   .pickcard:hover{border-color:var(--accent)}
   .pickcard b{font-size:15px}
   .pickcard p{color:var(--muted);font-size:13px;margin:6px 0 0}
+  .dgpanel{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin:10px 0}
+  figure.dg{margin:0;border:1px solid var(--line);border-radius:8px;background:#fff;padding:10px}
+  figure.dg figcaption{font-size:12px;margin-bottom:6px}
+  .cmebox{margin-top:10px}
+  .cmebox summary{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+                  color:var(--muted);cursor:pointer}
+  .cmebox .aud{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.08em;
+       text-transform:uppercase;border:1px solid var(--line);border-radius:999px;
+       padding:2px 9px;margin:0 4px 0 0;color:var(--muted)}
+  .cmebox h4{margin:10px 0 2px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink)}
+  .cmebox ul{margin:2px 0;padding-left:18px}
+  .cmebox li{font-size:13px;margin:3px 0}
+  .refs{margin:10px 0 0;padding-left:18px}
+  .refs li{font-size:12.5px;margin:6px 0}
+  .refs .note{opacity:.85}
   footer{max-width:1180px;margin:10px auto 40px;padding:0 20px;color:var(--muted);font-size:12px}
   @media (prefers-reduced-motion:reduce){.ecg-scroll{animation:none !important}}
   .iopulse{animation:iopulse 1.2s ease-in-out infinite}
@@ -95,6 +110,10 @@
       <p class="draft">Draft content — pending physician review · simplified training physiology,
         not clinical guidance</p>
       <p id="briefing"></p>
+      <details class="cmebox" id="cmebox" hidden>
+        <summary>Learning objectives — physician · nursing · EMS/tech</summary>
+        <div id="cmebody"></div>
+      </details>
     </div>
     <div class="stage">
       <section class="panel" aria-label="Patient">
@@ -139,6 +158,11 @@
           <g id="io_tibia" class="iopulse" style="display:none">
             <circle cx="151" cy="330" r="7" fill="#6B21A8"/>
             <text x="163" y="335" font-size="11" font-family="var(--mono)" fill="#6B21A8">IO</text>
+          </g>
+          <!-- eye wound (orbital trauma cases) -->
+          <g id="wound_eye" style="display:none">
+            <circle cx="142" cy="64" r="9" fill="#B91C1C" opacity="0.35"/>
+            <circle cx="142" cy="64" r="9" fill="none" stroke="#B91C1C" stroke-width="2.5"/>
           </g>
           <!-- decon shower (case 2) -->
           <g id="decon" style="display:none">
@@ -186,6 +210,110 @@
 <footer>Deterministic training simulation — every branch is authored, reviewable content; no model
 in the loop. Synthetic patients only. Debrief teaching points are draft pending physician review.</footer>
 
+<!-- Landmark / technique diagram library (referenced by case decisions via "diagram") -->
+<div id="diagram-lib" style="display:none">
+  <template id="dg-io_humerus">
+    <figure class="dg">
+      <figcaption><b>Proximal humerus IO — landmarks</b></figcaption>
+      <svg viewBox="0 0 320 190" role="img" aria-label="Proximal humerus IO landmark diagram">
+        <rect x="10" y="30" width="120" height="150" rx="26" fill="#B9D0E8"/>
+        <circle cx="140" cy="66" r="30" fill="#E8D6BC" stroke="#8A97A8" stroke-width="1.5"/>
+        <rect x="128" y="92" width="30" height="88" rx="14" fill="#E8D6BC" stroke="#8A97A8" stroke-width="1.5"/>
+        <circle cx="128" cy="52" r="7" fill="#B91C1C"/>
+        <line x1="70" y1="6" x2="121" y2="47" stroke="#101826" stroke-width="3"/>
+        <polygon points="121,47 128,52 117,56" fill="#101826"/>
+        <rect x="52" y="0" width="24" height="10" rx="3" transform="rotate(39 64 5)" fill="#5A6472"/>
+        <path d="M170 120 q26 26 -8 52" fill="none" stroke="#1D4ED8" stroke-width="3" stroke-dasharray="5 4"/>
+        <polygon points="162,168 156,178 170,177" fill="#1D4ED8"/>
+        <text x="196" y="40" font-size="12" fill="#101826" font-weight="700">Greater tubercle</text>
+        <text x="196" y="56" font-size="11" fill="#5A6472">surgical neck spared</text>
+        <text x="196" y="86" font-size="12" fill="#101826" font-weight="700">Needle 45&#176; to skin</text>
+        <text x="196" y="102" font-size="11" fill="#5A6472">aim into the tubercle</text>
+        <text x="196" y="136" font-size="12" fill="#1D4ED8" font-weight="700">Adduct the arm,</text>
+        <text x="196" y="152" font-size="12" fill="#1D4ED8" font-weight="700">hand on umbilicus</text>
+        <text x="196" y="168" font-size="11" fill="#5A6472">internal rotation</text>
+      </svg>
+    </figure>
+  </template>
+  <template id="dg-io_tibia">
+    <figure class="dg">
+      <figcaption><b>Proximal tibia IO — landmarks (adult)</b></figcaption>
+      <svg viewBox="0 0 320 190" role="img" aria-label="Proximal tibia IO landmark diagram">
+        <rect x="128" y="6" width="34" height="52" rx="15" fill="#E8D6BC" stroke="#8A97A8" stroke-width="1.5"/>
+        <ellipse cx="145" cy="66" rx="20" ry="15" fill="#D9C5A6" stroke="#8A97A8" stroke-width="1.5"/>
+        <rect x="130" y="82" width="30" height="100" rx="13" fill="#E8D6BC" stroke="#8A97A8" stroke-width="1.5"/>
+        <circle cx="145" cy="100" r="6" fill="#101826"/>
+        <circle cx="118" cy="110" r="7" fill="#B91C1C"/>
+        <line x1="52" y1="110" x2="109" y2="110" stroke="#101826" stroke-width="3"/>
+        <polygon points="109,110 118,110 108,116" fill="#101826"/>
+        <rect x="30" y="104" width="24" height="12" rx="3" fill="#5A6472"/>
+        <text x="196" y="46" font-size="12" fill="#101826" font-weight="700">Patella</text>
+        <text x="196" y="76" font-size="12" fill="#101826" font-weight="700">Tibial tuberosity</text>
+        <text x="196" y="106" font-size="12" fill="#B91C1C" font-weight="700">Insertion site</text>
+        <text x="196" y="122" font-size="11" fill="#5A6472">&#8776;2 cm medial, on the</text>
+        <text x="196" y="136" font-size="11" fill="#5A6472">flat anteromedial tibia</text>
+        <text x="196" y="164" font-size="12" fill="#101826" font-weight="700">Needle 90&#176; to bone</text>
+      </svg>
+    </figure>
+  </template>
+  <template id="dg-canthotomy">
+    <figure class="dg">
+      <figcaption><b>Lateral canthotomy + inferior cantholysis</b></figcaption>
+      <svg viewBox="0 0 320 190" role="img" aria-label="Lateral canthotomy landmark diagram">
+        <path d="M40 80 Q105 34 170 80 Q105 126 40 80 Z" fill="#FFF" stroke="#8A97A8" stroke-width="2"/>
+        <circle cx="105" cy="80" r="22" fill="#7A8CA8"/>
+        <circle cx="105" cy="80" r="10" fill="#101826"/>
+        <circle cx="170" cy="80" r="5" fill="#B91C1C"/>
+        <line x1="175" y1="80" x2="216" y2="80" stroke="#B91C1C" stroke-width="3.5" stroke-dasharray="7 4"/>
+        <line x1="196" y1="86" x2="224" y2="118" stroke="#C2410C" stroke-width="3.5" stroke-dasharray="7 4"/>
+        <polygon points="224,118 214,116 222,108" fill="#C2410C"/>
+        <text x="40" y="26" font-size="12" fill="#101826" font-weight="700">1. Canthotomy</text>
+        <text x="40" y="42" font-size="11" fill="#5A6472">horizontal incision at the</text>
+        <text x="40" y="56" font-size="11" fill="#5A6472">lateral canthus (&#8776;1 cm)</text>
+        <text x="196" y="150" font-size="12" fill="#C2410C" font-weight="700">2. Inferior cantholysis</text>
+        <text x="196" y="166" font-size="11" fill="#5A6472">strum + cut the INFERIOR crus</text>
+        <text x="196" y="180" font-size="11" fill="#5A6472">&#8212; this is the step that lowers IOP</text>
+        <text x="228" y="76" font-size="11" fill="#B91C1C" font-weight="700">lateral canthus</text>
+      </svg>
+    </figure>
+  </template>
+  <template id="dg-breech_grip">
+    <figure class="dg">
+      <figcaption><b>Breech: grip bone only — thumbs on the sacrum</b></figcaption>
+      <svg viewBox="0 0 320 190" role="img" aria-label="Breech grip diagram">
+        <rect x="118" y="20" width="60" height="110" rx="24" fill="#E8C9A8" stroke="#8A97A8" stroke-width="1.5"/>
+        <rect x="126" y="128" width="18" height="46" rx="9" fill="#E8C9A8" stroke="#8A97A8" stroke-width="1.5"/>
+        <rect x="150" y="128" width="18" height="46" rx="9" fill="#E8C9A8" stroke="#8A97A8" stroke-width="1.5"/>
+        <rect x="132" y="86" width="12" height="30" rx="6" fill="#1D4ED8"/>
+        <rect x="152" y="86" width="12" height="30" rx="6" fill="#1D4ED8"/>
+        <path d="M96 78 q18 30 30 44" fill="none" stroke="#1D4ED8" stroke-width="9" stroke-linecap="round"/>
+        <path d="M200 78 q-18 30 -30 44" fill="none" stroke="#1D4ED8" stroke-width="9" stroke-linecap="round"/>
+        <line x1="34" y1="40" x2="118" y2="40" stroke="#B91C1C" stroke-width="3"/>
+        <line x1="34" y1="40" x2="44" y2="32" stroke="#B91C1C" stroke-width="3"/>
+        <line x1="34" y1="40" x2="44" y2="48" stroke="#B91C1C" stroke-width="3"/>
+        <text x="16" y="24" font-size="12" fill="#B91C1C" font-weight="700">NEVER the abdomen</text>
+        <text x="212" y="100" font-size="12" fill="#1D4ED8" font-weight="700">Thumbs on sacrum,</text>
+        <text x="212" y="116" font-size="12" fill="#1D4ED8" font-weight="700">fingers on iliac crests</text>
+        <text x="212" y="140" font-size="11" fill="#5A6472">support &#8212; do not pull</text>
+      </svg>
+    </figure>
+  </template>
+  <template id="dg-pmcd_timeline">
+    <figure class="dg">
+      <figcaption><b>Maternal arrest — the 4-minute decision</b></figcaption>
+      <svg viewBox="0 0 320 120" role="img" aria-label="Perimortem cesarean timeline">
+        <rect x="20" y="46" width="176" height="18" rx="4" fill="#166534"/>
+        <rect x="196" y="46" width="60" height="18" rx="4" fill="#6B21A8"/>
+        <line x1="196" y1="30" x2="196" y2="80" stroke="#B91C1C" stroke-width="3"/>
+        <text x="24" y="40" font-size="11" fill="#166534" font-weight="700">0&#8211;4 min: CPR + manual LEFT uterine displacement</text>
+        <text x="140" y="96" font-size="11" fill="#B91C1C" font-weight="700">4 min, no ROSC: decide NOW</text>
+        <text x="200" y="26" font-size="11" fill="#6B21A8" font-weight="700">deliver by minute 5</text>
+        <text x="200" y="78" font-size="10" fill="#5A6472" transform="translate(0,32)">at the bedside &#8212; never in transit</text>
+      </svg>
+    </figure>
+  </template>
+</div>
+
 <script>
 "use strict";
 const $ = (s) => document.querySelector(s);
@@ -221,12 +349,23 @@ async function init() {
 
 /* ---------- engine ---------- */
 const svgShow = (id, on) => { $(id).style.display = on ? "" : "none"; };
+const ROLE_LABEL = { physician: "Physician", nursing: "Nursing", ems: "EMS / Tech" };
 function startRun() {
   $("#run").hidden = false;
   $("#title").textContent = CASE.title;
   $("#briefing").textContent = CASE.briefing;
   if (CASE.sprite?.wound === "abdomen") svgShow("#wound", true);
+  if (CASE.sprite?.wound === "eye") svgShow("#wound_eye", true);
   if ((CASE.sprite?.props || []).includes("staff")) svgShow("#staff", true);
+  if (CASE.cme) {
+    $("#cmebox").hidden = false;
+    $("#cmebody").innerHTML =
+      CASE.cme.audiences.map((a) => `<span class="aud">${esc(ROLE_LABEL[a] || a)}</span>`).join("") +
+      Object.entries(CASE.cme.objectives).map(([role, objs]) => `
+        <h4>${esc(ROLE_LABEL[role] || role)}</h4>
+        <ul>${objs.map((o) => `<li>${esc(o)}</li>`).join("")}</ul>`).join("") +
+      `<p style="font-size:12px;color:var(--muted)">${esc(CASE.cme.note)}</p>`;
+  }
   vitals = { ...CASE.states[CASE.start.state].vitals };
   enterState(CASE.start.state);
   scheduleDecision(CASE.start.decision, CASE.start.delay);
@@ -274,10 +413,21 @@ function showDecision(name) {
   const d = CASE.decisions[name];
   $("#decision").hidden = false;
   $("#q").textContent = d.prompt;
+  // Landmark/technique diagrams attached to this decision (string or array of ids).
+  const dgNames = d.diagram ? (Array.isArray(d.diagram) ? d.diagram : [d.diagram]) : [];
+  const panel = document.createElement("div");
+  panel.className = "dgpanel";
+  for (const n of dgNames) {
+    const t = document.getElementById(`dg-${n}`);
+    if (t) panel.appendChild(t.content.cloneNode(true));
+  }
   $("#opts").innerHTML = d.options.map((o) => `
     <button class="optbtn" data-id="${esc(o.id)}">
       <b>${esc(o.label)}</b>${o.detail ? `<span>${esc(o.detail)}</span>` : ""}
     </button>`).join("");
+  if (dgNames.length) $("#opts").before(panel);
+  for (const old of document.querySelectorAll(".decision .dgpanel"))
+    if (old !== panel) old.remove();
   for (const b of $("#opts").querySelectorAll(".optbtn"))
     b.addEventListener("click", () => choose(d, b.dataset.id));
   if (autoPath.length) {
@@ -301,15 +451,23 @@ function finish(outcomeId) {
   const el = $("#outcome");
   el.hidden = false;
   el.className = `outcome ${esc(oc.tone)}`;
+  const refs = (CASE.references || []).map((r) =>
+    `<li>${esc(r.citation)}<br><span class="note">Supports: ${esc(r.note)}</span></li>`).join("");
+  const cardLink = CASE.edu_module
+    ? `<a href="/edu/modules/${esc(CASE.edu_module)}/card" target="_blank">Readiness card: ${esc(CASE.edu_module.replace(/_/g, " "))}</a>`
+    : `<a href="/edu/" target="_blank">Procedure cards (CME)</a>`;
   el.innerHTML = `
     <h2>${esc(oc.label)}</h2>
     <p>${esc(oc.debrief)}</p>
     <ol>${oc.teaching.map((t) => `<li>${esc(t)}</li>`).join("")}</ol>
-    <p style="font-size:12px;opacity:.85">Teaching points are draft — pending physician review.</p>
+    <p style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.9">Evidence</p>
+    <ul class="refs">${refs}</ul>
+    <p style="font-size:12px;opacity:.85">Teaching points are draft — pending physician review.
+      Structured to CME/CE-style objectives for physicians, nursing, and EMS/techs (see briefing).</p>
     <div class="again">
       <button onclick="location.reload()">Run again</button>
       <a href="/sim">All cases</a>
-      <a href="/edu/" target="_blank">Procedure cards (CME)</a>
+      ${cardLink}
     </div>`;
   el.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
@@ -374,9 +532,9 @@ function renderSprite() {
   const arrest = !!s.arrest;
   svgShow("#eyesOpen", !arrest);
   svgShow("#eyesShut", arrest);
-  const distress = arrest ? 0 : (s.distress ?? 0.3);
-  // mouth from slight smile to open grimace
-  const bend = 6 - distress * 14;
+  // Mouth: neutral flat line in arrest (never a smile), grimace scaling with distress.
+  const distress = s.distress ?? 0.3;
+  const bend = arrest ? 0 : 6 - distress * 14;
   $("#mouth").setAttribute("d", `M118 84 Q130 ${84 + bend} 142 84`);
   svgShow("#drool", (s.secretions ?? 0) > 0.4);
   svgShow("#io_tibia", s.io === "tibia");
