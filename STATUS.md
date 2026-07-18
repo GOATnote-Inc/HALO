@@ -10,7 +10,7 @@ it is the source of truth for who is working where.
 | scaffold | T0 | repo root, `src/halo/`, `tests/`, CI | done | `make check` (11 passed) |
 | mci-module | T1 | `src/halo/mci/`, `tests/test_mci_*.py`, `tests/fixtures/`, `src/halo/app.py` (add routes only) | done | `make check` (38 passed); live `python -m halo.mci.demo`: 11/12 agreement, 0 under-triage FNs, N=12 synthetic |
 | mci-reconcile | T1 | `src/halo/mci/panel.py`, `src/halo/mci/reconcile.py`, `src/halo/llm.py` (agent_loop), `synthetic-ambient-fhir-25/` | done | `make check` (55 passed); live agent path verified (variant search + chart corroboration -> 'possible') |
-| demo-surface | T1 | `README.md`, `docs/`, `src/halo/static/`, `src/halo/mci/scenarios.py`, `src/halo/mci/demo.py`, `src/halo/app.py` (UI routes) | active | `make check`; UI verified in Chrome |
+| demo-surface | T1 | `README.md`, `docs/`, `src/halo/static/`, `src/halo/mci/scenarios.py`, `src/halo/mci/demo.py`, `src/halo/app.py` (UI routes) | done | `make check` (62 passed); `demo --handoff` 3/3 scenarios live; UI verified in Chrome (shell + live autorun screenshots) |
 | edu-module | T2 | `src/halo/edu/`, `tests/test_edu_*.py`, `tests/fixtures/edu_*` | active | `make check`; `python -m halo.edu.demo` (offline drill + card render) |
 
 Claim a lane: add a row with a short name, your terminal label (T1/T2/…), the exact files or
@@ -45,3 +45,9 @@ you start. Set state to `done` (with the verify command's result) when you finis
   corroboration). Agent proposes, deterministic layer verifies; identity status is never
   "confirmed" (human act); care-modifier flags are a rule table with FHIR provenance. Anti-project
   check: agentic tool use + deterministic clinical guardrails — no dashboard, no RAG, no chatbot.
+- 2026-07-18: Judged surface locked — evidence-linked README (Route 91/Boston/Beirut after-action
+  citations), docs/GOVERNANCE.md (honest FDA device posture, EMTALA, HIPAA-eligible framing, IOM
+  crisis standards, AI risk register), dependency-free web UI at `/` (works offline/intranet),
+  and `demo --handoff` (3 scripted scenarios, one source of truth with the UI via
+  /mci/scenarios). Mission framing: open-source the MCI layer every ED currently handles with a
+  binder, a vendor black box, or one staff member.
