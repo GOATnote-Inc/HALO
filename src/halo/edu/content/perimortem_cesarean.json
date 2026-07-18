@@ -1,0 +1,231 @@
+{
+  "id": "perimortem_cesarean",
+  "name": "Perimortem Cesarean (Resuscitative Hysterotomy)",
+  "category": "obstetric",
+  "one_liner": "Maternal cardiac arrest with fundus at or above the umbilicus: incise by minute 4 — delivery treats the mother.",
+  "aliases": [
+    "perimortem c-section",
+    "resuscitative hysterotomy",
+    "pmcs",
+    "maternal arrest",
+    "pregnant cardiac arrest",
+    "crash c-section",
+    "postmortem cesarean",
+    "4 minute rule"
+  ],
+  "indications": [
+    "Maternal cardiac arrest with fundal height at or above the umbilicus (~>= 20 weeks)",
+    "No sustained ROSC within the first minutes of high-quality ACLS — begin preparing at arrest recognition, not after a failed code"
+  ],
+  "contraindications": [
+    "Fundus clearly below the umbilicus (uterus too small to cause aortocaval compression — hysterotomy will not aid the resuscitation)",
+    "Sustained ROSC (move to OR/definitive care instead — relative, reassess continuously)"
+  ],
+  "time_target": {
+    "label": "Incision by minute 4 of arrest, delivery by minute 5 — but proceed even if the window has passed; survival is reported with later delivery and the mother still benefits.",
+    "minutes": 4
+  },
+  "team_calls": [
+    "OB stat (do not wait for arrival)",
+    "Neonatal/NICU or pediatrics for the infant",
+    "Anesthesia",
+    "Second RN as dedicated recorder (arrest, incision, delivery, ROSC times)",
+    "Blood bank"
+  ],
+  "equipment": [
+    "#10 scalpel — the only truly required instrument",
+    "Mayo or bandage scissors",
+    "Two cord clamps (or hemostats) + cord scissors",
+    "Lap pads / packing, suction if at hand",
+    "Antiseptic splash if immediately available (do not delay for prep)",
+    "Neonatal warmer, dry towels, infant BVM — set up in parallel"
+  ],
+  "steps": [
+    {
+      "n": 1,
+      "action": "Recognize and decide NOW",
+      "detail": "Arrest + fundus at/above umbilicus -> the decision is made. Start the clock; goal is incision by minute 4. Do not wait for OB, ultrasound, or fetal heart tones.",
+      "critical": true
+    },
+    {
+      "n": 2,
+      "action": "CPR never stops; displace the uterus",
+      "detail": "High-quality compressions continue throughout the procedure. Manual LEFT uterine displacement (push uterus to patient's left) until the incision relieves it.",
+      "critical": true
+    },
+    {
+      "n": 3,
+      "action": "Skip everything that delays the knife",
+      "detail": "No consent process, no sterile field, no transport to OR, no imaging. Splash antiseptic only if it is already in your hand.",
+      "critical": true
+    },
+    {
+      "n": 4,
+      "action": "Assign the infant team",
+      "detail": "Second provider/RN preps neonatal resuscitation (warmer, towels, BVM) while you cut. Call OB + NICU in parallel — they take over after, not before.",
+      "critical": false
+    },
+    {
+      "n": 5,
+      "action": "Abdominal incision: vertical midline",
+      "detail": "Xiphoid-to-pubis vertical midline through skin, fascia, and peritoneum — fastest and most forgiving for the non-obstetrician. Blood loss is minimal during arrest.",
+      "critical": false,
+      "media": "pmcs_incision"
+    },
+    {
+      "n": 6,
+      "action": "Uterine incision with a finger guard",
+      "detail": "Vertical incision starting at the fundus. Once inside, lift the uterine wall and extend with scissors, using two fingers beneath as a guard against fetal injury.",
+      "critical": true
+    },
+    {
+      "n": 7,
+      "action": "Deliver, clamp x2, cut, hand off",
+      "detail": "Deliver head or breech per lie, suction if needed, double-clamp and cut the cord, pass the infant to the neonatal team, keep the infant warm.",
+      "critical": true
+    },
+    {
+      "n": 8,
+      "action": "Back to the mother",
+      "detail": "Pack the uterus/abdomen and continue ACLS — ROSC frequently follows delivery within minutes as aortocaval compression is relieved. After ROSC: oxytocin, antibiotics, OB to OR for closure.",
+      "critical": false
+    },
+    {
+      "n": 9,
+      "action": "Document the times",
+      "detail": "Arrest, incision, delivery, ROSC. The recorder assigned in step 4 owns this.",
+      "critical": false
+    }
+  ],
+  "meds": [
+    {
+      "name": "Epinephrine (ACLS)",
+      "role": "Standard ACLS — doses and defibrillation energies are UNCHANGED in pregnancy",
+      "route": "IV/IO",
+      "adult": {
+        "text": "1 mg IV/IO every 3-5 min per ACLS",
+        "unit": "mg",
+        "fixed": 1
+      },
+      "notes": [
+        "Place IV access ABOVE the diaphragm (aortocaval compression impairs femoral return)"
+      ]
+    },
+    {
+      "name": "Oxytocin",
+      "role": "Uterine tone after delivery (give after ROSC, not during arrest)",
+      "route": "IM or IV infusion",
+      "adult": {
+        "text": "10 units IM after delivery, or 20-40 units/L IV titrated. Avoid rapid IV bolus (hypotension).",
+        "unit": "units",
+        "fixed": 10
+      },
+      "cautions": ["Rapid undiluted IV bolus causes hypotension — IM or dilute infusion only"]
+    },
+    {
+      "name": "Cefazolin",
+      "role": "Post-procedure antibiotic prophylaxis once ROSC achieved",
+      "route": "IV",
+      "adult": {
+        "text": "2 g IV after ROSC",
+        "unit": "g",
+        "fixed": 2
+      }
+    }
+  ],
+  "pitfalls": [
+    "Waiting — for OB, for ultrasound, for fetal heart tones, for consent. The procedure is part of the maternal resuscitation; delay kills both patients.",
+    "Stopping compressions during the procedure.",
+    "Deciding it is 'too late' after 5 minutes — intact survival is reported well beyond the window; the mother still benefits hemodynamically.",
+    "Low transverse skin incision by habit — vertical midline is faster and safer for the non-obstetrician.",
+    "Cutting the uterus without a finger guard — fetal lacerations.",
+    "No one assigned to the infant — two patients emerge from this procedure."
+  ],
+  "success_criteria": [
+    "Incision started within ~4 min of arrest (or as soon as recognized)",
+    "Infant delivered and handed to a prepared neonatal team",
+    "Maternal ACLS uninterrupted; ROSC reassessed immediately after delivery",
+    "All four times documented (arrest, incision, delivery, ROSC)"
+  ],
+  "aftercare": [
+    "Post-ROSC bundle; OB to OR for uterine repair and closure",
+    "Oxytocin infusion for tone; watch for hemorrhage",
+    "Cefazolin 2 g IV",
+    "Neonatal disposition with NICU",
+    "Team debrief; complete documentation while times are fresh"
+  ],
+  "references": [
+    {
+      "label": "AHA 2015 Scientific Statement",
+      "cite": "Jeejeebhoy FM, et al. Cardiac Arrest in Pregnancy: A Scientific Statement From the American Heart Association. Circulation. 2015;132(18):1747-1773."
+    },
+    {
+      "label": "Rose 2015 — beyond the 4-minute rule",
+      "cite": "Rose CH, et al. Challenging the 4- to 5-minute rule: from perimortem cesarean to resuscitative hysterotomy. Am J Obstet Gynecol. 2015;213(5):653-656."
+    },
+    {
+      "label": "Einav 2012 systematic review",
+      "cite": "Einav S, Kaufman N, Sela HY. Maternal cardiac arrest and perimortem caesarean delivery: evidence or expert-based? Resuscitation. 2012;83(10):1191-1200."
+    },
+    {
+      "label": "Tintinalli 9e",
+      "cite": "Tintinalli's Emergency Medicine: A Comprehensive Study Guide, 9th ed. Resuscitation in Pregnancy."
+    }
+  ],
+  "review": {
+    "status": "draft",
+    "author": "Claude (Fable 5), HALO T2 — pending physician review",
+    "date": "2026-07-18",
+    "version": 1,
+    "reviewed_by": null
+  },
+  "drill": {
+    "stem": "A 32-year-old at approximately 34 weeks collapses in triage and is pulseless. CPR is in progress. You are the only physician in the department; OB is 25 minutes away. (Synthetic scenario.)",
+    "synthetic": true,
+    "pass_threshold": 0.8,
+    "decision_points": [
+      {
+        "prompt": "Name the simultaneous first priorities as CPR starts.",
+        "ideal": "Continue high-quality ACLS, manual LEFT uterine displacement, call OB + neonatal + anesthesia, scalpel to the bedside, assign a recorder.",
+        "accept": [["left uterine displacement"], ["displace", "uterus"], ["lud"], ["uterine displacement"]],
+        "critical": true,
+        "expected_step": 2
+      },
+      {
+        "prompt": "When do you decide to perform the hysterotomy, and what triggers it?",
+        "ideal": "The decision is NOW, at arrest recognition: fundus at/above umbilicus + arrest. Goal incision by minute 4, delivery by minute 5 — do not wait for OB or imaging.",
+        "accept": [["four"], ["4 min"], ["minute 4"], ["by 4"], ["immediate"], ["now"]],
+        "critical": true,
+        "expected_step": 1
+      },
+      {
+        "prompt": "Name two things you explicitly do NOT wait for.",
+        "ideal": "Ultrasound, fetal heart tones, consent, OB arrival, sterile prep, OR transport.",
+        "accept": [["ultrasound"], ["consent"], ["fetal heart"], ["sterile"], ["or transport"]],
+        "critical": false,
+        "expected_step": 3
+      },
+      {
+        "prompt": "Describe your abdominal and uterine incisions.",
+        "ideal": "Vertical midline skin incision xiphoid-to-pubis; vertical uterine incision from the fundus, extended with scissors over two fingers as a guard.",
+        "accept": [["vertical", "midline"], ["midline"], ["xiphoid"]],
+        "critical": false,
+        "expected_step": 5
+      },
+      {
+        "prompt": "The infant is out. Next two actions?",
+        "ideal": "Double-clamp and cut the cord, hand the infant to the prepared neonatal team (warm, dry, NRP) — and continue maternal ACLS.",
+        "accept": [["clamp", "cord"], ["cord", "cut"], ["clamp", "cut"]],
+        "critical": false,
+        "expected_step": 7
+      },
+      {
+        "prompt": "Why does delivery itself help the mother?",
+        "ideal": "It relieves aortocaval compression, restoring venous return and cardiac output — ROSC often follows within minutes of delivery.",
+        "accept": [["aortocaval"], ["venous return"], ["compression"], ["cardiac output"]],
+        "critical": false,
+        "expected_step": 8
+      }
+    ]
+  }
+}

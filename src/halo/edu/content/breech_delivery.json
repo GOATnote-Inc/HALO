@@ -1,0 +1,240 @@
+{
+  "id": "breech_delivery",
+  "name": "Imminent Vaginal Breech Delivery (No OB Available)",
+  "category": "obstetric",
+  "one_liner": "Term breech on the perineum, delivering now: hands off the breech, grip only bone, flex the head — never pull.",
+  "aliases": [
+    "breech",
+    "breech delivery",
+    "frank breech",
+    "footling breech",
+    "precipitous breech",
+    "mauriceau",
+    "lovset",
+    "head entrapment",
+    "emergency delivery breech"
+  ],
+  "indications": [
+    "Breech presenting part on the perineum or actively delivering, with no obstetrician immediately available",
+    "Full cervical dilation with irresistible maternal urge to push"
+  ],
+  "contraindications": [
+    "Delivery NOT imminent and cervix not fully dilated — support, tocolysis if appropriate, and emergent OB/transfer for cesarean is the better path",
+    "Cord prolapse with a viable fetus and delivery not imminent (elevate presenting part, position, emergent cesarean)"
+  ],
+  "time_target": {
+    "label": "Once the umbilicus is out the head must follow within ~3-5 minutes — set up neonatal resuscitation in parallel from the first minute.",
+    "minutes": 5
+  },
+  "team_calls": [
+    "OB stat (talk them onto the phone/video if remote)",
+    "Neonatal/pediatrics + warmer to the bedside — breech neonates are often stunned",
+    "Anesthesia",
+    "Charge RN / second pair of experienced hands"
+  ],
+  "equipment": [
+    "Warm dry towels (grip + neonatal warming)",
+    "Neonatal warmer + NRP setup (BVM, suction, hats/blankets)",
+    "Straight catheter (empty the bladder)",
+    "Two cord clamps + scissors",
+    "Lidocaine 1% + scissors if episiotomy needed",
+    "Lubricant"
+  ],
+  "steps": [
+    {
+      "n": 1,
+      "action": "Calls out, room set",
+      "detail": "OB + neonatal/peds + anesthesia paged; warmer on; NRP kit open. Dorsal lithotomy, buttocks at the bed edge; empty the bladder with a straight cath.",
+      "critical": false
+    },
+    {
+      "n": 2,
+      "action": "HANDS OFF THE BREECH",
+      "detail": "No traction, ever — traction causes nuchal arms and head entrapment. Allow spontaneous delivery to the umbilicus, powered by maternal effort only.",
+      "critical": true
+    },
+    {
+      "n": 3,
+      "action": "Confirm full dilation before pushing",
+      "detail": "Encouraging pushing through an incompletely dilated cervix (especially preterm) is how the aftercoming head gets trapped.",
+      "critical": true
+    },
+    {
+      "n": 4,
+      "action": "Legs: Pinard if they do not free themselves",
+      "detail": "Pressure in the popliteal fossa, flex the knee, sweep each leg out laterally.",
+      "critical": false
+    },
+    {
+      "n": 5,
+      "action": "Umbilicus out: small cord loop, warm towel",
+      "detail": "Gently draw down a small loop of cord to avoid tension (do not manipulate it further). Wrap the body in a warm dry towel for grip and warmth.",
+      "critical": false
+    },
+    {
+      "n": 6,
+      "action": "Grip BONE only: thumbs on sacrum",
+      "detail": "Thumbs on the sacrum, fingers on the iliac crests — never the abdomen or flanks (liver/spleen/kidney injury). Keep the back anterior; rotate to sacrum-anterior if needed.",
+      "critical": true,
+      "media": "breech_grip"
+    },
+    {
+      "n": 7,
+      "action": "Arms: Lovset if not spontaneous",
+      "detail": "Holding the pelvic grip, rotate the trunk 90 degrees and sweep the now-anterior humerus down across the chest; rotate 180 degrees the other way for the second arm.",
+      "critical": false
+    },
+    {
+      "n": 8,
+      "action": "Head: Mauriceau-Smellie-Veit",
+      "detail": "Body prone, straddling your forearm. Index + middle finger of that hand on the MAXILLA (cheekbones — not in the mouth) to flex the head; other hand on the shoulders/occiput. Assistant gives suprapubic pressure. Keep the body horizontal — never hyperextend the neck; raise the body only as the face clears.",
+      "critical": true,
+      "media": "mauriceau"
+    },
+    {
+      "n": 9,
+      "action": "Head entrapment: relax the uterus",
+      "detail": "Nitroglycerin IV (or terbutaline SC) for rapid uterine/cervical relaxation; McRoberts positioning + suprapubic pressure; last resort is Duhrssen incisions of the cervix at 2 and 10 o'clock (add 6 if needed).",
+      "critical": true
+    },
+    {
+      "n": 10,
+      "action": "After delivery: two patients",
+      "detail": "Infant to the warmer/NRP team (anticipate a stunned neonate). Active third stage with oxytocin; inspect for lacerations; document times.",
+      "critical": false
+    }
+  ],
+  "meds": [
+    {
+      "name": "Nitroglycerin",
+      "role": "Rapid uterine relaxation for head entrapment",
+      "route": "IV",
+      "adult": {
+        "text": "50-200 mcg IV push, may repeat; watch BP (transient hypotension expected)",
+        "unit": "mcg"
+      },
+      "cautions": ["Transient hypotension — have fluids running and pressure cycling"]
+    },
+    {
+      "name": "Terbutaline",
+      "role": "Tocolysis / uterine relaxation when IV NTG unavailable",
+      "route": "SC",
+      "adult": {
+        "text": "0.25 mg SC once",
+        "unit": "mg",
+        "fixed": 0.25
+      }
+    },
+    {
+      "name": "Oxytocin",
+      "role": "Active third stage after delivery",
+      "route": "IM or IV infusion",
+      "adult": {
+        "text": "10 units IM after placenta, or 20-40 units/L IV titrated",
+        "unit": "units",
+        "fixed": 10
+      },
+      "cautions": ["No rapid undiluted IV bolus (hypotension)"]
+    },
+    {
+      "name": "Lidocaine 1%",
+      "role": "Local anesthesia if episiotomy required",
+      "route": "SC infiltration",
+      "adult": {
+        "text": "5-10 mL infiltrated at the perineum",
+        "unit": "mL"
+      }
+    }
+  ],
+  "pitfalls": [
+    "Pulling on the breech — the cardinal sin; causes nuchal arms and head entrapment.",
+    "Encouraging pushing before full dilation.",
+    "Gripping soft tissue — abdominal organs are injured by a flank/abdomen grip; bone only.",
+    "Hyperextending the fetal neck during head delivery (cervical spine injury) — flex via the maxilla, never lever the body upward early.",
+    "Fingers in the mouth to 'help' — jaw fractures; maxilla only.",
+    "No neonatal setup — the breech neonate frequently needs NRP-level support.",
+    "Handling the cord roughly — spasm; one gentle small loop, then leave it."
+  ],
+  "success_criteria": [
+    "No traction applied before the umbilicus; spontaneous descent powered by maternal effort",
+    "Bony-pelvis-only grip; back stays anterior",
+    "Controlled, flexed head delivery (MSV) with suprapubic pressure",
+    "Neonate delivered to a prepared NRP team; times documented"
+  ],
+  "aftercare": [
+    "Active third stage (oxytocin), inspect and repair lacerations",
+    "Neonatal observation — low threshold for extended monitoring",
+    "OB handoff and documentation of maneuvers used",
+    "Team debrief"
+  ],
+  "references": [
+    {
+      "label": "RCOG Green-top 20b",
+      "cite": "Impey LWM, et al. Management of Breech Presentation. RCOG Green-top Guideline No. 20b. BJOG. 2017;124(7):e151-e177."
+    },
+    {
+      "label": "ALSO breech module",
+      "cite": "Advanced Life Support in Obstetrics (ALSO) Provider Manual — Malpresentations, Malpositions, and Multiple Gestation."
+    },
+    {
+      "label": "Tintinalli 9e",
+      "cite": "Tintinalli's Emergency Medicine, 9th ed. Emergency Delivery and Its Complications."
+    }
+  ],
+  "review": {
+    "status": "draft",
+    "author": "Claude (Fable 5), HALO T2 — pending physician review",
+    "date": "2026-07-18",
+    "version": 1,
+    "reviewed_by": null
+  },
+  "drill": {
+    "stem": "A G4P3 at term arrives fully dilated with a frank breech on the perineum, delivering with the next contraction. The nearest obstetrician is 30 minutes away. (Synthetic scenario.)",
+    "synthetic": true,
+    "pass_threshold": 0.8,
+    "decision_points": [
+      {
+        "prompt": "Your first calls and room setup?",
+        "ideal": "Page OB (phone/video them in), neonatal/peds to the bedside, warmer on, NRP kit open, lithotomy, empty the bladder.",
+        "accept": [["neonatal"], ["warmer"], ["nicu"], ["peds"], ["nrp"]],
+        "critical": false,
+        "expected_step": 1
+      },
+      {
+        "prompt": "The breech is delivering to the umbilicus. What are your hands doing?",
+        "ideal": "Nothing — hands off the breech. No traction; maternal effort delivers to the umbilicus.",
+        "accept": [["hands off"], ["no traction"], ["don't pull"], ["do not pull"], ["dont pull"], ["spontaneous"]],
+        "critical": true,
+        "expected_step": 2
+      },
+      {
+        "prompt": "When you finally must hold the baby, where exactly do you grip?",
+        "ideal": "Bony pelvis only: thumbs on the sacrum, fingers on the iliac crests — never the abdomen or flanks.",
+        "accept": [["sacrum"], ["bony pelvis"], ["iliac"]],
+        "critical": true,
+        "expected_step": 6
+      },
+      {
+        "prompt": "The arms have not delivered. Name and describe the maneuver.",
+        "ideal": "Lovset: keeping the pelvic grip, rotate the trunk 90 degrees and sweep the anterior humerus down across the chest; rotate back the other way for the second arm.",
+        "accept": [["lovset"], ["løvset"], ["rotate", "sweep"], ["rotate 90"]],
+        "critical": false,
+        "expected_step": 7
+      },
+      {
+        "prompt": "Deliver the head — name the maneuver and the key hand position.",
+        "ideal": "Mauriceau-Smellie-Veit: body straddles the forearm, index and middle fingers on the maxilla to FLEX the head, suprapubic pressure from an assistant, body kept horizontal.",
+        "accept": [["mauriceau"], ["msv"], ["maxilla"], ["smellie"]],
+        "critical": true,
+        "expected_step": 8
+      },
+      {
+        "prompt": "The head is entrapped. What drug do you reach for, and dose?",
+        "ideal": "Nitroglycerin 50-200 mcg IV push (or terbutaline 0.25 mg SC) to relax the uterus; then McRoberts + suprapubic pressure; Duhrssen incisions as the last resort.",
+        "accept": [["nitroglycerin"], ["ntg"], ["glyceryl"], ["terbutaline"]],
+        "critical": true,
+        "expected_step": 9
+      }
+    ]
+  }
+}

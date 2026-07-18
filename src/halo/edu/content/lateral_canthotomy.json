@@ -1,0 +1,209 @@
+{
+  "id": "lateral_canthotomy",
+  "name": "Lateral Canthotomy & Inferior Cantholysis",
+  "category": "ophthalmic",
+  "one_liner": "Orbital compartment syndrome: the eye is dying on the clock — cut the inferior crus, not just skin.",
+  "aliases": [
+    "lateral canthotomy",
+    "cantholysis",
+    "orbital compartment syndrome",
+    "retrobulbar hemorrhage",
+    "retrobulbar hematoma",
+    "proptosis after trauma",
+    "tense orbit",
+    "ocular compartment",
+    "eye pressure trauma"
+  ],
+  "indications": [
+    "Orbital compartment syndrome: acute proptosis + vision loss or APD after orbital trauma (also post-surgical or spontaneous in the anticoagulated)",
+    "IOP > 40 mmHg with a tense ('rock-hard') orbit and decreased retropulsion",
+    "Clinical diagnosis — decompress on exam findings; do NOT wait for CT or ophthalmology if vision is threatened"
+  ],
+  "contraindications": [
+    "Suspected globe rupture (peaked pupil, extruding vitreous, severe hyphema) — relative; stat ophthalmology, shield the eye",
+    "No vision threat (normal acuity, no APD, soft orbit) — observe with ophtho instead"
+  ],
+  "time_target": {
+    "label": "Retinal ischemia becomes irreversible in roughly 90-120 minutes — decompress as soon as orbital compartment syndrome is recognized.",
+    "minutes": 120
+  },
+  "team_calls": [
+    "Ophthalmology stat — in parallel, never as a precondition",
+    "CT orbits AFTER decompression, not before"
+  ],
+  "equipment": [
+    "Lidocaine 1-2% with epinephrine, small syringe, 25-27g needle",
+    "Straight hemostat",
+    "Iris or tenotomy scissors (blunt-tipped)",
+    "Toothed forceps",
+    "Gauze; saline",
+    "Tonometer (Tono-Pen) for before/after IOP"
+  ],
+  "steps": [
+    {
+      "n": 1,
+      "action": "Recognize and commit",
+      "detail": "Trauma + proptosis + falling vision/APD (+/- IOP > 40): that is orbital compartment syndrome. The decision is decompression now; ophtho is called in parallel.",
+      "critical": true
+    },
+    {
+      "n": 2,
+      "action": "Anesthetize the lateral canthus",
+      "detail": "1-2 mL lidocaine with epi SC at the lateral canthus, needle aimed AWAY from the globe.",
+      "critical": false
+    },
+    {
+      "n": 3,
+      "action": "Crush the canthus",
+      "detail": "Straight hemostat horizontally across the lateral canthus to the orbital rim; clamp 1-2 minutes. This devascularizes and marks the cut line.",
+      "critical": false,
+      "media": "canthotomy"
+    },
+    {
+      "n": 4,
+      "action": "Canthotomy: cut the crush line",
+      "detail": "Iris scissors: full-thickness horizontal cut ~1 cm from the canthal angle laterally to the rim.",
+      "critical": false,
+      "media": "canthotomy"
+    },
+    {
+      "n": 5,
+      "action": "CANTHOLYSIS — the step that saves vision",
+      "detail": "Grasp the lower lid with forceps, pull it anteriorly and away. Point scissors inferoposteriorly toward the lateral orbital rim, strum the taut inferior crus of the lateral canthal tendon with the closed tips, then cut it. The lid should swing free — if it does not, you have not cut the tendon.",
+      "critical": true,
+      "media": "canthotomy"
+    },
+    {
+      "n": 6,
+      "action": "Reassess; superior crus if still tense",
+      "detail": "Recheck IOP, vision, APD, retropulsion. If the orbit remains tense or IOP stays > 40, cut the superior crus the same way (protect the globe and lacrimal gland).",
+      "critical": true
+    },
+    {
+      "n": 7,
+      "action": "Aftercare",
+      "detail": "No patch, no pressure. Head of bed up. Medical IOP adjuncts per ophtho. Ophthalmology performs delayed repair — cosmesis is fixable, retinal ischemia is not.",
+      "critical": false
+    }
+  ],
+  "meds": [
+    {
+      "name": "Lidocaine 1-2% with epinephrine",
+      "role": "Local anesthesia + hemostasis at the lateral canthus",
+      "route": "SC",
+      "adult": {
+        "text": "1-2 mL SC at the lateral canthus, needle directed away from the globe",
+        "unit": "mL"
+      }
+    },
+    {
+      "name": "Acetazolamide",
+      "role": "Adjunct IOP reduction (never a substitute for cantholysis)",
+      "route": "IV",
+      "adult": {
+        "text": "500 mg IV",
+        "unit": "mg",
+        "fixed": 500
+      },
+      "cautions": ["Sulfa allergy caution; adjunct only — the tendon still has to be cut"]
+    },
+    {
+      "name": "Mannitol 20%",
+      "role": "Adjunct IOP reduction when decompression alone is insufficient (with ophtho)",
+      "route": "IV",
+      "adult": {
+        "text": "1 g/kg IV over 30-60 min",
+        "unit": "g",
+        "per_kg": 1,
+        "max_amount": 100,
+        "round_to": 1
+      },
+      "cautions": ["Volume/osmotic shifts — caution in heart failure and renal disease"]
+    }
+  ],
+  "pitfalls": [
+    "Cutting skin only — the canthotomy alone rarely decompresses; the INFERIOR CRUS must be cut and the lid must visibly release.",
+    "Waiting for CT or ophthalmology while the retina infarcts — this is a clinical diagnosis and an ED procedure.",
+    "Letting cosmetic worry stop you — canthoplasty repairs the lid; nothing repairs 2 hours of retinal ischemia.",
+    "Scissors aimed at the globe — always inferoposterior toward the bony rim.",
+    "Stopping after one crus when the orbit is still tense — cut the superior crus.",
+    "Patching or pressure-dressing the decompressed eye."
+  ],
+  "success_criteria": [
+    "Lower lid releases and swings free after cantholysis",
+    "IOP drops (target < 40, ideally < 30-35) with improving vision or resolving APD",
+    "Globe protected throughout; ophtho follow-up arranged"
+  ],
+  "aftercare": [
+    "Serial IOP and vision checks",
+    "CT orbits after decompression",
+    "Ophthalmology for definitive management and delayed canthal repair",
+    "Tetanus status; address anticoagulation with the consultant"
+  ],
+  "references": [
+    {
+      "label": "Roberts & Hedges 7e",
+      "cite": "Roberts and Hedges' Clinical Procedures in Emergency Medicine and Acute Care, 7th ed. Ophthalmologic Procedures."
+    },
+    {
+      "label": "McInnes 2002",
+      "cite": "McInnes G, Howes DW. Lateral canthotomy and cantholysis: a simple, vision-saving procedure. CJEM. 2002;4(1):49-52."
+    },
+    {
+      "label": "Ballard 2009",
+      "cite": "Ballard SR, et al. Emergency lateral canthotomy and cantholysis: a simple procedure to preserve vision from sight threatening orbital hemorrhage. J Spec Oper Med. 2009;9(3):26-32."
+    },
+    {
+      "label": "Tintinalli 9e",
+      "cite": "Tintinalli's Emergency Medicine, 9th ed. Eye Emergencies."
+    }
+  ],
+  "review": {
+    "status": "draft",
+    "author": "Claude (Fable 5), HALO T2 — pending physician review",
+    "date": "2026-07-18",
+    "version": 1,
+    "reviewed_by": null
+  },
+  "drill": {
+    "stem": "Assault with a fist to the right eye. The right globe is proptotic and rock-hard, vision is 'shadows only,' there is an APD, and IOP reads 52. Ophthalmology is 45 minutes out. (Synthetic scenario.)",
+    "synthetic": true,
+    "pass_threshold": 0.8,
+    "decision_points": [
+      {
+        "prompt": "What is the diagnosis, and what is your decision?",
+        "ideal": "Orbital compartment syndrome from retrobulbar hemorrhage — immediate lateral canthotomy and inferior cantholysis; ophtho called in parallel, no CT first.",
+        "accept": [["compartment"], ["canthotomy"], ["retrobulbar"]],
+        "critical": true,
+        "expected_step": 1
+      },
+      {
+        "prompt": "One thing to actively exclude on your 10-second exam before cutting?",
+        "ideal": "Globe rupture (peaked pupil, extruding vitreous, severe hyphema) — if present, shield the eye and get ophtho stat instead.",
+        "accept": [["rupture"], ["open globe"], ["globe injury"], ["peaked pupil"]],
+        "critical": false
+      },
+      {
+        "prompt": "Which single cut actually saves the vision, and how do you find it?",
+        "ideal": "Cutting the INFERIOR CRUS of the lateral canthal tendon (cantholysis): pull the lower lid away, strum the taut band with closed scissor tips aimed inferoposteriorly at the rim, cut — the lid must swing free.",
+        "accept": [["inferior crus"], ["cantholysis"], ["canthal tendon"]],
+        "critical": true,
+        "expected_step": 5
+      },
+      {
+        "prompt": "IOP is still 45 after your cut. Next move?",
+        "ideal": "Confirm the lid actually released (tendon truly cut), then cut the superior crus and recheck IOP/vision.",
+        "accept": [["superior"], ["recheck", "cut"]],
+        "critical": true,
+        "expected_step": 6
+      },
+      {
+        "prompt": "How do you anesthetize, and in which direction does the needle point?",
+        "ideal": "1-2 mL lidocaine with epinephrine SC at the lateral canthus, needle aimed away from the globe.",
+        "accept": [["lidocaine"], ["lido"], ["away from", "globe"]],
+        "critical": false,
+        "expected_step": 2
+      }
+    ]
+  }
+}

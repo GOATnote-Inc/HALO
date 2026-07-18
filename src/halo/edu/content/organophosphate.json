@@ -1,0 +1,309 @@
+{
+  "id": "organophosphate",
+  "name": "Organophosphate / Nerve Agent Exposure (Atropine + 2-PAM)",
+  "category": "toxicologic",
+  "one_liner": "Cholinergic toxidrome: decon before the doors, atropine until the chest is dry, 2-PAM early and slow — and protect your staff.",
+  "aliases": [
+    "organophosphate",
+    "nerve agent",
+    "2-pam",
+    "2pam",
+    "pralidoxime",
+    "sarin",
+    "vx",
+    "pesticide poisoning",
+    "cholinergic crisis",
+    "sludge",
+    "dumbels",
+    "chemical exposure",
+    "chemical explosion",
+    "duodote",
+    "mark 1"
+  ],
+  "indications": [
+    "Cholinergic toxidrome after pesticide or nerve-agent exposure: DUMBELS (defecation, urination, miosis, bronchorrhea/bronchospasm/bradycardia, emesis, lacrimation, salivation)",
+    "The killer B's drive treatment urgency: Bronchorrhea, Bronchospasm, Bradycardia",
+    "Miosis + secretions + respiratory distress after any chemical incident: treat as nerve agent/OP until proven otherwise"
+  ],
+  "contraindications": [
+    "None to atropine in a true cholinergic crisis — under-dosing is the error that kills",
+    "Pralidoxime: give WITH atropine, never alone; slow the infusion for hypertension/laryngospasm"
+  ],
+  "time_target": {
+    "label": "Decontamination before the patient crosses the doors; atropine within minutes for the killer B's; 2-PAM early, before enzyme aging locks in.",
+    "minutes": null
+  },
+  "team_calls": [
+    "Hazmat / decon team — set up outside",
+    "Poison control (1-800-222-1222) / toxicology",
+    "Public health + hospital incident command; security to enforce the decon route",
+    "Pharmacy — atropine supplies exhaust fast; pool the hospital's stock early",
+    "Multiple patients -> declare MCI (see the MCI module)"
+  ],
+  "equipment": [
+    "Staff PPE before contact: double nitrile gloves, fluid-resistant gown, eye protection (respiratory protection per hazmat guidance)",
+    "Decon station OUTSIDE: clothing removal (removes ~80-90% of contamination), copious water +/- soap, runoff containment, bags for belongings",
+    "Atropine — in quantity; pralidoxime; midazolam; DuoDote autoinjectors if stocked",
+    "Suction (secretions are copious), oxygen, BVM, ventilator",
+    "Cardiac monitor; large-bore IV supplies"
+  ],
+  "steps": [
+    {
+      "n": 1,
+      "action": "Protect staff, decon FIRST",
+      "detail": "Nobody touches the patient without PPE. Strip all clothing and decon with copious water OUTSIDE before entry — contaminated patients create contaminated staff (Tokyo sarin: ~10% of hospital staff developed symptoms). Bag belongings; contain runoff.",
+      "critical": true
+    },
+    {
+      "n": 2,
+      "action": "Resus room: airway, oxygen, access, monitor",
+      "detail": "High-flow O2, aggressive suction of secretions, large-bore IV, monitor. Bag-valve ventilation as needed — hypoxia from bronchorrhea/bronchospasm is the immediate threat.",
+      "critical": false
+    },
+    {
+      "n": 3,
+      "action": "Atropine NOW — titrate to the chest, not the pupils",
+      "detail": "Adult 2 mg IV (3-5 mg if severe); pediatric 0.05 mg/kg. DOUBLE the dose every 5 minutes until secretions dry and air entry is adequate. Endpoints are a dry chest and oxygenation — never pupil size or heart rate. Cumulative needs can reach tens of milligrams; start an infusion (10-20% of the loading dose per hour).",
+      "critical": true
+    },
+    {
+      "n": 4,
+      "action": "Pralidoxime (2-PAM) early, WITH atropine, SLOWLY",
+      "detail": "Adult 1-2 g in 100 mL NS IV over 15-30 min (WHO: 30 mg/kg), then 8 mg/kg/h infusion. Pediatric 25-50 mg/kg (max 2 g) then 10-20 mg/kg/h. Reactivates acetylcholinesterase before aging; rapid push causes hypertension and laryngospasm. Give even if presentation is delayed — aging windows vary by agent.",
+      "critical": true,
+      "media": "autoinjector"
+    },
+    {
+      "n": 5,
+      "action": "Seizures: benzodiazepines, IM if no line",
+      "detail": "Midazolam 10 mg IM (peds 0.2 mg/kg, max 10 mg) or diazepam IV. Low threshold in severe nerve-agent toxicity — nonconvulsive status is common.",
+      "critical": true
+    },
+    {
+      "n": 6,
+      "action": "RSI: rocuronium — NOT succinylcholine",
+      "detail": "Succinylcholine is metabolized by the same plasma cholinesterase the poison inhibits: paralysis lasts hours. Use rocuronium 1.2 mg/kg.",
+      "critical": true
+    },
+    {
+      "n": 7,
+      "action": "Autoinjectors when drips lag",
+      "detail": "DuoDote (atropine 2.1 mg + pralidoxime 600 mg) IM lateral thigh, through clothing if needed: mild 1, moderate 2, severe 3 in rapid succession.",
+      "critical": false,
+      "media": "autoinjector"
+    },
+    {
+      "n": 8,
+      "action": "Reassess continuously",
+      "detail": "Secretions, air entry, oxygenation, fasciculations, mental status every 5 minutes; re-dose atropine on schedule until dry.",
+      "critical": false
+    },
+    {
+      "n": 9,
+      "action": "Zoom out: this is rarely one patient",
+      "detail": "Chemical event -> notify poison control, public health, hazmat; lock the ambulance bay to force the decon route; declare MCI and open the MCI workflow if more are coming.",
+      "critical": false
+    }
+  ],
+  "meds": [
+    {
+      "name": "Atropine",
+      "role": "Antidote — muscarinic antagonist; dries secretions, breaks bronchospasm/bradycardia",
+      "route": "IV/IO (IM via autoinjector)",
+      "adult": {
+        "text": "2 mg IV (3-5 mg if severe); DOUBLE every 5 min until secretions dry + air entry adequate; then infusion at 10-20% of loading dose/hr",
+        "unit": "mg",
+        "fixed": 2
+      },
+      "peds": {
+        "text": "0.05 mg/kg IV (severe; 0.02 mg/kg mild), double every 5 min to the same endpoints",
+        "unit": "mg",
+        "per_kg": 0.05,
+        "max_amount": 5,
+        "round_to": 0.1
+      },
+      "cautions": [
+        "Endpoint = dry secretions and adequate air entry. Pupils and heart rate are NOT endpoints.",
+        "Expect to use far more than cardiac-arrest doses — pool pharmacy stock early."
+      ]
+    },
+    {
+      "name": "Pralidoxime (2-PAM)",
+      "role": "Antidote — reactivates acetylcholinesterase (give before agent-specific aging completes)",
+      "route": "IV infusion",
+      "adult": {
+        "text": "1-2 g in 100 mL NS IV over 15-30 min (WHO: 30 mg/kg bolus), then 8 mg/kg/h infusion",
+        "unit": "mg",
+        "fixed": 2000
+      },
+      "peds": {
+        "text": "25-50 mg/kg IV over 30 min (max 2 g), then 10-20 mg/kg/h infusion",
+        "unit": "mg",
+        "per_kg": 25,
+        "max_amount": 2000,
+        "round_to": 50
+      },
+      "cautions": [
+        "Always WITH atropine, never alone",
+        "Rapid infusion -> hypertension, laryngospasm, rigidity — slow the rate",
+        "Delayed presentation is not a reason to withhold; aging varies by agent"
+      ]
+    },
+    {
+      "name": "Midazolam",
+      "role": "Seizure control / prophylaxis in severe toxicity",
+      "route": "IM (works without a line) or IV",
+      "adult": {
+        "text": "10 mg IM (or 5 mg IV, repeat as needed)",
+        "unit": "mg",
+        "fixed": 10
+      },
+      "peds": {
+        "text": "0.2 mg/kg IM, max 10 mg",
+        "unit": "mg",
+        "per_kg": 0.2,
+        "max_amount": 10,
+        "round_to": 0.5
+      },
+      "notes": ["Nonconvulsive status is common in severe nerve-agent toxicity — treat the twitching patient"]
+    },
+    {
+      "name": "Rocuronium",
+      "role": "RSI paralytic of choice (succinylcholine is contraindicated in practice)",
+      "route": "IV",
+      "adult": {
+        "text": "1.2 mg/kg IV",
+        "unit": "mg",
+        "per_kg": 1.2,
+        "round_to": 5,
+        "uncapped": true
+      },
+      "peds": {
+        "text": "1.2 mg/kg IV",
+        "unit": "mg",
+        "per_kg": 1.2,
+        "round_to": 1,
+        "uncapped": true
+      },
+      "cautions": [
+        "Succinylcholine is hydrolyzed by plasma cholinesterase — the enzyme the poison inhibits; its block lasts hours. Use rocuronium."
+      ]
+    },
+    {
+      "name": "DuoDote autoinjector",
+      "role": "Field/stopgap antidote when IV therapy lags",
+      "route": "IM, lateral thigh (through clothing if necessary)",
+      "adult": {
+        "text": "Atropine 2.1 mg + pralidoxime 600 mg per injector: mild 1, moderate 2, severe 3 in rapid succession",
+        "unit": "injector"
+      },
+      "notes": ["Military kits add a CANA (diazepam 10 mg) autoinjector with the third DuoDote"]
+    }
+  ],
+  "pitfalls": [
+    "Staff contamination — treating before decon turns responders into patients (documented in the Tokyo sarin attack).",
+    "Timid atropine dosing — milligram-level caution while the patient drowns in secretions; double every 5 minutes to effect.",
+    "Using pupils or heart rate as the atropine endpoint — the chest is the endpoint.",
+    "Pushing 2-PAM fast, or giving it without atropine.",
+    "Succinylcholine for RSI — hours of paralysis.",
+    "Forgetting seizure treatment/prophylaxis in the severe case.",
+    "Treating it as a single-patient event — no notification, no MCI declaration, no pharmacy heads-up on atropine stock."
+  ],
+  "success_criteria": [
+    "No secondary staff exposures; decon done before entry",
+    "Secretions dried, air entry adequate, oxygenation restored (atropinization achieved)",
+    "2-PAM running with atropine; seizures controlled",
+    "Poison control/public health notified; MCI declared if multiple patients"
+  ],
+  "aftercare": [
+    "Atropine infusion with slow wean; observe for re-cholinergic rebound",
+    "Watch for intermediate syndrome (proximal weakness, respiratory failure) at 24-96 h — extended observation/admission",
+    "Carbamate nuance: same acute treatment; discuss 2-PAM duration with toxicology",
+    "Staff exposure surveillance; restock antidotes; after-action report"
+  ],
+  "references": [
+    {
+      "label": "Eddleston 2008",
+      "cite": "Eddleston M, Buckley NA, Eyer P, Dawson AH. Management of acute organophosphorus pesticide poisoning. Lancet. 2008;371(9612):597-607."
+    },
+    {
+      "label": "ATSDR MMG — Nerve Agents",
+      "cite": "ATSDR Medical Management Guidelines for Nerve Agents: Tabun (GA), Sarin (GB), Soman (GD), and VX."
+    },
+    {
+      "label": "CHEMM",
+      "cite": "Chemical Hazards Emergency Medical Management (CHEMM), US HHS — nerve agent antidote and DuoDote dosing guidance. chemm.hhs.gov"
+    },
+    {
+      "label": "Okumura 1998 — Tokyo sarin",
+      "cite": "Okumura T, et al. The Tokyo subway sarin attack: disaster management. Acad Emerg Med. 1998;5(6):613-628. (Secondary staff exposure lessons.)"
+    },
+    {
+      "label": "Tintinalli 9e",
+      "cite": "Tintinalli's Emergency Medicine, 9th ed. Pesticides / Chemical Disasters."
+    }
+  ],
+  "review": {
+    "status": "draft",
+    "author": "Claude (Fable 5), HALO T2 — pending physician review",
+    "date": "2026-07-18",
+    "version": 1,
+    "reviewed_by": null
+  },
+  "drill": {
+    "stem": "Explosion at an agricultural chemical warehouse. EMS arrives with a seizing patient soaked in liquid — pinpoint pupils, drooling, diffuse wheeze, HR 48. Two more ambulances are behind them, and staff in street scrubs are reaching for the gurney. (Synthetic scenario.)",
+    "synthetic": true,
+    "pass_threshold": 0.8,
+    "decision_points": [
+      {
+        "prompt": "Your very first order — before anyone touches the patient?",
+        "ideal": "Stop: staff into PPE; strip and decon the patient with copious water OUTSIDE before entry; bag belongings; contain runoff.",
+        "accept": [["decon"], ["ppe"], ["strip"], ["undress"], ["remove", "clothing"], ["remove", "clothes"]],
+        "critical": true,
+        "expected_step": 1
+      },
+      {
+        "prompt": "First antidote: drug, starting dose, and titration endpoint?",
+        "ideal": "Atropine 2-5 mg IV (peds 0.05 mg/kg), doubling every 5 minutes until secretions dry and air entry is adequate — the chest is the endpoint, never the pupils.",
+        "accept": [["atropine"]],
+        "critical": true,
+        "expected_step": 3
+      },
+      {
+        "prompt": "Second antidote: drug and how it must be given?",
+        "ideal": "Pralidoxime (2-PAM) 1-2 g IV over 15-30 minutes (peds 25-50 mg/kg, max 2 g), always with atropine, then an infusion — slow, because rapid push causes hypertension and laryngospasm.",
+        "accept": [["pralidoxime"], ["2-pam"], ["2pam"], ["protopam"]],
+        "critical": true,
+        "expected_step": 4
+      },
+      {
+        "prompt": "The patient is still seizing and has no IV yet. Drug and route?",
+        "ideal": "Midazolam 10 mg IM (peds 0.2 mg/kg IM, max 10 mg).",
+        "accept": [["midazolam"], ["versed"], ["benzo"], ["diazepam"]],
+        "critical": false,
+        "expected_step": 5
+      },
+      {
+        "prompt": "You decide to intubate. Which paralytic, and why that one?",
+        "ideal": "Rocuronium 1.2 mg/kg. Succinylcholine is broken down by plasma cholinesterase — the enzyme the poison has inhibited — so its paralysis lasts hours.",
+        "accept": [["rocuronium"], ["avoid", "succinylcholine"], ["no", "succinylcholine"], ["not succinylcholine"]],
+        "critical": true,
+        "expected_step": 6
+      },
+      {
+        "prompt": "You have DuoDote autoinjectors. For this severe patient: how many, and where?",
+        "ideal": "Three, IM into the lateral thigh in rapid succession (through clothing if necessary).",
+        "accept": [["three"], ["3"]],
+        "critical": false,
+        "expected_step": 7
+      },
+      {
+        "prompt": "Two more ambulances are inbound. Beyond this patient, what do you set in motion?",
+        "ideal": "Declare an MCI, notify poison control / public health / hazmat, lock the bay to force the decon route, and have pharmacy pool atropine stock.",
+        "accept": [["mci"], ["mass casualty"], ["poison control"], ["hazmat"], ["incident command"]],
+        "critical": false,
+        "expected_step": 9
+      }
+    ]
+  }
+}
