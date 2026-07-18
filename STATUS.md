@@ -19,6 +19,8 @@ it is the source of truth for who is working where.
 
 | sim-lab | T1 | `src/halo/sim/`, `src/halo/static/sim.html`, `src/halo/app.py` (sim routes + `/edu/*.html` redirect shim), `src/halo/static/index.html` (readiness section), `tests/test_sim.py`, `pyproject.toml` (package-data line) | done | `make check` (258 passed); both IO-case endings Chrome-verified (tibia -> distension/arrest/death debrief; humerus -> survival); /edu/*.html shim 307->200 |
 
+| sim-lab-2 | T1 (+4 subagents on case JSONs) | `src/halo/sim/` (schema+validator+cases), `src/halo/static/sim.html` (diagrams, CME, references), `tests/test_sim.py` | active | `make check`; new cases + landmark diagrams Chrome-verified |
+
 Claim a lane: add a row with a short name, your terminal label (T1/T2/…), the exact files or
 directories you own, state `active`, and the command that proves your work. Push the claim before
 you start. Set state to `done` (with the verify command's result) when you finish.
