@@ -23,6 +23,8 @@ it is the source of truth for who is working where.
 
 | waiting-room+agents | T1 | `src/halo/mci/board.py` (waiting/bays), `src/halo/mci/compliance.py`, `tests/fixtures/ed_waiting.json`, `src/halo/static/index.html`, `src/halo/app.py` (waiting/compliance routes), `docs/AGENTS.md`, `tests/test_mci_board.py`, `tests/test_compliance.py`, `README.md` | done | `make check` (275 passed); waiting room -> triage -> bays/beds routing Chrome-verified (surge-freed bed C03 consumed by arrival); legal agent live: 5/5 rules, 0 unverified, caught a real log gap (R5 monitor) |
 
+| one-ed-page | T1 | `src/halo/static/index.html`, `tests/test_app.py` | done | `make check` (275 passed); tabs collapsed to ED BOARD + STAFF READINESS; triage = top area of the board (T01-T08 + MRN) above ROOMS A01-C11; scenario chips removed (they ARE the queue patients); chart-style workspace w/ patient banner; Chrome-verified |
+
 Claim a lane: add a row with a short name, your terminal label (T1/T2/…), the exact files or
 directories you own, state `active`, and the command that proves your work. Push the claim before
 you start. Set state to `done` (with the verify command's result) when you finish.
