@@ -43,6 +43,7 @@
   .num.spo2 .v{color:var(--mon-spo2)} .num.rr .v{color:var(--mon-rr)}
   .mon-note{color:#9FB0C7;font:12px/1.4 var(--mono);margin-top:8px;min-height:18px}
   .clock{color:#7C8CA5;font:12px var(--mono);float:right}
+  .ptnote{margin:10px 2px 0;font-size:12.5px;color:var(--muted);min-height:18px}
   /* decision + log */
   .decision{border:1.5px solid var(--accent);border-radius:10px;padding:14px 16px;margin-top:14px;background:#F8FAFF}
   .decision .q{font-weight:700;font-size:15px;margin-bottom:10px}
@@ -73,6 +74,7 @@
   .pickcard p{color:var(--muted);font-size:13px;margin:6px 0 0}
   .dgpanel{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin:10px 0}
   figure.dg{margin:0;border:1px solid var(--line);border-radius:8px;background:#fff;padding:10px}
+  figure.dg svg{width:100%;max-width:430px;height:auto;display:block;margin:0 auto}
   figure.dg figcaption{font-size:12px;margin-bottom:6px}
   .cmebox{margin-top:10px}
   .cmebox summary{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
@@ -176,6 +178,7 @@
             <text x="18" y="392" font-size="10" font-family="var(--mono)" fill="#5A6472">RN · Tech</text>
           </g>
         </svg>
+        <p class="ptnote" id="ptnote" aria-live="polite"></p>
       </section>
       <section>
         <div class="panel">
@@ -215,7 +218,7 @@ in the loop. Synthetic patients only. Debrief teaching points are draft pending 
   <template id="dg-io_humerus">
     <figure class="dg">
       <figcaption><b>Proximal humerus IO — landmarks</b></figcaption>
-      <svg viewBox="0 0 320 190" role="img" aria-label="Proximal humerus IO landmark diagram">
+      <svg viewBox="0 0 360 190" role="img" aria-label="Proximal humerus IO landmark diagram">
         <rect x="10" y="30" width="120" height="150" rx="26" fill="#B9D0E8"/>
         <circle cx="140" cy="66" r="30" fill="#E8D6BC" stroke="#8A97A8" stroke-width="1.5"/>
         <rect x="128" y="92" width="30" height="88" rx="14" fill="#E8D6BC" stroke="#8A97A8" stroke-width="1.5"/>
@@ -225,20 +228,20 @@ in the loop. Synthetic patients only. Debrief teaching points are draft pending 
         <rect x="52" y="0" width="24" height="10" rx="3" transform="rotate(39 64 5)" fill="#5A6472"/>
         <path d="M170 120 q26 26 -8 52" fill="none" stroke="#1D4ED8" stroke-width="3" stroke-dasharray="5 4"/>
         <polygon points="162,168 156,178 170,177" fill="#1D4ED8"/>
-        <text x="196" y="40" font-size="12" fill="#101826" font-weight="700">Greater tubercle</text>
-        <text x="196" y="56" font-size="11" fill="#5A6472">surgical neck spared</text>
-        <text x="196" y="86" font-size="12" fill="#101826" font-weight="700">Needle 45&#176; to skin</text>
-        <text x="196" y="102" font-size="11" fill="#5A6472">aim into the tubercle</text>
-        <text x="196" y="136" font-size="12" fill="#1D4ED8" font-weight="700">Adduct the arm,</text>
-        <text x="196" y="152" font-size="12" fill="#1D4ED8" font-weight="700">hand on umbilicus</text>
-        <text x="196" y="168" font-size="11" fill="#5A6472">internal rotation</text>
+        <text x="200" y="40" font-size="12" fill="#101826" font-weight="700">Greater tubercle</text>
+        <text x="200" y="55" font-size="11" fill="#5A6472">(surgical neck spared)</text>
+        <text x="200" y="84" font-size="12" fill="#101826" font-weight="700">Needle 45&#176; to skin</text>
+        <text x="200" y="99" font-size="11" fill="#5A6472">aim into the tubercle</text>
+        <text x="200" y="132" font-size="12" fill="#1D4ED8" font-weight="700">Adduct the arm,</text>
+        <text x="200" y="147" font-size="12" fill="#1D4ED8" font-weight="700">hand on umbilicus</text>
+        <text x="200" y="162" font-size="11" fill="#5A6472">internal rotation</text>
       </svg>
     </figure>
   </template>
   <template id="dg-io_tibia">
     <figure class="dg">
       <figcaption><b>Proximal tibia IO — landmarks (adult)</b></figcaption>
-      <svg viewBox="0 0 320 190" role="img" aria-label="Proximal tibia IO landmark diagram">
+      <svg viewBox="0 0 360 190" role="img" aria-label="Proximal tibia IO landmark diagram">
         <rect x="128" y="6" width="34" height="52" rx="15" fill="#E8D6BC" stroke="#8A97A8" stroke-width="1.5"/>
         <ellipse cx="145" cy="66" rx="20" ry="15" fill="#D9C5A6" stroke="#8A97A8" stroke-width="1.5"/>
         <rect x="130" y="82" width="30" height="100" rx="13" fill="#E8D6BC" stroke="#8A97A8" stroke-width="1.5"/>
@@ -247,68 +250,87 @@ in the loop. Synthetic patients only. Debrief teaching points are draft pending 
         <line x1="52" y1="110" x2="109" y2="110" stroke="#101826" stroke-width="3"/>
         <polygon points="109,110 118,110 108,116" fill="#101826"/>
         <rect x="30" y="104" width="24" height="12" rx="3" fill="#5A6472"/>
-        <text x="196" y="46" font-size="12" fill="#101826" font-weight="700">Patella</text>
-        <text x="196" y="76" font-size="12" fill="#101826" font-weight="700">Tibial tuberosity</text>
-        <text x="196" y="106" font-size="12" fill="#B91C1C" font-weight="700">Insertion site</text>
-        <text x="196" y="122" font-size="11" fill="#5A6472">&#8776;2 cm medial, on the</text>
-        <text x="196" y="136" font-size="11" fill="#5A6472">flat anteromedial tibia</text>
-        <text x="196" y="164" font-size="12" fill="#101826" font-weight="700">Needle 90&#176; to bone</text>
+        <text x="200" y="46" font-size="12" fill="#101826" font-weight="700">Patella</text>
+        <text x="200" y="76" font-size="12" fill="#101826" font-weight="700">Tibial tuberosity</text>
+        <text x="200" y="104" font-size="12" fill="#B91C1C" font-weight="700">Insertion site</text>
+        <text x="200" y="119" font-size="11" fill="#5A6472">&#8776;2 cm medial, on the</text>
+        <text x="200" y="133" font-size="11" fill="#5A6472">flat anteromedial tibia</text>
+        <text x="200" y="160" font-size="12" fill="#101826" font-weight="700">Needle 90&#176; to bone</text>
       </svg>
     </figure>
   </template>
   <template id="dg-canthotomy">
     <figure class="dg">
       <figcaption><b>Lateral canthotomy + inferior cantholysis</b></figcaption>
-      <svg viewBox="0 0 320 190" role="img" aria-label="Lateral canthotomy landmark diagram">
-        <path d="M40 80 Q105 34 170 80 Q105 126 40 80 Z" fill="#FFF" stroke="#8A97A8" stroke-width="2"/>
-        <circle cx="105" cy="80" r="22" fill="#7A8CA8"/>
-        <circle cx="105" cy="80" r="10" fill="#101826"/>
-        <circle cx="170" cy="80" r="5" fill="#B91C1C"/>
-        <line x1="175" y1="80" x2="216" y2="80" stroke="#B91C1C" stroke-width="3.5" stroke-dasharray="7 4"/>
-        <line x1="196" y1="86" x2="224" y2="118" stroke="#C2410C" stroke-width="3.5" stroke-dasharray="7 4"/>
-        <polygon points="224,118 214,116 222,108" fill="#C2410C"/>
-        <text x="40" y="26" font-size="12" fill="#101826" font-weight="700">1. Canthotomy</text>
-        <text x="40" y="42" font-size="11" fill="#5A6472">horizontal incision at the</text>
-        <text x="40" y="56" font-size="11" fill="#5A6472">lateral canthus (&#8776;1 cm)</text>
-        <text x="196" y="150" font-size="12" fill="#C2410C" font-weight="700">2. Inferior cantholysis</text>
-        <text x="196" y="166" font-size="11" fill="#5A6472">strum + cut the INFERIOR crus</text>
-        <text x="196" y="180" font-size="11" fill="#5A6472">&#8212; this is the step that lowers IOP</text>
-        <text x="228" y="76" font-size="11" fill="#B91C1C" font-weight="700">lateral canthus</text>
+      <svg viewBox="0 0 360 190" role="img" aria-label="Lateral canthotomy landmark diagram">
+        <path d="M40 90 Q100 46 160 90 Q100 134 40 90 Z" fill="#FFF" stroke="#8A97A8" stroke-width="2"/>
+        <circle cx="100" cy="90" r="20" fill="#7A8CA8"/>
+        <circle cx="100" cy="90" r="9" fill="#101826"/>
+        <circle cx="160" cy="90" r="5" fill="#B91C1C"/>
+        <text x="30" y="30" font-size="12" fill="#101826" font-weight="700">1. Canthotomy</text>
+        <text x="30" y="45" font-size="11" fill="#5A6472">&#8776;1 cm horizontal cut</text>
+        <text x="30" y="59" font-size="11" fill="#5A6472">at the lateral canthus</text>
+        <line x1="165" y1="90" x2="206" y2="90" stroke="#B91C1C" stroke-width="3.5" stroke-dasharray="7 4"/>
+        <line x1="186" y1="96" x2="212" y2="126" stroke="#C2410C" stroke-width="3.5" stroke-dasharray="7 4"/>
+        <polygon points="212,126 202,124 210,116" fill="#C2410C"/>
+        <text x="196" y="40" font-size="12" fill="#C2410C" font-weight="700">2. Cut the INFERIOR crus</text>
+        <text x="196" y="55" font-size="11" fill="#5A6472">strum the band, then cut &#8212;</text>
+        <text x="196" y="69" font-size="11" fill="#5A6472">this is what lowers the IOP</text>
+        <text x="196" y="160" font-size="11" fill="#B91C1C" font-weight="700">skin alone is not enough</text>
       </svg>
     </figure>
   </template>
   <template id="dg-breech_grip">
     <figure class="dg">
-      <figcaption><b>Breech: grip bone only — thumbs on the sacrum</b></figcaption>
-      <svg viewBox="0 0 320 190" role="img" aria-label="Breech grip diagram">
-        <rect x="118" y="20" width="60" height="110" rx="24" fill="#E8C9A8" stroke="#8A97A8" stroke-width="1.5"/>
-        <rect x="126" y="128" width="18" height="46" rx="9" fill="#E8C9A8" stroke="#8A97A8" stroke-width="1.5"/>
-        <rect x="150" y="128" width="18" height="46" rx="9" fill="#E8C9A8" stroke="#8A97A8" stroke-width="1.5"/>
-        <rect x="132" y="86" width="12" height="30" rx="6" fill="#1D4ED8"/>
-        <rect x="152" y="86" width="12" height="30" rx="6" fill="#1D4ED8"/>
-        <path d="M96 78 q18 30 30 44" fill="none" stroke="#1D4ED8" stroke-width="9" stroke-linecap="round"/>
-        <path d="M200 78 q-18 30 -30 44" fill="none" stroke="#1D4ED8" stroke-width="9" stroke-linecap="round"/>
-        <line x1="34" y1="40" x2="118" y2="40" stroke="#B91C1C" stroke-width="3"/>
-        <line x1="34" y1="40" x2="44" y2="32" stroke="#B91C1C" stroke-width="3"/>
-        <line x1="34" y1="40" x2="44" y2="48" stroke="#B91C1C" stroke-width="3"/>
-        <text x="16" y="24" font-size="12" fill="#B91C1C" font-weight="700">NEVER the abdomen</text>
-        <text x="212" y="100" font-size="12" fill="#1D4ED8" font-weight="700">Thumbs on sacrum,</text>
-        <text x="212" y="116" font-size="12" fill="#1D4ED8" font-weight="700">fingers on iliac crests</text>
-        <text x="212" y="140" font-size="11" fill="#5A6472">support &#8212; do not pull</text>
+      <figcaption><b>After-coming head: where your hands go</b></figcaption>
+      <svg viewBox="0 0 360 190" role="img" aria-label="Breech grip do and do-not diagram">
+        <!-- CORRECT panel -->
+        <rect x="8" y="8" width="166" height="154" rx="8" fill="#F4FBF5" stroke="#166534" stroke-width="2"/>
+        <circle cx="150" cy="24" r="10" fill="#166534"/>
+        <path d="M144 24 l4 5 l8 -9" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        <!-- baby from behind: head partly below symphysis line, trunk, pelvis -->
+        <line x1="24" y1="46" x2="158" y2="46" stroke="#8A97A8" stroke-width="2" stroke-dasharray="4 4"/>
+        <circle cx="91" cy="38" r="13" fill="#E8C9A8" stroke="#8A97A8" stroke-width="1.5"/>
+        <path d="M74 52 q17 -8 34 0 l-3 44 q-14 6 -28 0 Z" fill="#E8C9A8" stroke="#8A97A8" stroke-width="1.5"/>
+        <rect x="70" y="96" width="42" height="22" rx="9" fill="#D9B590" stroke="#8A97A8" stroke-width="1.5"/>
+        <!-- hands: fingers wrap iliac crests, thumbs on sacrum midline -->
+        <path d="M56 100 q10 12 18 14 M58 108 q8 8 14 10" stroke="#1D4ED8" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+        <path d="M126 100 q-10 12 -18 14 M124 108 q-8 8 -14 10" stroke="#1D4ED8" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+        <rect x="82" y="99" width="7" height="16" rx="3.5" fill="#1D4ED8"/>
+        <rect x="93" y="99" width="7" height="16" rx="3.5" fill="#1D4ED8"/>
+        <text x="20" y="136" font-size="10.5" fill="#166534" font-weight="700">Thumbs on the SACRUM,</text>
+        <text x="20" y="150" font-size="10.5" fill="#166534" font-weight="700">fingers on the iliac crests</text>
+        <!-- WRONG panel -->
+        <rect x="186" y="8" width="166" height="154" rx="8" fill="#FEF5F5" stroke="#B91C1C" stroke-width="2"/>
+        <circle cx="328" cy="24" r="10" fill="#B91C1C"/>
+        <path d="M323 19 l10 10 M333 19 l-10 10" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+        <line x1="202" y1="46" x2="336" y2="46" stroke="#8A97A8" stroke-width="2" stroke-dasharray="4 4"/>
+        <circle cx="269" cy="38" r="13" fill="#E8C9A8" stroke="#8A97A8" stroke-width="1.5"/>
+        <path d="M252 52 q17 -8 34 0 l-3 44 q-14 6 -28 0 Z" fill="#E8C9A8" stroke="#8A97A8" stroke-width="1.5"/>
+        <rect x="248" y="96" width="42" height="22" rx="9" fill="#D9B590" stroke="#8A97A8" stroke-width="1.5"/>
+        <!-- hands squeezing the soft abdomen (mid-trunk), squeeze arrows -->
+        <path d="M236 66 q12 8 18 8 M238 76 q10 6 16 6" stroke="#B91C1C" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+        <path d="M302 66 q-12 8 -18 8 M300 76 q-10 6 -16 6" stroke="#B91C1C" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+        <line x1="243" y1="86" x2="254" y2="80" stroke="#B91C1C" stroke-width="2.5"/>
+        <line x1="295" y1="86" x2="284" y2="80" stroke="#B91C1C" stroke-width="2.5"/>
+        <text x="198" y="136" font-size="10.5" fill="#B91C1C" font-weight="700">NEVER the abdomen &#8212;</text>
+        <text x="198" y="150" font-size="10.5" fill="#B91C1C" font-weight="700">soft-tissue / organ injury</text>
+        <text x="76" y="180" font-size="11.5" fill="#101826" font-weight="700">Support and flex &#8212; never pull on the trunk</text>
       </svg>
     </figure>
   </template>
   <template id="dg-pmcd_timeline">
     <figure class="dg">
       <figcaption><b>Maternal arrest — the 4-minute decision</b></figcaption>
-      <svg viewBox="0 0 320 120" role="img" aria-label="Perimortem cesarean timeline">
-        <rect x="20" y="46" width="176" height="18" rx="4" fill="#166534"/>
-        <rect x="196" y="46" width="60" height="18" rx="4" fill="#6B21A8"/>
-        <line x1="196" y1="30" x2="196" y2="80" stroke="#B91C1C" stroke-width="3"/>
-        <text x="24" y="40" font-size="11" fill="#166534" font-weight="700">0&#8211;4 min: CPR + manual LEFT uterine displacement</text>
-        <text x="140" y="96" font-size="11" fill="#B91C1C" font-weight="700">4 min, no ROSC: decide NOW</text>
-        <text x="200" y="26" font-size="11" fill="#6B21A8" font-weight="700">deliver by minute 5</text>
-        <text x="200" y="78" font-size="10" fill="#5A6472" transform="translate(0,32)">at the bedside &#8212; never in transit</text>
+      <svg viewBox="0 0 360 120" role="img" aria-label="Perimortem cesarean timeline">
+        <rect x="20" y="52" width="196" height="18" rx="4" fill="#166534"/>
+        <rect x="216" y="52" width="70" height="18" rx="4" fill="#6B21A8"/>
+        <line x1="216" y1="34" x2="216" y2="88" stroke="#B91C1C" stroke-width="3"/>
+        <text x="24" y="44" font-size="11" fill="#166534" font-weight="700">0&#8211;4 min: CPR + manual LEFT uterine displacement</text>
+        <text x="146" y="104" font-size="11" fill="#B91C1C" font-weight="700">4 min, no ROSC: decide NOW</text>
+        <text x="222" y="30" font-size="11" fill="#6B21A8" font-weight="700">deliver by minute 5</text>
+        <text x="294" y="64" font-size="10" fill="#5A6472">at the bedside,</text>
+        <text x="294" y="76" font-size="10" fill="#5A6472">not in transit</text>
       </svg>
     </figure>
   </template>
@@ -378,6 +400,7 @@ function enterState(name) {
   if (state.sprite?.arrest) vitals = { ...state.vitals };  // arrest is instant, not a lerp
   pendingStateTick = state.resolve ? tick + state.resolve.after : null;
   $("#mon-note").textContent = state.note || "";
+  $("#ptnote").textContent = state.note || "";
   addLog(state.note ? `[monitor] ${state.note}` : null, false);
 }
 function scheduleDecision(name, delay) {
