@@ -17,7 +17,8 @@ def test_ui_served_at_root() -> None:
     assert "HALO" in body
     assert "Synthetic data" in body
     assert "not a medical device" in body
-    assert "Track board" in body and "Door triage" in body
+    assert "ED board" in body
+    assert "awaiting assessment" in body
 
 
 def test_health() -> None:

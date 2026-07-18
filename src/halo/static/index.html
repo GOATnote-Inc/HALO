@@ -239,8 +239,7 @@
 <header class="chrome">
   <div class="brand">HALO<small>High acuity, low occurrence</small></div>
   <nav class="tabs" role="tablist" aria-label="Module views">
-    <button class="tab" id="tabbtn-board" role="tab" aria-selected="true" aria-controls="tab-board">Track board</button>
-    <button class="tab" id="tabbtn-door" role="tab" aria-selected="false" aria-controls="tab-door">Door triage</button>
+    <button class="tab" id="tabbtn-board" role="tab" aria-selected="true" aria-controls="tab-board">ED board</button>
     <button class="tab" id="tabbtn-edu" role="tab" aria-selected="false" aria-controls="tab-edu">Staff readiness</button>
   </nav>
   <div class="badges">
@@ -266,6 +265,69 @@
     <div class="tiles" id="tiles"></div>
     <div class="plan" id="plan" hidden></div>
     <div class="boardmsg" id="boardmsg" role="alert" hidden></div>
+
+    <div class="wrwrap">
+      <div class="wrhead">
+        <h2>Triage — awaiting assessment (<span id="wr-n">0</span>)</h2>
+        <span class="bays" id="baysline"></span>
+        <span style="flex:1"></span>
+        <button class="exe" id="unlistedbtn">Triage an unlisted arrival</button>
+      </div>
+      <table class="tb" aria-label="Triage area">
+        <thead><tr>
+          <th>Pt</th><th>Patient</th><th>MRN</th><th>Arrived</th><th>Complaint</th>
+          <th>Triage</th><th>Action</th>
+        </tr></thead>
+        <tbody id="wr"></tbody>
+      </table>
+      <div class="routedline" id="routedline" hidden></div>
+    </div>
+
+    <div class="wrwrap" id="chartwrap" hidden>
+      <div class="wrhead">
+        <h2 id="chart-title">Chart — triage documentation</h2>
+        <span class="bays" id="chartbanner"></span>
+        <span style="flex:1"></span>
+        <button class="exe" id="closechart">Close chart</button>
+      </div>
+      <div class="door" style="padding:14px 16px">
+        <section>
+          <p class="hint">Speak or type what you see — 15 seconds, numbers beat judgments
+          ("RR 38, radial present, follows commands").</p>
+          <textarea id="note" aria-label="Triage note" spellcheck="false"
+            placeholder="e.g. male ~40s, RR 38, radial present, follows commands, bleeding controlled, name unknown"></textarea>
+          <div class="formrow">
+            <label for="idate">Incident date</label>
+            <input type="date" id="idate" value="2026-07-18">
+          </div>
+          <button class="run" id="run">Run triage + chart reconciliation</button>
+          <details class="phys">
+            <summary>Physician secondary triage (not part of door triage)</summary>
+            <p class="hint" style="margin-top:10px">Door triage is a nursing workflow and never sets
+            this. EXPECTANT exists only downstream, when a physician at secondary triage documents a
+            resource-based survivability decision — the software cannot make that judgment.</p>
+            <label style="display:block;font-size:13.5px;margin:4px 0;color:var(--ink)">
+              <input type="radio" name="ls" value="null" checked> No physician decision recorded (door triage default)</label>
+            <label style="display:block;font-size:13.5px;margin:4px 0;color:var(--ink)">
+              <input type="radio" name="ls" value="true"> Physician documented: survivable with current resources</label>
+            <label style="display:block;font-size:13.5px;margin:4px 0;color:var(--ink)">
+              <input type="radio" name="ls" value="false"> Physician documented: NOT survivable with current resources</label>
+            <p class="warn-note">EXPECTANT can only result from that explicit physician decision.</p>
+          </details>
+          <div class="status" id="status" role="status"></div>
+          <div id="errbox"></div>
+        </section>
+        <section>
+          <h2 style="margin:0 0 4px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600">Handoff</h2>
+          <div id="results" aria-live="polite">
+            <p class="placeholder">Run triage — results land here. The agent path (garbled
+            identity) can take one to two minutes.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <h3 class="sec">Rooms A01&#8211;C11</h3>
     <div class="boardwrap">
       <table class="tb" aria-label="ED track board">
         <thead><tr>
@@ -315,51 +377,7 @@
       style="width:100%;height:1100px;border:1px solid var(--line);border-radius:10px;background:#fff"></iframe>
   </section>
 
-  <section id="tab-door" role="tabpanel" aria-labelledby="tabbtn-door" hidden>
-    <div class="wrwrap">
-      <div class="wrhead">
-        <h2>Waiting room — checked in (<span id="wr-n">0</span>)</h2>
-        <span class="bays" id="baysline"></span>
-      </div>
-      <table class="wr" aria-label="Waiting room"><tbody id="wr"></tbody></table>
-      <div class="routedline" id="routedline" hidden></div>
-    </div>
-    <div class="door">
-      <section class="card" aria-labelledby="in-h">
-        <h2 id="in-h">Door triage note</h2>
-        <p class="hint">Speak or type what you see — 15 seconds, numbers beat judgments
-        ("RR 38, radial present, follows commands"). Or load a scripted scenario.</p>
-        <div class="chips" id="chips" role="group" aria-label="Sample scenarios"></div>
-        <textarea id="note" aria-label="Door triage note" spellcheck="false"
-          placeholder="e.g. Pt 12: male ~40s, RR 38, radial present, follows commands, bleeding controlled, name unknown"></textarea>
-        <div class="formrow">
-          <label for="idate">Incident date</label>
-          <input type="date" id="idate" value="2026-07-18">
-        </div>
-        <button class="run" id="run">Run triage + chart reconciliation</button>
-        <details class="phys">
-          <summary>Physician secondary triage (not part of door triage)</summary>
-          <p class="hint" style="margin-top:10px">Door triage never sets this. EXPECTANT exists
-          only downstream, when a physician documents a resource-based survivability decision —
-          the software cannot make that judgment.</p>
-          <label style="display:block;font-size:13.5px;margin:4px 0;color:var(--ink)">
-            <input type="radio" name="ls" value="null" checked> No physician decision recorded (door triage default)</label>
-          <label style="display:block;font-size:13.5px;margin:4px 0;color:var(--ink)">
-            <input type="radio" name="ls" value="true"> Physician documented: survivable with current resources</label>
-          <label style="display:block;font-size:13.5px;margin:4px 0;color:var(--ink)">
-            <input type="radio" name="ls" value="false"> Physician documented: NOT survivable with current resources</label>
-          <p class="warn-note">EXPECTANT can only result from that explicit physician decision.</p>
-        </details>
-        <div class="status" id="status" role="status"></div>
-        <div id="errbox"></div>
-      </section>
-      <section class="card" aria-labelledby="out-h">
-        <h2 id="out-h">Handoff</h2>
-        <div id="results" aria-live="polite">
-          <p class="placeholder">Results appear here. The agent path (garbled identity) can take
-          one to two minutes — the model is searching the panel and corroborating charts.</p>
-        </div>
-      </section>
+
     </div>
   </section>
 </main>
@@ -382,14 +400,13 @@ const esc = (x) => String(x ?? "").replace(/[&<>"']/g,
 
 /* ---------- tabs ---------- */
 function showTab(which) {
-  for (const t of ["board", "door", "edu"]) {
+  for (const t of ["board", "edu"]) {
     $(`#tab-${t}`).hidden = t !== which;
     $(`#tabbtn-${t}`).setAttribute("aria-selected", String(t === which));
   }
   $("#mcibanner").style.display = which === "board" ? "" : "none";
 }
 $("#tabbtn-board").addEventListener("click", () => showTab("board"));
-$("#tabbtn-door").addEventListener("click", () => showTab("door"));
 $("#tabbtn-edu").addEventListener("click", () => showTab("edu"));
 
 /* ---------- track board (live, interactive) ---------- */
@@ -583,6 +600,28 @@ const ROUTE_LABEL = {
 };
 let loadedArrival = null;
 
+const ptNo = (arrivalId) => arrivalId.replace(/^W/, "T");
+function openChart(a) {
+  loadedArrival = a ? a.arrival_id : null;
+  $("#chartwrap").hidden = false;
+  if (a) {
+    $("#chart-title").textContent = `Chart — ${a.name}`;
+    $("#chartbanner").innerHTML =
+      `<b>${esc(ptNo(a.arrival_id))}</b> &#183; MRN ${esc(a.mrn)} &#183; arrived T+${esc(a.arrived_min)}m
+       &#183; ${esc(a.complaint)} &#183; ${esc(a.source)}`;
+    $("#note").value = a.note;
+  } else {
+    $("#chart-title").textContent = "Chart — unregistered arrival";
+    $("#chartbanner").textContent = "No registration yet — quick-reg alias will be assigned";
+    $("#note").value = "";
+  }
+  $("#status").textContent = "";
+  $("#errbox").innerHTML = "";
+  $("#chartwrap").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+$("#closechart").addEventListener("click", () => { $("#chartwrap").hidden = true; loadedArrival = null; });
+$("#unlistedbtn").addEventListener("click", () => openChart(null));
+
 function catChip(c) {
   return c
     ? `<span class="catchip cat-${esc(c)}">${esc(c.replace(/_/g, " "))}</span>`
@@ -606,24 +645,20 @@ function renderWaiting(s) {
               `<button class="exe" data-wid="${esc(a.arrival_id)}" data-dest="${esc(d)}">${esc(ROUTE_LABEL[d])}</button>`
             ).join(" ")
           : `<button class="exe" data-load="${esc(a.arrival_id)}">Triage</button>`;
-        return `<tr>
-          <td class="mrn">${esc(a.mrn)}</td>
+        return `<tr class="row">
+          <td class="bed">${esc(ptNo(a.arrival_id))}</td>
           <td class="pt">${esc(a.name)}</td>
+          <td class="mrn">${esc(a.mrn)}</td>
           <td class="mrn">T+${esc(a.arrived_min)}m</td>
           <td>${esc(a.complaint)}<br><span class="reasons">${esc(a.source)}</span></td>
           <td>${catChip(a.category)}</td>
           <td>${actions}</td>
         </tr>`;
       }).join("")
-    : `<tr><td class="status" style="padding:12px">Waiting room clear.</td></tr>`;
+    : `<tr><td class="status" style="padding:12px" colspan="7">Triage area clear.</td></tr>`;
   for (const b of wr.querySelectorAll("button[data-load]"))
-    b.addEventListener("click", () => {
-      const a = s.waiting.find((x) => x.arrival_id === b.dataset.load);
-      loadedArrival = a.arrival_id;
-      $("#note").value = a.note;
-      $("#status").textContent = `Loaded ${a.mrn} ${a.name} — run triage, the result routes back to the waiting room.`;
-      $("#note").scrollIntoView({ behavior: "smooth", block: "center" });
-    });
+    b.addEventListener("click", () =>
+      openChart(s.waiting.find((x) => x.arrival_id === b.dataset.load)));
   for (const b of wr.querySelectorAll("button[data-wid]"))
     b.addEventListener("click", () =>
       boardFetch("/mci/waiting/route", {
@@ -702,24 +737,6 @@ const FIELD_LABELS = {
   major_hemorrhage_uncontrolled: "Uncontrolled major hemorrhage",
   minor_injuries_only: "Minor injuries only", can_walk: "Ambulatory",
 };
-let scenarios = [];
-
-async function loadScenarios() {
-  try {
-    const r = await fetch("/mci/scenarios");
-    scenarios = (await r.json()).scenarios;
-  } catch { scenarios = []; }
-  const chips = $("#chips");
-  chips.innerHTML = "";
-  for (const s of scenarios) {
-    const b = document.createElement("button");
-    b.className = "chip"; b.type = "button";
-    b.innerHTML = `<span class="t">${esc(s.title)}</span><span class="p">${esc(s.pattern.split(":")[0])}</span>`;
-    b.addEventListener("click", () => { $("#note").value = s.note; });
-    chips.appendChild(b);
-  }
-  if (scenarios.length && !$("#note").value) $("#note").value = scenarios[0].note;
-}
 function obsRow(name, value, evidence) {
   let cls, shown;
   if (typeof value === "number") { cls = ""; shown = esc(value); }
@@ -876,15 +893,14 @@ async function loadSimCases() {
 }
 
 /* ---------- init ---------- */
-loadBoard();
 loadSimCases();
-loadScenarios().then(() => {
+loadBoard().then((state) => {
   const q = new URLSearchParams(location.search);
-  if (["door", "edu"].includes(q.get("tab"))) showTab(q.get("tab"));
-  const sid = q.get("scenario");
-  if (sid) {
-    const s = scenarios.find((x) => x.scenario_id === sid);
-    if (s) { $("#note").value = s.note; showTab("door"); }
+  if (q.get("tab") === "edu") showTab("edu");
+  const pt = q.get("pt");
+  if (pt && state) {
+    const a = state.waiting.find((x) => x.arrival_id === pt);
+    if (a) openChart(a);
   }
   if (q.get("autorun") === "1") run();
   if (q.get("surge") === "1") runSurge();
