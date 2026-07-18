@@ -11,7 +11,7 @@ it is the source of truth for who is working where.
 | mci-module | T1 | `src/halo/mci/`, `tests/test_mci_*.py`, `tests/fixtures/`, `src/halo/app.py` (add routes only) | done | `make check` (38 passed); live `python -m halo.mci.demo`: 11/12 agreement, 0 under-triage FNs, N=12 synthetic |
 | mci-reconcile | T1 | `src/halo/mci/panel.py`, `src/halo/mci/reconcile.py`, `src/halo/llm.py` (agent_loop), `synthetic-ambient-fhir-25/` | done | `make check` (55 passed); live agent path verified (variant search + chart corroboration -> 'possible') |
 | demo-surface | T1 | `README.md`, `docs/`, `src/halo/static/`, `src/halo/mci/scenarios.py`, `src/halo/mci/demo.py`, `src/halo/app.py` (UI routes) | done | `make check` (62 passed); `demo --handoff` 3/3 scenarios live; UI verified in Chrome (shell + live autorun screenshots) |
-| edu-module | T2 | `src/halo/edu/`, `tests/test_edu_*.py` | done | `make check` (192 passed, 113 edu; mypy strict clean on `halo.edu`); offline `python -m halo.edu.demo` full showcase (peds dosing + refusals, critical-miss drill gate, chained CME ledger verifies, FHIR round-trip, 5 printable cards); live `demo find --llm`: keyword-free colloquial query routed to `organophosphate` via `halo.llm.structured` enum schema |
+| edu-module | T2 | `src/halo/edu/`, `tests/test_edu_*.py` | done | `make check` (128 edu tests; mypy strict clean on `halo.edu`); offline `python -m halo.edu.demo` full showcase (peds dosing + refusals, critical-miss drill gate, chained CME ledger verifies, FHIR round-trip, 5 printable cards); live `demo find --llm`: keyword-free colloquial query routed to `organophosphate` via `halo.llm.structured` enum schema; red-team pass: all 4 cards Chrome-verified (headless screenshots), 6 finding classes fixed w/ regressions (see decisions log) |
 | nurse-workflow | T1 | `src/halo/mci/` (triage/extract/panel/fhir_out), `src/halo/static/`, `docs/WORKFLOW.md`, `docs/INTEGRATION.md`, `README.md`, `tests/test_mci_*`, `tests/test_app.py` | done | `make check` (170 passed); 4/4 scenarios live; UI re-verified in Chrome (30-2-Can-Do derivation + FHIR preview) |
 | surge-trackboard | T1 | `src/halo/mci/census.py`, `src/halo/mci/surge.py`, `tests/fixtures/ed_census.json`, `src/halo/static/`, `src/halo/app.py` (surge routes), `tests/test_mci_surge.py`, docs updates | done | `make check` (219 passed); board + door tabs verified in Chrome; plan: 11 dc + 6 chairs + 4 admit-pull + 2 hold of 23 |
 
@@ -80,3 +80,15 @@ you start. Set state to `done` (with the verify command's result) when you finis
   opt-in per call. `halo.edu.routes` is a ready APIRouter — mounting into `halo.app` is
   one line, left to the app-owning lane (no cross-lane edit). T2 ack re fmt note: no
   harm done, files were formatted before commit.
+- 2026-07-18: EDU red-team pass (T2) — rendered all four cards headless-Chrome and attacked
+  the lane. Found + fixed, each with a regression test: substring grading let wrong answers
+  score critical hits ("now" inside "know", "3" inside "30 minutes") -> word-boundary
+  matching; scripted demo drills minted CME ledger records -> interactive-only attestation;
+  dosing computed "0 mg" for weight 0 -> implausible-context refusals; FHIR inbound crashed
+  on malformed entries and turned a future birthDate into a negative age -> hardened;
+  outbound Composition narrative unescaped -> escaped; SVG labels clipped/overlapped ->
+  margin-column layout, re-verified in Chrome. Known limits documented rather than hidden:
+  keyword drills are self-attestation (raw answers kept in the ledger for human review);
+  ledger detects edits/deletions of records but not deletion of the whole file (anchor the
+  head hash externally); llm=true knobs are unauthenticated cost triggers — strip or gate
+  before any exposed deployment. 219 passed.
