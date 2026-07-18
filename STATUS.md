@@ -21,7 +21,7 @@ it is the source of truth for who is working where.
 
 | sim-lab-2 | T1 (+4 subagents on case JSONs) | `src/halo/sim/` (schema+validator+cases), `src/halo/static/sim.html` (diagrams, CME, references), `tests/test_sim.py` | done | `make check` (263 passed); 5 cases (IO, OP, PMCD, canthotomy, breech), all citation-backed + per-role CME objectives (validator-enforced); diagrams redrawn legible (do/don't breech panel, no clipping, capped size) — IO, breech, canthotomy decisions + crashing-OP death path Chrome-verified |
 
-| waiting-room+agents | T1 | `src/halo/mci/board.py` (waiting/bays), `src/halo/mci/compliance.py`, `tests/fixtures/ed_waiting.json`, `src/halo/static/index.html`, `src/halo/app.py` (waiting/compliance routes), `docs/AGENTS.md`, `tests/test_mci_board.py`, `tests/test_compliance.py`, `README.md` | active | `make check`; waiting-room routing + legal-agent memo Chrome-verified |
+| waiting-room+agents | T1 | `src/halo/mci/board.py` (waiting/bays), `src/halo/mci/compliance.py`, `tests/fixtures/ed_waiting.json`, `src/halo/static/index.html`, `src/halo/app.py` (waiting/compliance routes), `docs/AGENTS.md`, `tests/test_mci_board.py`, `tests/test_compliance.py`, `README.md` | done | `make check` (275 passed); waiting room -> triage -> bays/beds routing Chrome-verified (surge-freed bed C03 consumed by arrival); legal agent live: 5/5 rules, 0 unverified, caught a real log gap (R5 monitor) |
 
 Claim a lane: add a row with a short name, your terminal label (T1/T2/…), the exact files or
 directories you own, state `active`, and the command that proves your work. Push the claim before
