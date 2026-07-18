@@ -8,12 +8,14 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
+from halo.edu.routes import router as edu_router
 from halo.llm import LLMFailure, model_name
 from halo.mci import Observations, salt_triage
 from halo.mci.extract import extract_observations
 from halo.mci.scenarios import SCENARIOS
 
 app = FastAPI(title="HALO")
+app.include_router(edu_router)
 
 _STATIC = Path(__file__).parent / "static"
 
