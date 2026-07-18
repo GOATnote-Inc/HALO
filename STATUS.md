@@ -8,6 +8,7 @@ it is the source of truth for who is working where.
 | Lane | Owner | Scope (files/dirs) | State | Verify |
 |---|---|---|---|---|
 | scaffold | T0 | repo root, `src/halo/`, `tests/`, CI | done | `make check` (11 passed) |
+| mci-module | T1 | `src/halo/mci/`, `tests/test_mci_*.py`, `tests/fixtures/`, `src/halo/app.py` (add routes only) | active | `make check` |
 
 Claim a lane: add a row with a short name, your terminal label (T1/T2/…), the exact files or
 directories you own, state `active`, and the command that proves your work. Push the claim before
