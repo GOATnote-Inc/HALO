@@ -1,8 +1,14 @@
 """Minimal API surface. Run locally: ``make serve`` -> http://127.0.0.1:8000/health"""
 
-from fastapi import FastAPI
+from dataclasses import asdict
+from typing import Any
 
-from halo.llm import model_name
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+
+from halo.llm import LLMFailure, model_name
+from halo.mci import Observations, salt_triage
+from halo.mci.extract import extract_observations
 
 app = FastAPI(title="HALO")
 
@@ -10,3 +16,54 @@ app = FastAPI(title="HALO")
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "model": model_name()}
+
+
+class TriageNoteRequest(BaseModel):
+    """Free-text field/EMS note. Claude extracts; the SALT algorithm decides."""
+
+    note: str = Field(min_length=1)
+    likely_survivable: bool | None = Field(
+        default=None,
+        description="Human resource decision. Only an explicit false can yield EXPECTANT.",
+    )
+
+
+class TriageObservationsRequest(BaseModel):
+    """Pre-structured observations — deterministic path, no model call."""
+
+    observations: dict[str, bool | None] = Field(default_factory=dict)
+    likely_survivable: bool | None = None
+
+
+def _result_payload(
+    result: Any, observations: Observations, evidence: dict[str, str]
+) -> dict[str, Any]:
+    return {
+        "category": result.category.value,
+        "rationale": result.rationale,
+        "missing_fields": list(result.missing_fields),
+        "observations": asdict(observations),
+        "evidence": evidence,
+        "synthetic_only": True,
+    }
+
+
+@app.post("/mci/triage/note")
+def triage_note(req: TriageNoteRequest) -> dict[str, Any]:
+    try:
+        observations, evidence = extract_observations(req.note)
+    except LLMFailure as exc:
+        # Fail closed: no category is better than a wrong one.
+        raise HTTPException(status_code=502, detail=f"extraction failed closed: {exc}") from exc
+    result = salt_triage(observations, likely_survivable=req.likely_survivable)
+    return _result_payload(result, observations, evidence)
+
+
+@app.post("/mci/triage/observations")
+def triage_observations(req: TriageObservationsRequest) -> dict[str, Any]:
+    try:
+        observations = Observations(**req.observations)
+    except TypeError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    result = salt_triage(observations, likely_survivable=req.likely_survivable)
+    return _result_payload(result, observations, {})

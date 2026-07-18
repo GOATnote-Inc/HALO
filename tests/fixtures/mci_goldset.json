@@ -1,0 +1,187 @@
+{
+  "synthetic": true,
+  "description": "Synthetic MCI field notes with gold observations and gold SALT categories. No real patient data.",
+  "cases": [
+    {
+      "id": "mci-001",
+      "synthetic": true,
+      "note": "Pt 1: adult male, walking around the staging area asking about his friend. Superficial abrasions to forearms only. Talking in full sentences, follows instructions, radial pulse strong, breathing comfortably, no active bleeding.",
+      "gold_observations": {
+        "breathing": true,
+        "obeys_commands": true,
+        "peripheral_pulse": true,
+        "respiratory_distress": false,
+        "major_hemorrhage_uncontrolled": false,
+        "minor_injuries_only": true,
+        "can_walk": true
+      },
+      "gold_category": "minimal"
+    },
+    {
+      "id": "mci-002",
+      "synthetic": true,
+      "note": "Pt 2: adult female, closed deformity of right femur, unable to walk. Alert, follows commands. Radial pulse present, breathing unlabored, bleeding controlled with pressure dressing.",
+      "gold_observations": {
+        "breathing": true,
+        "obeys_commands": true,
+        "peripheral_pulse": true,
+        "respiratory_distress": false,
+        "major_hemorrhage_uncontrolled": false,
+        "minor_injuries_only": false,
+        "can_walk": false
+      },
+      "gold_category": "delayed"
+    },
+    {
+      "id": "mci-003",
+      "synthetic": true,
+      "note": "Pt 3: teenage male, heavy arterial bleeding from left thigh, tourniquet applied but blood still soaking through. Confused, not following commands. Breathing rapidly and laboring. No radial pulse, carotid only.",
+      "gold_observations": {
+        "breathing": true,
+        "obeys_commands": false,
+        "peripheral_pulse": false,
+        "respiratory_distress": true,
+        "major_hemorrhage_uncontrolled": true,
+        "minor_injuries_only": false,
+        "can_walk": false
+      },
+      "gold_category": "immediate"
+    },
+    {
+      "id": "mci-004",
+      "synthetic": true,
+      "note": "Pt 4: adult male found under debris. Airway repositioned twice, no spontaneous respirations.",
+      "gold_observations": {
+        "breathing": false,
+        "obeys_commands": null,
+        "peripheral_pulse": null,
+        "respiratory_distress": null,
+        "major_hemorrhage_uncontrolled": null,
+        "minor_injuries_only": null,
+        "can_walk": false
+      },
+      "gold_category": "dead"
+    },
+    {
+      "id": "mci-005",
+      "synthetic": true,
+      "note": "Pt 5: elderly female, breathing spontaneously. Moves hand away when touched but does not follow commands. Radial pulse weak but present, no visible bleeding, breathing appears comfortable.",
+      "gold_observations": {
+        "breathing": true,
+        "obeys_commands": false,
+        "peripheral_pulse": true,
+        "respiratory_distress": false,
+        "major_hemorrhage_uncontrolled": false,
+        "minor_injuries_only": null,
+        "can_walk": null
+      },
+      "gold_category": "immediate"
+    },
+    {
+      "id": "mci-006",
+      "synthetic": true,
+      "note": "Pt 6: adult, breathing. No other assessment documented — crews pulled to another sector.",
+      "gold_observations": {
+        "breathing": true,
+        "obeys_commands": null,
+        "peripheral_pulse": null,
+        "respiratory_distress": null,
+        "major_hemorrhage_uncontrolled": null,
+        "minor_injuries_only": null,
+        "can_walk": null
+      },
+      "gold_category": "unable_to_triage"
+    },
+    {
+      "id": "mci-007",
+      "synthetic": true,
+      "note": "Pt 7: child, breathing with severe distress, gasping. Follows commands, radial pulse present, no external bleeding.",
+      "gold_observations": {
+        "breathing": true,
+        "obeys_commands": true,
+        "peripheral_pulse": true,
+        "respiratory_distress": true,
+        "major_hemorrhage_uncontrolled": false,
+        "minor_injuries_only": null,
+        "can_walk": null
+      },
+      "gold_category": "immediate"
+    },
+    {
+      "id": "mci-008",
+      "synthetic": true,
+      "note": "Pt 8: adult male, ambulatory, laceration to scalp bleeding controlled with dressing. Follows commands, strong radial pulse, breathing normally. Laceration is the only injury found.",
+      "gold_observations": {
+        "breathing": true,
+        "obeys_commands": true,
+        "peripheral_pulse": true,
+        "respiratory_distress": false,
+        "major_hemorrhage_uncontrolled": false,
+        "minor_injuries_only": true,
+        "can_walk": true
+      },
+      "gold_category": "minimal"
+    },
+    {
+      "id": "mci-009",
+      "synthetic": true,
+      "note": "Pt 9: adult female, extensive full-thickness burns, breathing spontaneously but shallow with distress, no peripheral pulse, unresponsive to commands.",
+      "gold_observations": {
+        "breathing": true,
+        "obeys_commands": false,
+        "peripheral_pulse": false,
+        "respiratory_distress": true,
+        "major_hemorrhage_uncontrolled": null,
+        "minor_injuries_only": false,
+        "can_walk": false
+      },
+      "gold_category": "immediate",
+      "note_expectant": "With an explicit human likely_survivable=false decision this becomes expectant; the algorithm must not make that call on its own."
+    },
+    {
+      "id": "mci-010",
+      "synthetic": true,
+      "note": "Pt 10: adult male, follows commands, radial pulse intact, breathing without difficulty, no significant bleeding. Injuries not yet fully surveyed.",
+      "gold_observations": {
+        "breathing": true,
+        "obeys_commands": true,
+        "peripheral_pulse": true,
+        "respiratory_distress": false,
+        "major_hemorrhage_uncontrolled": false,
+        "minor_injuries_only": null,
+        "can_walk": null
+      },
+      "gold_category": "delayed"
+    },
+    {
+      "id": "mci-011",
+      "synthetic": true,
+      "note": "Pt 11: adolescent female, alert and following commands, breathing comfortably, radial pulse present. Bleeding from lower leg wound — dressing in place, unclear whether bleeding is controlled.",
+      "gold_observations": {
+        "breathing": true,
+        "obeys_commands": true,
+        "peripheral_pulse": true,
+        "respiratory_distress": false,
+        "major_hemorrhage_uncontrolled": null,
+        "minor_injuries_only": null,
+        "can_walk": null
+      },
+      "gold_category": "unable_to_triage"
+    },
+    {
+      "id": "mci-012",
+      "synthetic": true,
+      "note": "Pt 12: adult, no documentation of respirations. Follows commands, radial pulse present.",
+      "gold_observations": {
+        "breathing": null,
+        "obeys_commands": true,
+        "peripheral_pulse": true,
+        "respiratory_distress": null,
+        "major_hemorrhage_uncontrolled": null,
+        "minor_injuries_only": null,
+        "can_walk": null
+      },
+      "gold_category": "unable_to_triage"
+    }
+  ]
+}
