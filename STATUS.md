@@ -9,6 +9,7 @@ it is the source of truth for who is working where.
 |---|---|---|---|---|
 | scaffold | T0 | repo root, `src/halo/`, `tests/`, CI | done | `make check` (11 passed) |
 | mci-module | T1 | `src/halo/mci/`, `tests/test_mci_*.py`, `tests/fixtures/`, `src/halo/app.py` (add routes only) | done | `make check` (38 passed); live `python -m halo.mci.demo`: 11/12 agreement, 0 under-triage FNs, N=12 synthetic |
+| mci-reconcile | T1 | `src/halo/mci/panel.py`, `src/halo/mci/reconcile.py`, `src/halo/llm.py` (agent_loop), `synthetic-ambient-fhir-25/` | done | `make check` (55 passed); live agent path verified (variant search + chart corroboration -> 'possible') |
 
 Claim a lane: add a row with a short name, your terminal label (T1/T2/…), the exact files or
 directories you own, state `active`, and the command that proves your work. Push the claim before
@@ -27,3 +28,9 @@ you start. Set state to `done` (with the verify command's result) when you finis
   EXPECTANT only via explicit human `likely_survivable=false`. Live e2e on the 12-case synthetic
   goldset (claude-opus-4-8): 11/12 category agreement, 0 under-triage FNs; sole miss is
   safe-direction over-triage.
+- 2026-07-18: Module 2 locked — **agentic chart reconciliation** over the Abridge
+  synthetic-ambient-fhir-25 panel. Simplest-pattern-first: deterministic cue scoring resolves
+  clean identities; the SDK beta tool runner handles garbled ones (name-variant search + chart
+  corroboration). Agent proposes, deterministic layer verifies; identity status is never
+  "confirmed" (human act); care-modifier flags are a rule table with FHIR provenance. Anti-project
+  check: agentic tool use + deterministic clinical guardrails — no dashboard, no RAG, no chatbot.
