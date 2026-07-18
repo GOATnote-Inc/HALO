@@ -75,6 +75,7 @@
   .dgpanel{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin:10px 0}
   figure.dg{margin:0;border:1px solid var(--line);border-radius:8px;background:#fff;padding:10px}
   figure.dg svg{width:100%;max-width:430px;height:auto;display:block;margin:0 auto}
+  figure.dg.dg-tall svg{max-width:400px}
   figure.dg figcaption{font-size:12px;margin-bottom:6px}
   .cmebox{margin-top:10px}
   .cmebox summary{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
@@ -281,41 +282,120 @@ in the loop. Synthetic patients only. Debrief teaching points are draft pending 
     </figure>
   </template>
   <template id="dg-breech_grip">
-    <figure class="dg">
-      <figcaption><b>After-coming head: where your hands go</b></figcaption>
-      <svg viewBox="0 0 360 190" role="img" aria-label="Breech grip do and do-not diagram">
-        <!-- CORRECT panel -->
-        <rect x="8" y="8" width="166" height="154" rx="8" fill="#F4FBF5" stroke="#166534" stroke-width="2"/>
-        <circle cx="150" cy="24" r="10" fill="#166534"/>
-        <path d="M144 24 l4 5 l8 -9" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-        <!-- baby from behind: head partly below symphysis line, trunk, pelvis -->
-        <line x1="24" y1="46" x2="158" y2="46" stroke="#8A97A8" stroke-width="2" stroke-dasharray="4 4"/>
-        <circle cx="91" cy="38" r="13" fill="#E8C9A8" stroke="#8A97A8" stroke-width="1.5"/>
-        <path d="M74 52 q17 -8 34 0 l-3 44 q-14 6 -28 0 Z" fill="#E8C9A8" stroke="#8A97A8" stroke-width="1.5"/>
-        <rect x="70" y="96" width="42" height="22" rx="9" fill="#D9B590" stroke="#8A97A8" stroke-width="1.5"/>
-        <!-- hands: fingers wrap iliac crests, thumbs on sacrum midline -->
-        <path d="M56 100 q10 12 18 14 M58 108 q8 8 14 10" stroke="#1D4ED8" stroke-width="4.5" fill="none" stroke-linecap="round"/>
-        <path d="M126 100 q-10 12 -18 14 M124 108 q-8 8 -14 10" stroke="#1D4ED8" stroke-width="4.5" fill="none" stroke-linecap="round"/>
-        <rect x="82" y="99" width="7" height="16" rx="3.5" fill="#1D4ED8"/>
-        <rect x="93" y="99" width="7" height="16" rx="3.5" fill="#1D4ED8"/>
-        <text x="20" y="136" font-size="10.5" fill="#166534" font-weight="700">Thumbs on the SACRUM,</text>
-        <text x="20" y="150" font-size="10.5" fill="#166534" font-weight="700">fingers on the iliac crests</text>
-        <!-- WRONG panel -->
-        <rect x="186" y="8" width="166" height="154" rx="8" fill="#FEF5F5" stroke="#B91C1C" stroke-width="2"/>
-        <circle cx="328" cy="24" r="10" fill="#B91C1C"/>
-        <path d="M323 19 l10 10 M333 19 l-10 10" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
-        <line x1="202" y1="46" x2="336" y2="46" stroke="#8A97A8" stroke-width="2" stroke-dasharray="4 4"/>
-        <circle cx="269" cy="38" r="13" fill="#E8C9A8" stroke="#8A97A8" stroke-width="1.5"/>
-        <path d="M252 52 q17 -8 34 0 l-3 44 q-14 6 -28 0 Z" fill="#E8C9A8" stroke="#8A97A8" stroke-width="1.5"/>
-        <rect x="248" y="96" width="42" height="22" rx="9" fill="#D9B590" stroke="#8A97A8" stroke-width="1.5"/>
-        <!-- hands squeezing the soft abdomen (mid-trunk), squeeze arrows -->
-        <path d="M236 66 q12 8 18 8 M238 76 q10 6 16 6" stroke="#B91C1C" stroke-width="4.5" fill="none" stroke-linecap="round"/>
-        <path d="M302 66 q-12 8 -18 8 M300 76 q-10 6 -16 6" stroke="#B91C1C" stroke-width="4.5" fill="none" stroke-linecap="round"/>
-        <line x1="243" y1="86" x2="254" y2="80" stroke="#B91C1C" stroke-width="2.5"/>
-        <line x1="295" y1="86" x2="284" y2="80" stroke="#B91C1C" stroke-width="2.5"/>
-        <text x="198" y="136" font-size="10.5" fill="#B91C1C" font-weight="700">NEVER the abdomen &#8212;</text>
-        <text x="198" y="150" font-size="10.5" fill="#B91C1C" font-weight="700">soft-tissue / organ injury</text>
-        <text x="76" y="180" font-size="11.5" fill="#101826" font-weight="700">Support and flex &#8212; never pull on the trunk</text>
+    <figure class="dg dg-tall">
+      <figcaption><b>After-coming head — correct vs incorrect grip</b></figcaption>
+      <svg viewBox="0 0 400 640" role="img" aria-label="Breech hand placement: correct grip on bony pelvis versus incorrect grip on abdomen">
+        <!-- ====== PANEL A: CORRECT (rear view) ====== -->
+        <circle cx="30" cy="26" r="12" fill="#166534"/>
+        <path d="M23 26 l5 6 l10 -11" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- maternal perineum band, head still inside -->
+        <path d="M70 54 Q200 26 330 54 L330 70 Q200 44 70 70 Z" fill="#EFC6BD" stroke="#D9A79E" stroke-width="1.5"/>
+        <text x="238" y="34" font-size="10" fill="#5A6472">maternal perineum &#8212;</text>
+        <text x="238" y="45" font-size="10" fill="#5A6472">head still inside</text>
+        <!-- newborn back, rear view -->
+        <path d="M184 60 L216 60 L218 72 L182 72 Z" fill="#E8B98F" stroke="#C99568" stroke-width="1"/>
+        <path d="M150 84 Q148 70 166 66 L200 60 L234 66 Q252 70 250 84
+                 L247 116 Q246 130 254 140 L259 152 Q262 174 243 186
+                 L224 194 Q200 200 176 194 L157 186 Q138 174 141 152
+                 L146 140 Q154 130 153 116 Z"
+              fill="#E8B98F" stroke="#C99568" stroke-width="1.5"/>
+        <!-- upper arms, flexed forward -->
+        <rect x="134" y="82" width="21" height="46" rx="10.5" fill="#E8B98F" stroke="#C99568" stroke-width="1.2" transform="rotate(13 144 105)"/>
+        <rect x="245" y="82" width="21" height="46" rx="10.5" fill="#E8B98F" stroke="#C99568" stroke-width="1.2" transform="rotate(-13 256 105)"/>
+        <!-- spine + gluteal cleft -->
+        <path d="M200 74 L200 142" stroke="#D9A47B" stroke-width="1.4"/>
+        <path d="M200 150 Q198 170 200 188" stroke="#C99568" stroke-width="1.6"/>
+        <path d="M160 160 Q176 182 197 187 M240 160 Q224 182 203 187" stroke="#D9A47B" stroke-width="1.2" fill="none"/>
+        <!-- legs, delivered and flexed -->
+        <rect x="150" y="188" width="25" height="54" rx="12.5" fill="#E8B98F" stroke="#C99568" stroke-width="1.2" transform="rotate(16 162 215)"/>
+        <rect x="225" y="188" width="25" height="54" rx="12.5" fill="#E8B98F" stroke="#C99568" stroke-width="1.2" transform="rotate(-16 238 215)"/>
+        <rect x="142" y="236" width="21" height="46" rx="10.5" fill="#E8B98F" stroke="#C99568" stroke-width="1.2" transform="rotate(-5 152 259)"/>
+        <rect x="237" y="236" width="21" height="46" rx="10.5" fill="#E8B98F" stroke="#C99568" stroke-width="1.2" transform="rotate(5 248 259)"/>
+        <ellipse cx="150" cy="286" rx="13" ry="7" fill="#E8B98F" stroke="#C99568" stroke-width="1.2"/>
+        <ellipse cx="250" cy="286" rx="13" ry="7" fill="#E8B98F" stroke="#C99568" stroke-width="1.2"/>
+        <!-- sacrum landmark -->
+        <path d="M188 136 L212 136 L206 164 Q200 170 194 164 Z" fill="#F6E3C8" opacity="0.85" stroke="#B8863B" stroke-width="1.4" stroke-dasharray="4 3"/>
+        <!-- iliac crest landmark curves -->
+        <path d="M148 142 Q162 128 182 124 M252 142 Q238 128 218 124" stroke="#1D4ED8" stroke-width="1.6" fill="none" stroke-dasharray="5 3"/>
+        <!-- LEFT gloved hand: forearm, palm edge under buttock, fingers around flank, thumb on sacrum -->
+        <path d="M100 252 L148 178" stroke="#5B6BD4" stroke-width="24" stroke-linecap="round"/>
+        <path d="M100 252 L148 178" stroke="#3A49A0" stroke-width="24" stroke-linecap="round" fill="none" opacity="0.18"/>
+        <path d="M114 224 L134 238" stroke="#7C8CE8" stroke-width="7" stroke-linecap="round"/>
+        <path d="M146 168 Q166 186 186 174" stroke="#5B6BD4" stroke-width="15" fill="none" stroke-linecap="round"/>
+        <rect x="128" y="124" width="18" height="10" rx="5" fill="#5B6BD4" stroke="#3A49A0" stroke-width="1.2" transform="rotate(-9 137 129)"/>
+        <rect x="126" y="137" width="21" height="10" rx="5" fill="#5B6BD4" stroke="#3A49A0" stroke-width="1.2" transform="rotate(-4 136 142)"/>
+        <rect x="126" y="150" width="20" height="10" rx="5" fill="#5B6BD4" stroke="#3A49A0" stroke-width="1.2"/>
+        <rect x="128" y="162" width="17" height="10" rx="5" fill="#5B6BD4" stroke="#3A49A0" stroke-width="1.2" transform="rotate(5 136 167)"/>
+        <rect x="180" y="136" width="12" height="37" rx="6" fill="#5B6BD4" stroke="#3A49A0" stroke-width="1.4" transform="rotate(12 186 154)"/>
+        <ellipse cx="190" cy="143" rx="3.4" ry="4.6" fill="#8B98EE" transform="rotate(12 190 143)"/>
+        <!-- RIGHT gloved hand (mirror) -->
+        <path d="M300 252 L252 178" stroke="#5B6BD4" stroke-width="24" stroke-linecap="round"/>
+        <path d="M300 252 L252 178" stroke="#3A49A0" stroke-width="24" stroke-linecap="round" fill="none" opacity="0.18"/>
+        <path d="M286 224 L266 238" stroke="#7C8CE8" stroke-width="7" stroke-linecap="round"/>
+        <path d="M254 168 Q234 186 214 174" stroke="#5B6BD4" stroke-width="15" fill="none" stroke-linecap="round"/>
+        <rect x="254" y="124" width="18" height="10" rx="5" fill="#5B6BD4" stroke="#3A49A0" stroke-width="1.2" transform="rotate(9 263 129)"/>
+        <rect x="253" y="137" width="21" height="10" rx="5" fill="#5B6BD4" stroke="#3A49A0" stroke-width="1.2" transform="rotate(4 264 142)"/>
+        <rect x="254" y="150" width="20" height="10" rx="5" fill="#5B6BD4" stroke="#3A49A0" stroke-width="1.2"/>
+        <rect x="255" y="162" width="17" height="10" rx="5" fill="#5B6BD4" stroke="#3A49A0" stroke-width="1.2" transform="rotate(-5 264 167)"/>
+        <rect x="208" y="136" width="12" height="37" rx="6" fill="#5B6BD4" stroke="#3A49A0" stroke-width="1.4" transform="rotate(-12 214 154)"/>
+        <ellipse cx="210" cy="143" rx="3.4" ry="4.6" fill="#8B98EE" transform="rotate(-12 210 143)"/>
+        <!-- leader arrows + labels -->
+        <text x="8" y="106" font-size="11" fill="#1D4ED8">Fingers wrap the</text>
+        <text x="8" y="119" font-size="11.5" fill="#1D4ED8" font-weight="700">ILIAC CRESTS</text>
+        <path d="M92 122 L124 132" stroke="#1D4ED8" stroke-width="1.5"/>
+        <polygon points="124,132 116,133 119,126" fill="#1D4ED8"/>
+        <text x="292" y="122" font-size="11" fill="#B8863B">Thumbs parallel</text>
+        <text x="292" y="135" font-size="11.5" fill="#B8863B" font-weight="700">on the SACRUM</text>
+        <path d="M290 138 L218 148" stroke="#B8863B" stroke-width="1.5"/>
+        <polygon points="218,148 226,144 226,151" fill="#B8863B"/>
+        <text x="200" y="308" font-size="12" fill="#166534" font-weight="700" text-anchor="middle">CORRECT &#8212; thumbs on sacrum, fingers on iliac crests</text>
+
+        <!-- ====== PANEL B: INCORRECT (quarter view, squeezing the abdomen) ====== -->
+        <line x1="20" y1="326" x2="380" y2="326" stroke="#D7DCE3" stroke-width="1.5"/>
+        <circle cx="30" cy="352" r="12" fill="#B91C1C"/>
+        <path d="M24 346 l12 12 M36 346 l-12 12" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+        <path d="M84 372 Q200 346 316 372 L316 388 Q200 364 84 388 Z" fill="#EFC6BD" stroke="#D9A79E" stroke-width="1.5"/>
+        <text x="246" y="356" font-size="10" fill="#5A6472">head still inside</text>
+        <!-- baby quarter-turned: belly toward viewer-right -->
+        <path d="M176 380 L208 378 L210 390 L176 392 Z" fill="#E8B98F" stroke="#C99568" stroke-width="1"/>
+        <path d="M148 402 Q146 388 164 384 L192 378 Q218 376 232 388
+                 Q246 398 244 416 L242 432 Q258 448 259 472
+                 Q259 500 238 512 L216 522 Q192 528 172 518
+                 L156 508 Q142 494 145 470 Q147 446 152 430 Z"
+              fill="#E8B98F" stroke="#C99568" stroke-width="1.5"/>
+        <!-- belly highlight: organs at risk -->
+        <ellipse cx="226" cy="464" rx="33" ry="29" fill="#E23636" opacity="0.20"/>
+        <ellipse cx="226" cy="464" rx="33" ry="29" fill="none" stroke="#B91C1C" stroke-width="1.6" stroke-dasharray="5 3"/>
+        <text x="284" y="440" font-size="10.5" fill="#B91C1C" font-weight="700">soft tissue:</text>
+        <text x="284" y="453" font-size="10.5" fill="#B91C1C">liver &#183; spleen</text>
+        <text x="284" y="466" font-size="10.5" fill="#B91C1C">kidneys</text>
+        <path d="M282 452 L262 458" stroke="#B91C1C" stroke-width="1.4"/>
+        <polygon points="262,458 269,453 270,460" fill="#B91C1C"/>
+        <!-- legs -->
+        <rect x="150" y="516" width="24" height="52" rx="12" fill="#E8B98F" stroke="#C99568" stroke-width="1.2" transform="rotate(20 162 542)"/>
+        <rect x="196" y="522" width="24" height="52" rx="12" fill="#E8B98F" stroke="#C99568" stroke-width="1.2" transform="rotate(-8 208 548)"/>
+        <ellipse cx="146" cy="576" rx="12" ry="7" fill="#E8B98F" stroke="#C99568" stroke-width="1.2"/>
+        <ellipse cx="212" cy="582" rx="12" ry="7" fill="#E8B98F" stroke="#C99568" stroke-width="1.2"/>
+        <!-- gloved fingers pressing INTO the belly, with indentation + stress marks -->
+        <path d="M298 540 L268 480" stroke="#5B6BD4" stroke-width="22" stroke-linecap="round"/>
+        <path d="M282 512 L262 524" stroke="#7C8CE8" stroke-width="6" stroke-linecap="round"/>
+        <rect x="240" y="436" width="26" height="11" rx="5.5" fill="#5B6BD4" stroke="#3A49A0" stroke-width="1.2" transform="rotate(-16 253 441)"/>
+        <rect x="242" y="452" width="29" height="11" rx="5.5" fill="#5B6BD4" stroke="#3A49A0" stroke-width="1.2" transform="rotate(-8 256 457)"/>
+        <rect x="242" y="468" width="28" height="11" rx="5.5" fill="#5B6BD4" stroke="#3A49A0" stroke-width="1.2"/>
+        <rect x="240" y="483" width="24" height="11" rx="5.5" fill="#5B6BD4" stroke="#3A49A0" stroke-width="1.2" transform="rotate(9 252 488)"/>
+        <path d="M243 442 q-5 3 -4 7 M245 458 q-5 3 -4 7 M245 473 q-5 3 -4 7" stroke="#B91C1C" stroke-width="2" fill="none"/>
+        <path d="M232 430 l-7 -7 M236 448 l-9 -4 M236 466 l-9 1 M234 484 l-8 5" stroke="#B91C1C" stroke-width="2" stroke-linecap="round"/>
+        <!-- back hand hint on the far side -->
+        <rect x="130" y="436" width="17" height="10" rx="5" fill="#4557B8" transform="rotate(8 138 441)"/>
+        <rect x="128" y="450" width="19" height="10" rx="5" fill="#4557B8" transform="rotate(3 137 455)"/>
+        <rect x="129" y="464" width="18" height="10" rx="5" fill="#4557B8"/>
+        <!-- no-traction symbol -->
+        <line x1="72" y1="440" x2="72" y2="478" stroke="#B91C1C" stroke-width="4"/>
+        <polygon points="72,488 64,474 80,474" fill="#B91C1C"/>
+        <circle cx="72" cy="462" r="23" fill="none" stroke="#B91C1C" stroke-width="4"/>
+        <line x1="56" y1="446" x2="88" y2="478" stroke="#B91C1C" stroke-width="4"/>
+        <text x="46" y="506" font-size="10.5" fill="#B91C1C" font-weight="700">no traction</text>
+        <text x="200" y="632" font-size="12" fill="#B91C1C" font-weight="700" text-anchor="middle">WRONG &#8212; squeezing the abdomen: organ injury</text>
       </svg>
     </figure>
   </template>
