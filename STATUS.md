@@ -15,5 +15,8 @@ you start. Set state to `done` (with the verify command's result) when you finis
 
 ## Decisions log
 
-- 2026-07-18: Repo created pre-event as the day-of build repo. Name: HALO. Project scope TBD at
-  the event — record it here when decided.
+- 2026-07-18: Repo created pre-event as the day-of build repo. Name: HALO.
+- 2026-07-18: Scope decided — **HALO = High Acuity, Low Occurrence** EHR module class. First
+  module: evidence-based Mass Casualty Incident (MCI) support. Deep-research pass (triage science,
+  real-MCI EHR failure modes, ABEM/ACEP/JAMA/NEJM evidence base, prior art, defensible demo
+  metrics) running; report lands in `docs/RESEARCH.md` and drives the build plan.

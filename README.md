@@ -2,12 +2,14 @@
 
 [![ci](https://github.com/GOATnote-Inc/HALO/actions/workflows/ci.yml/badge.svg)](https://github.com/GOATnote-Inc/HALO/actions/workflows/ci.yml)
 
-Agentic AI in healthcare — built live at the **Future of Agentic AI in Healthcare** hackathon
+**HALO — High Acuity, Low Occurrence.** An evidence-based EHR module class for the rare,
+high-stakes events clinicians can't practice daily; the first module targets Mass Casualty
+Incident (MCI) response. Built live at the **Future of Agentic AI in Healthcare** hackathon
 (Abridge × Anthropic × Lightspeed), San Francisco, 2026-07-18.
 
-Project scope is being defined at the event. This scaffold gives every terminal the same green
-baseline: a typed Python package, a single fail-closed seam for Claude API calls, offline tests,
-lint, and CI.
+The evidence base (triage science, real-MCI EHR failure modes, ABEM/ACEP standards, prior art)
+lives in `docs/RESEARCH.md`. The scaffold gives every terminal the same green baseline: a typed
+Python package, a single fail-closed seam for Claude API calls, offline tests, lint, and CI.
 
 ## Quickstart
 
