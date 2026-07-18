@@ -20,12 +20,13 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field, StringConstraints
 
+from halo.edu.brief import readiness_brief
 from halo.edu.corpus import load_corpus, module_version
 from halo.edu.dosing import dose_all
 from halo.edu.drill import run_drill
 from halo.edu.lookup import resolve, route_with_claude
 from halo.edu.models import PatientContext
-from halo.edu.render import card_html, index_html
+from halo.edu.render import brief_html, card_html, index_html
 
 router = APIRouter(prefix="/edu", tags=["edu"])
 
@@ -91,6 +92,20 @@ def find(q: str = Query(min_length=1), llm: bool = False) -> dict[str, Any]:
         ],
         "all_module_ids": [m.id for m in load_corpus()] if not matches else [],
     }
+
+
+@router.get("/brief")
+def get_brief(
+    incident: str = Query(min_length=3, max_length=300), llm: bool = False
+) -> dict[str, Any]:
+    """The staff-readiness half of an MCI declaration (JSON). Offline by default."""
+    return asdict(readiness_brief(incident, use_llm=llm))
+
+
+@router.get("/brief/card", response_class=HTMLResponse)
+def get_brief_card(incident: str = Query(min_length=3, max_length=300)) -> str:
+    """Printable readiness brief — link target for the track board's MCI banner."""
+    return brief_html(readiness_brief(incident))
 
 
 class DoseRequest(BaseModel):

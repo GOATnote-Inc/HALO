@@ -93,6 +93,27 @@ def test_drill_grade_wrong_answer_count_is_422() -> None:
     assert client.post("/edu/drill/grade", json=body).status_code == 422
 
 
+def test_brief_endpoint_json() -> None:
+    r = client.get("/edu/brief", params={"incident": "factory explosion, 100+ inbound"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["profiles"] == ["blast"]
+    assert body["cards"][0]["module_id"] == "lateral_canthotomy"
+    assert body["routed_by_claude"] is None  # llm off by default
+
+
+def test_brief_card_is_html() -> None:
+    r = client.get("/edu/brief/card", params={"incident": "factory explosion"})
+    assert r.status_code == 200
+    assert r.headers["content-type"].startswith("text/html")
+    assert "Staff readiness" in r.text
+
+
+def test_brief_incident_length_bounds() -> None:
+    assert client.get("/edu/brief", params={"incident": "xy"}).status_code == 422
+    assert client.get("/edu/brief", params={"incident": "x" * 301}).status_code == 422
+
+
 def test_drill_grade_oversized_answer_is_422() -> None:
     body = {"module_id": "organophosphate", "answers": ["x" * 6000] + ["ok"] * 6}
     assert client.post("/edu/drill/grade", json=body).status_code == 422

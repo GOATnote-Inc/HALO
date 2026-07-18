@@ -26,7 +26,7 @@ from halo.edu.corpus import module_version
 from halo.edu.models import DecisionPoint, DrillResult, ProcedureModule, StepGrade
 
 
-def _phrase_hits(phrase: str, text: str) -> bool:
+def phrase_hits(phrase: str, text: str) -> bool:
     """Left word boundary always; right boundary for digit-final or short phrases.
 
     Long alpha stems may grow a suffix so "clamp" credits "clamped" and "decon"
@@ -44,7 +44,7 @@ def match_answer(accept: tuple[tuple[str, ...], ...], answer: str) -> tuple[str,
     """First accept group whose phrases ALL appear in the answer, else None."""
     normalized = " ".join(answer.lower().split())
     for group in accept:
-        if all(_phrase_hits(phrase, normalized) for phrase in group):
+        if all(phrase_hits(phrase, normalized) for phrase in group):
             return group
     return None
 

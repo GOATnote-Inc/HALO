@@ -13,6 +13,7 @@ from __future__ import annotations
 import html
 from pathlib import Path
 
+from halo.edu.brief import ReadinessBrief
 from halo.edu.corpus import load_corpus, module_version
 from halo.edu.diagrams import get_diagram
 from halo.edu.models import Med, ProcedureModule, ReviewStatus, Step
@@ -253,6 +254,63 @@ Research demo, not clinical guidance.</div>
 &nbsp;&#183;&nbsp; API: <code>GET /edu/find?q=...</code> &nbsp;&#183;&nbsp; no match returns
 this list, never a guess.</p></section>
 <footer>{_DISCLAIMER}</footer>
+</body></html>"""
+
+
+def brief_html(brief: ReadinessBrief) -> str:
+    """The staff-readiness half of an MCI declaration, as a printable page."""
+    stats_by_id = {s.module_id: s for s in brief.drill_stats}
+    rows = []
+    for card in brief.cards:
+        stat = stats_by_id.get(card.module_id)
+        if stat is None or stat.attempts == 0:
+            drilled = '<strong class="muted">never drilled</strong>'
+        else:
+            outcome = "passed" if stat.last_passed else "did not pass"
+            drilled = (
+                f"{stat.passes}/{stat.attempts} passed &#183; last "
+                f"{_e(str(stat.last_when))} ({outcome})"
+            )
+        rows.append(
+            "<tr>"
+            f'<td><a href="/edu/modules/{_e(card.module_id)}/card">'
+            f"<strong>{_e(card.name)}</strong></a>"
+            f'<div class="small muted">{_e(card.one_liner)}</div></td>'
+            f"<td>{_e(card.why)}</td>"
+            f'<td class="small">{_e(card.time_target)}</td>'
+            f'<td class="small">{drilled}</td>'
+            "</tr>"
+        )
+    cards_section = (
+        "<table><thead><tr><th>Card</th><th>Why for this incident</th><th>Clock</th>"
+        f"<th>Team drill history</th></tr></thead><tbody>{''.join(rows)}</tbody></table>"
+        if rows
+        else '<p class="muted">No matching readiness card — see the <a href="/edu/">full list</a>.</p>'
+    )
+    profiles = " ".join(f'<span class="chip">{_e(p)}</span>' for p in brief.profiles)
+    routed = (
+        f'<p class="small muted">Claude routing suggested: {_e(brief.routed_by_claude)} '
+        "(verify fit).</p>"
+        if brief.routed_by_claude
+        else ""
+    )
+    return f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Staff readiness — HALO</title><style>{_CSS}</style></head><body>
+<header><span class="chip">HALO &#183; readiness brief</span>{profiles}
+<h1>Staff readiness for: {_e(brief.incident)}</h1>
+<p class="muted">The surge plan clears the beds — this page readies the hands.
+<a href="/">Back to the track board</a>.</p></header>
+<div class="banner"><strong>ALL CONTENT DRAFT — PENDING PHYSICIAN REVIEW.</strong>
+Research demo, not clinical guidance.</div>
+<section><h2>Set up before the first arrival</h2>{_list(brief.prep_now, cls="check")}</section>
+<section><h2>Cards this incident may need</h2>{cards_section}{routed}
+<p class="small muted">Drill any card in ~5 minutes:
+<code>python -m halo.edu.demo drill &lt;card&gt; --interactive</code> — completions land in the
+verified CME ledger shown here.</p></section>
+<section><h2>Not covered by a HALO card (know your binder)</h2>{_list(brief.gaps)}</section>
+<footer>{_DISCLAIMER}<br>{_e(brief.ledger_note)}</footer>
 </body></html>"""
 
 

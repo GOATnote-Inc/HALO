@@ -80,6 +80,22 @@ def append_record(
     return record
 
 
+def read_verified(path: Path) -> tuple[list[dict[str, Any]], str]:
+    """All records IF the chain verifies, plus a human-readable ledger note.
+
+    Fail-closed: a tampered ledger returns NO records and a loud note — stats
+    computed from an edited ledger would be readiness theater.
+    """
+    if not path.exists():
+        return [], "no drill records yet"
+    try:
+        count = verify_chain(path)
+    except ValueError as exc:
+        return [], f"LEDGER FAILED VERIFICATION ({exc}) — records untrusted"
+    records = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+    return records, f"ledger verified ({count} record{'s' if count != 1 else ''})"
+
+
 def verify_chain(path: Path) -> int:
     """Verify the whole ledger. Returns the record count; raises ValueError on tamper."""
     if not path.exists():

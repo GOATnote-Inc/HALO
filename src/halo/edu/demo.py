@@ -155,6 +155,33 @@ def cmd_find(query: str, use_llm: bool) -> int:
     return 0
 
 
+def cmd_brief(incident: str) -> int:
+    from halo.edu.brief import readiness_brief
+
+    brief = readiness_brief(incident, ledger_path=LEDGER)
+    _rule(f"STAFF READINESS — {incident}")
+    print(f"  profiles: {', '.join(brief.profiles) or 'none'}")
+    print("\n  Set up before the first arrival:")
+    for line in brief.prep_now:
+        print(f"    [ ] {line}")
+    print("\n  Cards this incident may need:")
+    stats = {s.module_id: s for s in brief.drill_stats}
+    for card in brief.cards:
+        stat = stats.get(card.module_id)
+        drilled = (
+            f"{stat.passes}/{stat.attempts} passed, last {stat.last_when}"
+            if stat and stat.attempts
+            else "never drilled"
+        )
+        print(f"    {card.module_id:22s} {drilled}")
+        print(f"      why: {card.why}")
+    print("\n  Not covered by a HALO card:")
+    for gap in brief.gaps:
+        print(f"    - {gap}")
+    print(f"\n  {brief.ledger_note}")
+    return 0
+
+
 def cmd_dose(module_id: str, weight: float | None, age: float | None) -> int:
     _print_doses(module_id, PatientContext(weight_kg=weight, age_years=age))
     return 0
@@ -218,6 +245,8 @@ def main(argv: list[str] | None = None) -> int:
     p_drill.add_argument("--interactive", action="store_true")
     p_drill.add_argument("--trainee", default="anonymous")
     p_drill.add_argument("--llm", action="store_true", help="Claude adjudication of misses")
+    p_brief = sub.add_parser("brief", help="incident text -> staff readiness brief")
+    p_brief.add_argument("incident")
     sub.add_parser("cards", help="render HTML cards to out/edu/")
     sub.add_parser("json", help="dump corpus summaries as JSON")
     args = parser.parse_args(argv)
@@ -228,6 +257,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_dose(args.module_id, args.weight, args.age)
     if args.cmd == "drill":
         return cmd_drill(args.module_id, args.interactive, args.trainee, args.llm)
+    if args.cmd == "brief":
+        return cmd_brief(args.incident)
     if args.cmd == "cards":
         for path in write_cards(OUT_DIR):
             print(path)
