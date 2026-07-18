@@ -300,7 +300,7 @@
             <label for="idate">Incident date</label>
             <input type="date" id="idate" value="2026-07-18">
           </div>
-          <button class="run" id="run">Run triage + chart reconciliation</button>
+          <button class="run" id="run">Re-run triage (after editing the note)</button>
           <details class="phys">
             <summary>Physician secondary triage (not part of door triage)</summary>
             <p class="hint" style="margin-top:10px">Door triage is a nursing workflow and never sets
@@ -618,6 +618,9 @@ function openChart(a) {
   $("#status").textContent = "";
   $("#errbox").innerHTML = "";
   $("#chartwrap").scrollIntoView({ behavior: "smooth", block: "start" });
+  // Queue patients carry their note — triage starts the moment the chart opens.
+  // The Run button remains for edited notes and unlisted arrivals.
+  if (a) run();
 }
 $("#closechart").addEventListener("click", () => { $("#chartwrap").hidden = true; loadedArrival = null; });
 $("#unlistedbtn").addEventListener("click", () => openChart(null));
