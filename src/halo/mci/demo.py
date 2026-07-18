@@ -56,6 +56,8 @@ def run_handoff_scenarios() -> int:
         result = salt_triage(obs)
         print(f"TRIAGE:   {result.category.value.upper()}")
         print(f"          {result.rationale}")
+        for derivation in result.derivations:
+            print(f"          derived: {derivation}")
         for name, quote in evidence.items():
             print(f'          {name}: "{quote}"')
 
@@ -66,8 +68,13 @@ def run_handoff_scenarios() -> int:
             continue
         print(f"\nIDENTITY: {recon.status} ({recon.method} path) — human must adjudicate")
         for c in recon.candidates:
+            n_flags = len(care_flags(c.patient))
             print(f"  candidate: {c.patient.display_name}  match={c.score:.2f}")
             print(f"             {'; '.join(c.reasons)}")
+            print(
+                f"             anti-bloat: {c.patient.chart_resource_count} chart FHIR "
+                f"resources -> {n_flags} care-modifying facts"
+            )
             rationale = recon.agent_rationales.get(c.patient.patient_id)
             if rationale:
                 print(f"             agent corroboration: {rationale[:220]}")

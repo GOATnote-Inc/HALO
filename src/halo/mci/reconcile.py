@@ -195,9 +195,16 @@ def reconcile(
     status, candidates = match_candidates(cues, on_date=on_date, panel=panel)
     if status == "strong_candidate":
         return Reconciliation(status, "deterministic", cues, candidates, {}, ())
-    if cues == IdentityCues():
-        # No identity content at all — nothing for an agent to chase.
-        return Reconciliation("no_match", "deterministic", cues, (), {}, ())
+    # The agent loop costs tens of seconds — at the door that budget is precious.
+    # Chase identity only when there's something to chase: a name fragment, or at
+    # least a gender+age pair worth a demographic shortlist.
+    has_lead = (
+        cues.family_name is not None
+        or cues.given_name is not None
+        or (cues.gender is not None and cues.approximate_age is not None)
+    )
+    if not has_lead:
+        return Reconciliation(status, "deterministic", cues, candidates, {}, ())
 
     proposals: list[Proposal] = []
     tools = _make_tools(panel, on_date, proposals)

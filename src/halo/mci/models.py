@@ -29,6 +29,7 @@ class Observations:
     obeys_commands: bool | None = None
     peripheral_pulse: bool | None = None
     respiratory_distress: bool | None = None
+    respiratory_rate: int | None = None  # breaths/min — nurses chart numbers, not judgments
     major_hemorrhage_uncontrolled: bool | None = None
     minor_injuries_only: bool | None = None
     can_walk: bool | None = None  # SALT global sort; informs assessment order, not category
@@ -40,3 +41,4 @@ class TriageResult:
     rationale: str
     missing_fields: tuple[str, ...] = ()
     evidence: dict[str, str] = field(default_factory=dict)  # observation field -> note quote
+    derivations: tuple[str, ...] = ()  # screen answers derived from raw vitals (30-2-Can-Do)

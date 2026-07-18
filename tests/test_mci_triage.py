@@ -107,31 +107,93 @@ def test_not_breathing_is_dead() -> None:
     assert salt_triage(Observations(breathing=False)).category is TriageCategory.DEAD
 
 
+def test_rr_at_or_above_30_derives_failed_breathing_screen() -> None:
+    # Nurses chart numbers, not judgments: RR 38 with no distress judgment documented.
+    result = salt_triage(
+        Observations(
+            breathing=True,
+            obeys_commands=True,
+            peripheral_pulse=True,
+            respiratory_rate=38,
+            major_hemorrhage_uncontrolled=False,
+        )
+    )
+    assert result.category is TriageCategory.IMMEDIATE
+    assert any("RR 38" in d for d in result.derivations)
+
+
+def test_rr_below_30_derives_passed_breathing_screen() -> None:
+    result = salt_triage(
+        Observations(
+            breathing=True,
+            obeys_commands=True,
+            peripheral_pulse=True,
+            respiratory_rate=22,
+            major_hemorrhage_uncontrolled=False,
+            minor_injuries_only=False,
+        )
+    )
+    assert result.category is TriageCategory.DELAYED
+    assert any("RR 22" in d for d in result.derivations)
+
+
+def test_documented_judgment_beats_rate_derivation() -> None:
+    # If the distress judgment IS documented, the number never overrides it.
+    result = salt_triage(
+        Observations(
+            breathing=True,
+            obeys_commands=True,
+            peripheral_pulse=True,
+            respiratory_distress=True,  # documented judgment
+            respiratory_rate=18,  # reassuring number — must not override
+            major_hemorrhage_uncontrolled=False,
+        )
+    )
+    assert result.category is TriageCategory.IMMEDIATE
+    assert result.derivations == ()
+
+
+def test_no_rate_no_judgment_still_fails_closed() -> None:
+    result = salt_triage(
+        Observations(
+            breathing=True,
+            obeys_commands=True,
+            peripheral_pulse=True,
+            major_hemorrhage_uncontrolled=False,
+        )
+    )
+    assert result.category is TriageCategory.UNABLE_TO_TRIAGE
+    assert "no_respiratory_distress" in result.missing_fields
+
+
 def test_totality_over_full_input_space() -> None:
     """Every combination of tri-state inputs maps to a category (no exceptions)."""
     tri = (True, False, None)
+    rates = (None, 22, 36)
     count = 0
     for b in tri:
         for oc in tri:
             for pp in tri:
                 for rd in tri:
-                    for mh in tri:
-                        for mi in tri:
-                            for ls in tri:
-                                result = salt_triage(
-                                    Observations(
-                                        breathing=b,
-                                        obeys_commands=oc,
-                                        peripheral_pulse=pp,
-                                        respiratory_distress=rd,
-                                        major_hemorrhage_uncontrolled=mh,
-                                        minor_injuries_only=mi,
-                                    ),
-                                    likely_survivable=ls,
-                                )
-                                assert isinstance(result.category, TriageCategory)
-                                # EXPECTANT only ever with the explicit human flag.
-                                if result.category is TriageCategory.EXPECTANT:
-                                    assert ls is False
-                                count += 1
-    assert count == 3**7
+                    for rr in rates:
+                        for mh in tri:
+                            for mi in tri:
+                                for ls in tri:
+                                    result = salt_triage(
+                                        Observations(
+                                            breathing=b,
+                                            obeys_commands=oc,
+                                            peripheral_pulse=pp,
+                                            respiratory_distress=rd,
+                                            respiratory_rate=rr,
+                                            major_hemorrhage_uncontrolled=mh,
+                                            minor_injuries_only=mi,
+                                        ),
+                                        likely_survivable=ls,
+                                    )
+                                    assert isinstance(result.category, TriageCategory)
+                                    # EXPECTANT only ever with the explicit physician flag.
+                                    if result.category is TriageCategory.EXPECTANT:
+                                        assert ls is False
+                                    count += 1
+    assert count == 3**8

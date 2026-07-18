@@ -65,6 +65,25 @@ SCENARIOS: tuple[Scenario, ...] = (
         ),
     ),
     Scenario(
+        scenario_id="nurse-vitals-pattern",
+        title="Numbers, not judgments — 30-2-Can Do",
+        pattern=(
+            "Door triage is a nursing workflow: at even the largest trauma centers a handful "
+            "of physicians may be on shift when 100+ present. Nurses chart numbers (RR 38), "
+            "not judgments (respiratory distress) — START's 30-2-Can Do."
+        ),
+        expect=(
+            "The distress judgment is not documented, but the charted rate is. The "
+            "deterministic layer derives the screen answer at the START threshold (RR >= 30) "
+            "and reports the derivation openly: IMMEDIATE, from the nurse's own numbers."
+        ),
+        note=(
+            "Pt 31: adult male, ambulatory to cot then unable to continue. RR 38, radial "
+            "pulse present, follows commands, no external bleeding. No other assessment "
+            "documented yet."
+        ),
+    ),
+    Scenario(
         scenario_id="fail-closed-showcase",
         title="Sparse documentation under surge",
         pattern=(

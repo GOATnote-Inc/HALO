@@ -169,6 +169,23 @@
       "gold_category": "unable_to_triage"
     },
     {
+      "id": "mci-013",
+      "synthetic": true,
+      "note": "Pt 13: adult male, RR 38, radial pulse present, follows commands, no external bleeding. Nothing else documented.",
+      "gold_observations": {
+        "breathing": true,
+        "obeys_commands": true,
+        "peripheral_pulse": true,
+        "respiratory_distress": null,
+        "respiratory_rate": 38,
+        "major_hemorrhage_uncontrolled": false,
+        "minor_injuries_only": null,
+        "can_walk": null
+      },
+      "gold_category": "immediate",
+      "note_derivation": "Distress judgment undocumented; charted RR 38 >= 30 fails the breathing screen (START 30-2-Can Do)."
+    },
+    {
       "id": "mci-012",
       "synthetic": true,
       "note": "Pt 12: adult, no documentation of respirations. Follows commands, radial pulse present.",

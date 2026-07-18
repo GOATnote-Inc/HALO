@@ -31,6 +31,7 @@ class PanelPatient:
     medication_labels: tuple[str, ...]
     condition_labels: tuple[str, ...]
     visit_titles: tuple[str, ...]
+    chart_resource_count: int = 0  # total FHIR resources in the longitudinal record (bloat metric)
 
     @property
     def display_name(self) -> str:
@@ -92,6 +93,7 @@ def _load_panel_cached(resolved: str) -> tuple[PanelPatient, ...]:
                     medication_labels=tuple(summary.get("medication_labels", [])),
                     condition_labels=tuple(summary.get("condition_labels", [])),
                     visit_titles=(rec["metadata"]["visit_title"],),
+                    chart_resource_count=sum(summary.get("resource_counts", {}).values()),
                 )
             )
     return tuple(patients)

@@ -54,6 +54,27 @@ def test_no_identity_content_skips_agent(monkeypatch: pytest.MonkeyPatch) -> Non
     assert result.candidates == ()
 
 
+def test_gender_only_skips_agent_but_keeps_deterministic_result(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # "adult male" alone is not a lead worth tens of seconds of agent time at the door.
+    _stub_cues(monkeypatch, IdentityCues(gender="male"))
+
+    def boom(*_a: Any, **_k: Any) -> None:
+        raise AssertionError("agent must not run on demographic-only cues without age")
+
+    monkeypatch.setattr(llm, "agent_loop", boom)
+    result = rec.reconcile("note", on_date=ON_DATE)
+    assert result.method == "deterministic"
+
+
+def test_gender_plus_age_still_runs_agent(monkeypatch: pytest.MonkeyPatch) -> None:
+    _stub_cues(monkeypatch, IdentityCues(gender="male", approximate_age=80))
+    _stub_agent(monkeypatch, [])
+    result = rec.reconcile("note", on_date=ON_DATE)
+    assert result.method == "agent"
+
+
 def test_agent_proposals_are_verified_and_capped_at_possible(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

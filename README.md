@@ -28,6 +28,16 @@ Yet in most emergency departments today, MCI triage support is an opaque vendor 
 paper form, or one staff member who knows the disaster binder. HALO's position: this layer
 should be **open source, inspectable, evidence-linked, and free to every ED on earth**.
 
+**Built for the triage nurse.** Door triage in an MCI is a nursing workflow — even the largest
+trauma centers run a handful of physicians per shift, and when 100+ patients present, nurses
+sort at the door with START ("30-2-Can Do") and SALT while physicians staff the resuscitation
+bays. HALO meets that reality: one spoken-style note per patient, numbers over judgments
+(a charted RR ≥ 30 deterministically fails the breathing screen, and the derivation is
+reported), and expectant designation existing **only** as a physician decision at secondary
+triage. The full workflow map: [docs/WORKFLOW.md](docs/WORKFLOW.md). The Epic/FHIR
+incorporation path (SMART on FHIR launch, alias-record write-back, CDS Hooks flags, and the
+chart-bloat contract): [docs/INTEGRATION.md](docs/INTEGRATION.md).
+
 ## What it does
 
 Three capabilities, one pipeline, every decision fail-closed:
@@ -120,12 +130,14 @@ The three scripted scenarios mirror the published failure modes:
 | Path | What it is |
 |---|---|
 | `src/halo/llm.py` | The only Claude seam: model knob (`HALO_MODEL`, default `claude-opus-4-8`), adaptive thinking, structured outputs, bounded agent loop, fail-closed policy. |
-| `src/halo/mci/` | Module 1: `extract` (note → observations), `triage` (deterministic SALT), `panel` (FHIR panel, scoring, flag rules), `reconcile` (agentic identity), `scenarios`, `demo`. |
+| `src/halo/mci/` | Module 1: `extract` (note → observations), `triage` (deterministic SALT + 30-2-Can-Do derivation), `panel` (FHIR panel, scoring, flag rules), `reconcile` (agentic identity), `fhir_out` (FHIR R4 write-back bundle), `scenarios`, `demo`. |
 | `src/halo/app.py` | FastAPI: web UI at `/`, `POST /mci/handoff`, `POST /mci/triage/*`. |
 | `src/halo/static/` | The dependency-free demo UI. |
 | `synthetic-ambient-fhir-25/` | Abridge-provided fully synthetic FHIR R4 panel (25 patients). |
 | `tests/` | Offline tests + synthetic goldset — no network, no key. CI-gated. |
 | `docs/GOVERNANCE.md` | Medical, legal, and ethical posture; AI risk register; limitations. |
+| `docs/WORKFLOW.md` | Who actually does MCI triage (nurses) and where each surface sits. |
+| `docs/INTEGRATION.md` | Epic/FHIR incorporation: SMART launch, alias write-back, CDS Hooks, chart bloat. |
 | `CLAUDE.md` / `STATUS.md` | Working charter and live multi-terminal coordination board. |
 
 ## Working agreements

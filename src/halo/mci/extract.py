@@ -12,7 +12,7 @@ from typing import Any
 from halo import llm
 from halo.mci.models import Observations
 
-_FIELDS = (
+_BOOL_FIELDS = (
     "breathing",
     "obeys_commands",
     "peripheral_pulse",
@@ -21,20 +21,28 @@ _FIELDS = (
     "minor_injuries_only",
     "can_walk",
 )
+_INT_FIELDS = ("respiratory_rate",)
+_FIELDS = _BOOL_FIELDS + _INT_FIELDS
 
-_FIELD_SCHEMA: dict[str, Any] = {
-    "type": "object",
-    "properties": {
-        "value": {"anyOf": [{"type": "boolean"}, {"type": "null"}]},
-        "evidence": {"anyOf": [{"type": "string"}, {"type": "null"}]},
-    },
-    "required": ["value", "evidence"],
-    "additionalProperties": False,
-}
+
+def _field_schema(value_type: str) -> dict[str, Any]:
+    return {
+        "type": "object",
+        "properties": {
+            "value": {"anyOf": [{"type": value_type}, {"type": "null"}]},
+            "evidence": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+        },
+        "required": ["value", "evidence"],
+        "additionalProperties": False,
+    }
+
 
 EXTRACTION_SCHEMA: dict[str, Any] = {
     "type": "object",
-    "properties": {f: _FIELD_SCHEMA for f in _FIELDS},
+    "properties": {
+        **{f: _field_schema("boolean") for f in _BOOL_FIELDS},
+        **{f: _field_schema("integer") for f in _INT_FIELDS},
+    },
     "required": list(_FIELDS),
     "additionalProperties": False,
 }
@@ -55,6 +63,8 @@ Field meanings:
 - obeys_commands: follows commands or makes purposeful movements.
 - peripheral_pulse: palpable peripheral (e.g. radial) pulse.
 - respiratory_distress: labored breathing, severe dyspnea, or respiratory distress documented.
+- respiratory_rate: the charted respiratory rate in breaths per minute (an integer, e.g. \
+"RR 36" -> 36). Null if no numeric rate is charted — never estimate one from descriptions.
 - major_hemorrhage_uncontrolled: major/life-threatening bleeding that is NOT controlled. \
 If bleeding is documented as controlled (e.g. tourniquet effective), this is false.
 - minor_injuries_only: injuries are documented as minor only.
@@ -69,14 +79,18 @@ def extract_observations(note: str) -> tuple[Observations, dict[str, str]]:
         EXTRACTION_SCHEMA,
         system=SYSTEM,
     )
-    values: dict[str, bool | None] = {}
+    values: dict[str, bool | int | None] = {}
     evidence: dict[str, str] = {}
     for name in _FIELDS:
         entry = data.get(name)
         if not isinstance(entry, dict):
             raise llm.LLMFailure(f"extraction missing field: {name}")
         value = entry.get("value")
-        if value is not None and not isinstance(value, bool):
+        if name in _INT_FIELDS:
+            # bool is an int subclass in Python — reject it explicitly.
+            if value is not None and (isinstance(value, bool) or not isinstance(value, int)):
+                raise llm.LLMFailure(f"extraction field {name} is not integer/null")
+        elif value is not None and not isinstance(value, bool):
             raise llm.LLMFailure(f"extraction field {name} is not boolean/null")
         values[name] = value
         quote = entry.get("evidence")

@@ -75,6 +75,26 @@ def test_non_boolean_value_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None
         extract_observations("note")
 
 
+def test_respiratory_rate_extracted_as_int(monkeypatch: pytest.MonkeyPatch) -> None:
+    _stub(monkeypatch, _payload(respiratory_rate={"value": 38, "evidence": "RR 38"}))
+    obs, evidence = extract_observations("note")
+    assert obs.respiratory_rate == 38
+    assert evidence["respiratory_rate"] == "RR 38"
+
+
+def test_non_integer_rate_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    _stub(monkeypatch, _payload(respiratory_rate={"value": "38", "evidence": "RR 38"}))
+    with pytest.raises(llm.LLMFailure):
+        extract_observations("note")
+
+
+def test_boolean_rate_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    # bool is an int subclass in Python — must still be rejected for an integer field.
+    _stub(monkeypatch, _payload(respiratory_rate={"value": True, "evidence": "x"}))
+    with pytest.raises(llm.LLMFailure):
+        extract_observations("note")
+
+
 def test_missing_field_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
     payload = _payload()
     del payload["breathing"]

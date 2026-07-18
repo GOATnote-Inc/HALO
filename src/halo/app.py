@@ -71,6 +71,7 @@ def _result_payload(
         "category": result.category.value,
         "rationale": result.rationale,
         "missing_fields": list(result.missing_fields),
+        "derivations": list(result.derivations),
         "observations": asdict(observations),
         "evidence": evidence,
         "synthetic_only": True,
@@ -99,7 +100,11 @@ def triage_observations(req: TriageObservationsRequest) -> dict[str, Any]:
 
 
 class HandoffRequest(BaseModel):
-    """Full MCI handoff: triage + chart reconciliation against the panel."""
+    """Full MCI handoff: triage + chart reconciliation against the panel.
+
+    ``likely_survivable`` is a physician secondary-triage decision — the nurse
+    door-triage flow never sets it.
+    """
 
     note: str = Field(min_length=1)
     incident_date: str = Field(default="2026-07-18", pattern=r"^\d{4}-\d{2}-\d{2}$")
@@ -108,6 +113,7 @@ class HandoffRequest(BaseModel):
 
 @app.post("/mci/handoff")
 def handoff(req: HandoffRequest) -> dict[str, Any]:
+    from halo.mci.fhir_out import triage_bundle
     from halo.mci.panel import care_flags
     from halo.mci.reconcile import reconcile
 
@@ -117,34 +123,46 @@ def handoff(req: HandoffRequest) -> dict[str, Any]:
     except LLMFailure as exc:
         raise HTTPException(status_code=502, detail=f"failed closed: {exc}") from exc
     triage = salt_triage(observations, likely_survivable=req.likely_survivable)
+
+    candidates = []
+    for c in recon.candidates:
+        flags = care_flags(c.patient)
+        candidates.append(
+            {
+                "patient_id": c.patient.patient_id,
+                "name": c.patient.display_name,
+                "gender": c.patient.gender,
+                "birth_date": c.patient.birth_date,
+                "match_score": round(c.score, 2),
+                "match_reasons": list(c.reasons),
+                "agent_rationale": recon.agent_rationales.get(c.patient.patient_id),
+                # Chart-bloat counter: the full record vs what actually changes care now.
+                "chart_resource_count": c.patient.chart_resource_count,
+                "care_flags_if_matched": [
+                    {
+                        "flag": f.flag_id,
+                        "severity": f.severity,
+                        "why": f.why,
+                        "provenance": list(f.provenance),
+                    }
+                    for f in flags
+                ],
+            }
+        )
+
     return {
         "triage": _result_payload(triage, observations, evidence),
         "identity": {
             "status": recon.status,  # never "confirmed" — human adjudicates
             "method": recon.method,
             "cues": recon.cues.__dict__,
-            "candidates": [
-                {
-                    "patient_id": c.patient.patient_id,
-                    "name": c.patient.display_name,
-                    "gender": c.patient.gender,
-                    "birth_date": c.patient.birth_date,
-                    "match_score": round(c.score, 2),
-                    "match_reasons": list(c.reasons),
-                    "agent_rationale": recon.agent_rationales.get(c.patient.patient_id),
-                    "care_flags_if_matched": [
-                        {
-                            "flag": f.flag_id,
-                            "severity": f.severity,
-                            "why": f.why,
-                            "provenance": list(f.provenance),
-                        }
-                        for f in care_flags(c.patient)
-                    ],
-                }
-                for c in recon.candidates
-            ],
+            "candidates": candidates,
             "agent_trail": list(recon.trail),
         },
+        # Write-back preview: one structured Observation on the MCI alias record.
+        # Candidate flags are intentionally NOT in the bundle — identity is unconfirmed.
+        "fhir": triage_bundle(
+            observations, triage, incident_date=req.incident_date, evidence=evidence
+        ),
         "synthetic_only": True,
     }

@@ -114,7 +114,7 @@
 <body>
 <header>
   <h1>HALO</h1>
-  <span class="sub">MCI Triage Support — Module 1</span>
+  <span class="sub">MCI Nurse Triage Support — Module 1</span>
   <div class="badges">
     <span class="badge warn">Synthetic data only</span>
     <span class="badge">Research demo — not a medical device</span>
@@ -124,27 +124,30 @@
 
 <main>
   <section class="card" aria-labelledby="in-h">
-    <h2 id="in-h">Field note</h2>
-    <p class="hint">Paste a free-text field/EMS note, or load a scripted scenario. Each scenario
-    mirrors a failure mode from published MCI after-action reports.</p>
+    <h2 id="in-h">Door triage note</h2>
+    <p class="hint">Speak or type what you see — 15 seconds, numbers beat judgments
+    ("RR 38, radial present, follows commands"). Or load a scripted scenario; each mirrors a
+    failure mode from published MCI after-action reports.</p>
     <div class="chips" id="chips" role="group" aria-label="Sample scenarios"></div>
-    <textarea id="note" aria-label="Field note" spellcheck="false"></textarea>
+    <textarea id="note" aria-label="Door triage note" spellcheck="false"
+      placeholder="e.g. Pt 12: male ~40s, RR 38, radial present, follows commands, bleeding controlled, name unknown"></textarea>
     <div class="row">
       <label for="idate">Incident date</label>
       <input type="date" id="idate" value="2026-07-18">
     </div>
-    <fieldset>
-      <legend>Human resource decision</legend>
-      <label><input type="radio" name="ls" value="null" checked>
-        No human decision recorded (default)</label>
-      <label><input type="radio" name="ls" value="true">
-        Clinician judges patient survivable with current resources</label>
-      <label><input type="radio" name="ls" value="false">
-        Clinician judges patient NOT survivable with current resources</label>
-      <p class="warn-note">EXPECTANT can only result from the explicit clinician decision above.
-      The software never makes that judgment on its own.</p>
-    </fieldset>
     <button class="run" id="run">Run triage + chart reconciliation</button>
+    <details>
+      <summary>Physician secondary triage (not part of door triage)</summary>
+      <p class="hint" style="margin-top:10px">Door triage is a nursing workflow and never sets
+      this. EXPECTANT exists only downstream, when a physician at secondary triage documents a
+      resource-based survivability decision — the software cannot make that judgment.</p>
+      <label style="display:block;font-size:13.5px;margin:4px 0">
+        <input type="radio" name="ls" value="null" checked> No physician decision recorded (door triage default)</label>
+      <label style="display:block;font-size:13.5px;margin:4px 0">
+        <input type="radio" name="ls" value="true"> Physician documented: survivable with current resources</label>
+      <label style="display:block;font-size:13.5px;margin:4px 0">
+        <input type="radio" name="ls" value="false"> Physician documented: NOT survivable with current resources</label>
+    </details>
     <div class="status" id="status" role="status"></div>
     <div id="errbox"></div>
   </section>
@@ -159,9 +162,12 @@
 </main>
 
 <footer>
-  Deterministic SALT triage over Claude-extracted observations; identity is never confirmed by
-  software; EXPECTANT requires a human decision. Evidence, regulatory posture, and AI risk
-  register: <a href="https://github.com/GOATnote-Inc/HALO/blob/main/docs/GOVERNANCE.md">docs/GOVERNANCE.md</a>.
+  Built for the triage nurse: deterministic SALT / 30-2-Can Do over Claude-extracted
+  observations. Identity is never confirmed by software; EXPECTANT exists only as a physician
+  decision at secondary triage. Evidence, workflow, EHR integration, and AI risk register:
+  <a href="https://github.com/GOATnote-Inc/HALO/blob/main/docs/GOVERNANCE.md">GOVERNANCE</a> ·
+  <a href="https://github.com/GOATnote-Inc/HALO/blob/main/docs/WORKFLOW.md">WORKFLOW</a> ·
+  <a href="https://github.com/GOATnote-Inc/HALO/blob/main/docs/INTEGRATION.md">INTEGRATION</a>.
   All data on this page is synthetic.
 </footer>
 
@@ -182,6 +188,7 @@ const CATEGORY_ACTION = {
 const FIELD_LABELS = {
   breathing: "Breathing", obeys_commands: "Obeys commands",
   peripheral_pulse: "Peripheral pulse", respiratory_distress: "Respiratory distress",
+  respiratory_rate: "Respiratory rate (breaths/min)",
   major_hemorrhage_uncontrolled: "Uncontrolled major hemorrhage",
   minor_injuries_only: "Minor injuries only", can_walk: "Ambulatory",
 };
@@ -206,8 +213,11 @@ async function loadScenarios() {
 }
 
 function obsRow(name, value, evidence) {
-  const cls = value === true ? "v-yes" : value === false ? "v-no" : "v-null";
-  const shown = value === true ? "Yes" : value === false ? "No" : "Not documented";
+  let cls, shown;
+  if (typeof value === "number") { cls = ""; shown = esc(value); }
+  else if (value === true) { cls = "v-yes"; shown = "Yes"; }
+  else if (value === false) { cls = "v-no"; shown = "No"; }
+  else { cls = "v-null"; shown = "Not documented"; }
   const ev = evidence ? `&ldquo;${esc(evidence)}&rdquo;` : "&mdash;";
   return `<tr><td>${esc(FIELD_LABELS[name] || name)}</td>
     <td class="${cls}">${shown}</td><td class="ev">${ev}</td></tr>`;
@@ -224,15 +234,22 @@ function flagBlock(f) {
 
 function candidateBlock(c, rationaleHtml) {
   const pct = Math.round(c.match_score * 100);
-  const flags = c.care_flags_if_matched.length
+  const nFlags = c.care_flags_if_matched.length;
+  const flags = nFlags
     ? c.care_flags_if_matched.map(flagBlock).join("")
     : `<p class="reasons">No care-modifier flags in this chart.</p>`;
+  const bloat = c.chart_resource_count
+    ? `<div class="reasons" style="margin-top:6px"><b>Anti-bloat:</b> chart holds
+       ${esc(c.chart_resource_count)} FHIR resources &rarr; ${nFlags} care-modifying
+       fact${nFlags === 1 ? "" : "s"} surfaced, each with provenance.</div>`
+    : "";
   return `<div class="cand">
     <div class="nm">${esc(c.name)} <span class="pill unconfirmed">Unconfirmed</span></div>
     <div class="demo">${esc(c.gender)} · DOB ${esc(c.birth_date)} · panel ID ${esc(c.patient_id.slice(0, 8))}&hellip;</div>
     <div class="scorebar" aria-hidden="true"><i style="width:${pct}%"></i></div>
     <div class="reasons">Deterministic match ${pct}% — ${c.match_reasons.map(esc).join("; ")}</div>
     ${rationaleHtml}
+    ${bloat}
     <h3 style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:12px 0 2px">
       Care-modifier flags if this match is confirmed</h3>
     ${flags}
@@ -244,6 +261,9 @@ function render(data) {
   const act = CATEGORY_ACTION[t.category] || "";
   const missing = t.missing_fields.length
     ? `<div class="missing">Not documented: ${t.missing_fields.map((m) => `<span>${esc(m)}</span>`).join("")}</div>`
+    : "";
+  const derived = (t.derivations || []).length
+    ? `<div class="missing">${t.derivations.map((d) => `Derived: ${esc(d)}`).join("<br>")}</div>`
     : "";
   const obsRows = Object.entries(t.observations)
     .map(([k, v]) => obsRow(k, v, t.evidence[k])).join("");
@@ -269,6 +289,7 @@ function render(data) {
       <span class="act">${esc(act)}</span>
       <div class="cat">${esc(t.category.replace(/_/g, " "))}</div>
       <div class="why">${esc(t.rationale)}</div>
+      ${derived}
       ${missing}
     </div>
     <h3 style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">
@@ -284,6 +305,11 @@ function render(data) {
     </div>
     ${candidates}
     ${trail}
+    <details><summary>FHIR R4 write-back preview (Observation on the MCI alias record)</summary>
+      <p class="hint" style="margin-top:8px">One structured Observation, no narrative bloat.
+      Candidate flags are deliberately excluded — identity is unconfirmed until a human merges
+      records through the EHR's identity-governance process.</p>
+      <pre>${esc(JSON.stringify(data.fhir, null, 2))}</pre></details>
     <details><summary>Raw handoff JSON</summary><pre>${esc(JSON.stringify(data, null, 2))}</pre></details>`;
 }
 
