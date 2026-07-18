@@ -1,0 +1,78 @@
+{
+  "synthetic": true,
+  "description": "Synthetic waiting-room check-ins at T+minutes after MCI declaration: quick-registration aliases for unknowns, partial identities for the panel patients who arrive with the incident, and the ordinary walk-ins who never stop coming.",
+  "arrivals": [
+    {
+      "id": "W01",
+      "name": "TRAUMA, ALPHA (unknown male)",
+      "mrn": "W-70001",
+      "arrived_min": 2,
+      "complaint": "Blast injury — self-transported, no EMS tag",
+      "source": "MCI — private vehicle",
+      "note": "Pt 31: adult male, ambulatory to cot then unable to continue. RR 38, radial pulse present, follows commands, no external bleeding. No other assessment documented yet."
+    },
+    {
+      "id": "W02",
+      "name": "WILKERSON?, LATOYIA (partial ID)",
+      "mrn": "W-70002",
+      "arrived_min": 3,
+      "complaint": "Head strike, elderly — daughter reports blood thinner",
+      "source": "MCI — bystander truck",
+      "note": "Pt 14: elderly female pulled from the collapsed section, brought in by a bystander's truck. States her name is Latoyia, last name sounded like 'Wilkerson' — daughter says she takes a blood thinner and a heart pill. Struck head on debris, GCS now improving, follows commands, breathing without distress, radial pulse present, scalp laceration bleeding controlled. Looks about 80."
+    },
+    {
+      "id": "W03",
+      "name": "TRAUMA, BRAVO (male ~80)",
+      "mrn": "W-70003",
+      "arrived_min": 4,
+      "complaint": "Confused elderly male, medical alert bracelet",
+      "source": "MCI — neighbor drop-off",
+      "note": "Pt 19: male, roughly 80, oriented x1, cannot state his own name reliably. Neighbor at the scene thought his name was something like 'Masikovich' or 'Majkovic'. Medical alert bracelet notes a blood thinner. Breathing, follows simple commands, radial pulse present, no respiratory distress, no external bleeding seen."
+    },
+    {
+      "id": "W04",
+      "name": "TRAUMA, CHARLIE (plant worker)",
+      "mrn": "W-70004",
+      "arrived_min": 5,
+      "complaint": "Chemical exposure — decon done at scene",
+      "source": "MCI — EMS",
+      "note": "Pt 41: worker from the plant floor, decon completed at scene. Pinpoint pupils, drooling, sweating heavily, muscle fasciculations. RR 34, radial pulse present, follows commands, no external bleeding. Name unknown."
+    },
+    {
+      "id": "W05",
+      "name": "TRAUMA, DELTA (facial trauma)",
+      "mrn": "W-70005",
+      "arrived_min": 6,
+      "complaint": "Debris strike to face, vision fading left eye",
+      "source": "MCI — walk-in",
+      "note": "Pt 44: adult male struck in the face by debris. Left eye proptotic with a rock-hard tense orbit, vision going dark in that eye. Breathing comfortably, follows commands, radial pulse present, facial bleeding controlled with pressure."
+    },
+    {
+      "id": "W06",
+      "name": "TRAUMA, ECHO (no assessment)",
+      "mrn": "W-70006",
+      "arrived_min": 7,
+      "complaint": "Dropped at door, crews pulled away",
+      "source": "MCI — EMS surge",
+      "note": "Pt 23: adult, breathing. Crews pulled to the next bay before any further assessment. No identifying information."
+    },
+    {
+      "id": "W07",
+      "name": "PORTER, DANIELLE",
+      "mrn": "W-70007",
+      "arrived_min": 4,
+      "complaint": "Twisted ankle at home — unrelated walk-in",
+      "source": "Walk-in (non-MCI)",
+      "note": "Walk-in during the MCI: adult female, inversion ankle injury at home this morning. Ambulatory with a limp, breathing comfortably, follows commands, radial pulse present, no bleeding. Minor injury only."
+    },
+    {
+      "id": "W08",
+      "name": "OKAFOR, SAMUEL",
+      "mrn": "W-70008",
+      "arrived_min": 6,
+      "complaint": "Chest tightness since this morning — walk-in",
+      "source": "Walk-in (non-MCI)",
+      "note": "Walk-in during the MCI: middle-aged male with intermittent chest tightness since breakfast, now resolved. Walking, talking in full sentences, breathing comfortably, follows commands, radial pulse strong, no bleeding. Injuries: none — medical complaint."
+    }
+  ]
+}

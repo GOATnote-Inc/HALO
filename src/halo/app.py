@@ -123,6 +123,20 @@ def _board_state() -> dict[str, Any]:
             out.append(row)
         return out
 
+    def arrival_view(a: Any) -> dict[str, Any]:
+        return {
+            "arrival_id": a.arrival_id,
+            "name": a.name,
+            "mrn": a.mrn,
+            "arrived_min": a.arrived_min,
+            "complaint": a.complaint,
+            "source": a.source,
+            "note": a.note,
+            "category": a.category,
+            "destination": a.destination,
+            "location": a.location,
+        }
+
     return {
         **BOARD.counts(),
         "assessed": BOARD.assessed,
@@ -130,6 +144,12 @@ def _board_state() -> dict[str, Any]:
         "beds": rows(LOC_BED),
         "chairs": rows(LOC_CHAIRS),
         "departed_entries": rows(LOC_DEPARTED),
+        "waiting": [arrival_view(a) for a in BOARD.arrivals.values() if a.destination == "waiting"],
+        "routed": [arrival_view(a) for a in BOARD.arrivals.values() if a.destination != "waiting"],
+        "bays": {
+            bay: (arrival_view(BOARD.arrivals[occ]) if occ else None)
+            for bay, occ in BOARD.bays.items()
+        },
         "activity": [e.text for e in BOARD.events][::-1],
         "synthetic_only": True,
     }
@@ -165,6 +185,53 @@ def board_action(req: BoardActionRequest) -> dict[str, Any]:
     except BoardError as exc:
         raise HTTPException(status_code=exc.status, detail=exc.detail) from exc
     return _board_state()
+
+
+class WaitingTriageRequest(BaseModel):
+    arrival_id: str = Field(min_length=1)
+    category: str = Field(min_length=1)
+
+
+@app.post("/mci/waiting/triage")
+def waiting_triage(req: WaitingTriageRequest) -> dict[str, Any]:
+    """Record the SALT category for a waiting-room arrival (door triage result)."""
+    from halo.mci.board import BOARD, BoardError
+
+    try:
+        BOARD.waiting_triage(req.arrival_id, req.category)
+    except BoardError as exc:
+        raise HTTPException(status_code=exc.status, detail=exc.detail) from exc
+    return _board_state()
+
+
+class WaitingRouteRequest(BaseModel):
+    arrival_id: str = Field(min_length=1)
+    destination: str = Field(min_length=1)
+
+
+@app.post("/mci/waiting/route")
+def waiting_route(req: WaitingRouteRequest) -> dict[str, Any]:
+    """Route a triaged arrival: resus/trauma bay, ED bed, stay waiting, etc."""
+    from halo.mci.board import BOARD, BoardError
+
+    try:
+        BOARD.waiting_route(req.arrival_id, req.destination)
+    except BoardError as exc:
+        raise HTTPException(status_code=exc.status, detail=exc.detail) from exc
+    return _board_state()
+
+
+@app.post("/mci/compliance")
+def compliance() -> dict[str, Any]:
+    """Legal/compliance agent: audits the live board against EMTALA/crisis-standards
+    rules. Agent proposes; every finding is verified against the actual audit log."""
+    from halo.llm import LLMFailure
+    from halo.mci.compliance import run_compliance_review
+
+    try:
+        return run_compliance_review()
+    except LLMFailure as exc:
+        raise HTTPException(status_code=502, detail=f"failed closed: {exc}") from exc
 
 
 @app.post("/mci/board/undo")

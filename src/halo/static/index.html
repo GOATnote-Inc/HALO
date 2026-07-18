@@ -73,6 +73,30 @@
         text-decoration:none;margin:4px 6px 0 0}
   .eduq-inline:hover{background:#C98A0B;color:#fff}
   .mrn{font-family:var(--mono);color:var(--muted)}
+  .wrwrap{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:18px}
+  .wrhead{display:flex;gap:14px;align-items:baseline;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .wrhead h2{margin:0;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .wrhead .bays{font:12px var(--mono);color:var(--muted)}
+  .wrhead .bays b{color:var(--ink)}
+  table.wr{width:100%;border-collapse:collapse;font-size:12.5px}
+  .wr td{padding:7px 12px;border-bottom:1px solid #E8EBF0;vertical-align:middle}
+  .wr .cat-none{color:var(--escalate);font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+  .catchip{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+           border-radius:5px;padding:4px 8px;color:#fff}
+  .cat-immediate{background:var(--immediate)} .cat-delayed{background:var(--delayed-bg);color:var(--delayed-ink)}
+  .cat-minimal{background:var(--minimal)} .cat-expectant{background:var(--expectant)}
+  .cat-dead{background:var(--dead)} .cat-unable_to_triage{background:var(--escalate)}
+  .routedline{padding:8px 16px;font:12px var(--mono);color:var(--muted);border-top:1px solid var(--line)}
+  .lawwrap{margin-top:14px}
+  .lawbtn{background:var(--board);color:#fff;border:0;border-radius:8px;padding:11px 18px;
+          font-size:14px;font-weight:700;cursor:pointer}
+  .lawbtn:disabled{opacity:.55;cursor:wait}
+  .finding{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:8px 0;background:var(--card)}
+  .finding .st{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+               border-radius:5px;padding:3px 8px;color:#fff;margin-right:8px}
+  .st-pass{background:var(--act-dc)} .st-monitor{background:var(--act-hold)} .st-flag{background:var(--immediate)}
+  .finding .ev{font:11.5px var(--mono);color:var(--muted);margin:6px 0;border-left:3px solid var(--line);padding-left:8px}
+  .finding .basis{font-size:11px;color:var(--muted);font-style:italic}
 
   main{max-width:1360px;margin:0 auto;padding:18px 20px 40px}
   [hidden]{display:none !important}
@@ -265,6 +289,15 @@
       <div id="departed"></div></details>
     <h3 class="sec">Board activity (audit trail)</h3>
     <ol class="trail activity" id="activity"><li class="placeholder-li">No actions yet.</li></ol>
+    <div class="lawwrap">
+      <h3 class="sec">Legal review — compliance agent</h3>
+      <p class="hint">A second Claude agent audits the live audit trail against EMTALA /
+      crisis-standards rules. The agent proposes; every finding is verified against the real
+      log — fabricated evidence is dropped and counted. Takes ~30-60 s.</p>
+      <button class="lawbtn" id="lawbtn">Run compliance review</button>
+      <span class="status" id="lawstatus"></span>
+      <div id="lawout"></div>
+    </div>
   </section>
 
   <section id="tab-edu" role="tabpanel" aria-labelledby="tabbtn-edu" hidden>
@@ -283,6 +316,14 @@
   </section>
 
   <section id="tab-door" role="tabpanel" aria-labelledby="tabbtn-door" hidden>
+    <div class="wrwrap">
+      <div class="wrhead">
+        <h2>Waiting room — checked in (<span id="wr-n">0</span>)</h2>
+        <span class="bays" id="baysline"></span>
+      </div>
+      <table class="wr" aria-label="Waiting room"><tbody id="wr"></tbody></table>
+      <div class="routedline" id="routedline" hidden></div>
+    </div>
     <div class="door">
       <section class="card" aria-labelledby="in-h">
         <h2 id="in-h">Door triage note</h2>
@@ -428,7 +469,9 @@ function bedRow(r, i) {
 function renderState(s) {
   boardState = s;
   tiles(s);
-  $("#board").innerHTML = s.beds.map(bedRow).join("");
+  const arrivalBedRows = (s.routed || []).filter((a) => a.destination === "bed").map(arrivalRow);
+  $("#board").innerHTML = s.beds.map(bedRow).join("") + arrivalBedRows.join("");
+  renderWaiting(s);
   // Chairs area — patients stay on the board, bed freed.
   $("#chairs-n").textContent = s.in_chairs;
   $("#chairs").innerHTML = s.chairs.length
@@ -524,6 +567,124 @@ const boardAction = (bed, action) =>
 $("#surgebtn").addEventListener("click", runSurge);
 $("#undobtn").addEventListener("click", () => boardFetch("/mci/board/undo", { method: "POST" }));
 $("#resetbtn").addEventListener("click", () => boardFetch("/mci/board/reset", { method: "POST" }));
+
+/* ---------- waiting room ---------- */
+const ROUTE_OPTIONS = {
+  immediate: ["resus", "trauma", "bed"],
+  unable_to_triage: ["resus", "trauma", "bed"],
+  delayed: ["bed", "waiting"],
+  minimal: ["waiting", "discharged"],
+  expectant: ["comfort"],
+  dead: ["morgue"],
+};
+const ROUTE_LABEL = {
+  resus: "To resus bay", trauma: "To trauma bay", bed: "To ED bed",
+  waiting: "Stay waiting", discharged: "Discharge", comfort: "Comfort care", morgue: "Morgue",
+};
+let loadedArrival = null;
+
+function catChip(c) {
+  return c
+    ? `<span class="catchip cat-${esc(c)}">${esc(c.replace(/_/g, " "))}</span>`
+    : `<span class="cat-none">Awaiting triage</span>`;
+}
+function renderWaiting(s) {
+  const wr = $("#wr");
+  if (!wr) return;
+  $("#wr-n").textContent = s.waiting.length;
+  const bays = Object.entries(s.bays);
+  const resus = bays.filter(([b]) => b.startsWith("RESUS"));
+  const trauma = bays.filter(([b]) => b.startsWith("TRAUMA"));
+  $("#baysline").innerHTML =
+    `RESUS <b>${resus.filter(([, o]) => o).length}</b>/${resus.length} &#183; ` +
+    `TRAUMA <b>${trauma.filter(([, o]) => o).length}</b>/${trauma.length} &#183; ` +
+    `open ED beds <b>${s.open_beds}</b> &#183; waiting <b>${s.waiting.length}</b>`;
+  wr.innerHTML = s.waiting.length
+    ? s.waiting.map((a) => {
+        const actions = a.category
+          ? ROUTE_OPTIONS[a.category].filter((d) => d !== "waiting").map((d) =>
+              `<button class="exe" data-wid="${esc(a.arrival_id)}" data-dest="${esc(d)}">${esc(ROUTE_LABEL[d])}</button>`
+            ).join(" ")
+          : `<button class="exe" data-load="${esc(a.arrival_id)}">Triage</button>`;
+        return `<tr>
+          <td class="mrn">${esc(a.mrn)}</td>
+          <td class="pt">${esc(a.name)}</td>
+          <td class="mrn">T+${esc(a.arrived_min)}m</td>
+          <td>${esc(a.complaint)}<br><span class="reasons">${esc(a.source)}</span></td>
+          <td>${catChip(a.category)}</td>
+          <td>${actions}</td>
+        </tr>`;
+      }).join("")
+    : `<tr><td class="status" style="padding:12px">Waiting room clear.</td></tr>`;
+  for (const b of wr.querySelectorAll("button[data-load]"))
+    b.addEventListener("click", () => {
+      const a = s.waiting.find((x) => x.arrival_id === b.dataset.load);
+      loadedArrival = a.arrival_id;
+      $("#note").value = a.note;
+      $("#status").textContent = `Loaded ${a.mrn} ${a.name} — run triage, the result routes back to the waiting room.`;
+      $("#note").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  for (const b of wr.querySelectorAll("button[data-wid]"))
+    b.addEventListener("click", () =>
+      boardFetch("/mci/waiting/route", {
+        method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ arrival_id: b.dataset.wid, destination: b.dataset.dest }),
+      }));
+  const routed = s.routed || [];
+  const rl = $("#routedline");
+  rl.hidden = routed.length === 0;
+  rl.textContent = routed.length
+    ? "Routed: " + routed.map((a) =>
+        `${a.mrn} → ${a.location || a.destination}`).join("  ·  ")
+    : "";
+}
+function arrivalRow(a) {
+  return `<tr class="row">
+    <td class="bed">${esc(a.location)}</td>
+    <td class="pt">${esc(a.name)}</td>
+    <td class="mrn">${esc(a.mrn)}</td>
+    <td class="agesex">&mdash;</td>
+    <td>&mdash;</td>
+    <td>${esc(a.complaint)}</td>
+    <td class="status">MCI arrival from waiting room &mdash; workup starting</td>
+    <td><span class="need">&mdash;</span></td>
+    <td>${catChip(a.category)}</td>
+    <td></td>
+  </tr>`;
+}
+
+/* ---------- compliance (legal agent) ---------- */
+async function runCompliance() {
+  const btn = $("#lawbtn");
+  btn.disabled = true;
+  const t0 = Date.now();
+  const tick = setInterval(() => {
+    $("#lawstatus").textContent = ` Agent reading the audit trail (${Math.round((Date.now() - t0) / 1000)}s)...`;
+  }, 1000);
+  try {
+    const r = await fetch("/mci/compliance", { method: "POST" });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.detail || r.status);
+    $("#lawstatus").textContent = ` Done in ${Math.round((Date.now() - t0) / 1000)}s.`;
+    $("#lawout").innerHTML = `
+      <p style="font-size:13.5px;margin:12px 0 6px"><b>Summary:</b> ${esc(data.summary)}</p>
+      ${data.findings.map((f) => `<div class="finding">
+        <span class="st st-${esc(f.status)}">${esc(f.status)}</span><b>${esc(f.rule_id)}</b>
+        <div class="ev">${esc(f.evidence)}</div>
+        <div>${esc(f.recommendation)}</div>
+        <div class="basis">${esc(f.basis)}</div>
+      </div>`).join("")}
+      <p class="reasons">Verified against the live audit log — ${esc(data.dropped_unverified)} unverifiable
+      finding(s) dropped. ${esc(data.rules_total)} rules audited.</p>
+      <details class="out"><summary>Agent tool trail (${data.agent_trail.length} calls)</summary>
+        <ol class="trail">${data.agent_trail.map((s2) =>
+          `<li>${esc(s2.tool)}(${esc(JSON.stringify(s2.input)).slice(0, 160)})</li>`).join("")}</ol></details>`;
+  } catch (e) {
+    $("#lawstatus").textContent = "";
+    $("#lawout").innerHTML = `<div class="error">Failed closed: ${esc(e.message)}</div>`;
+  } finally { clearInterval(tick); btn.disabled = false; }
+}
+$("#lawbtn").addEventListener("click", runCompliance);
 
 /* ---------- door triage ---------- */
 const CATEGORY_ACTION = {
@@ -680,8 +841,17 @@ async function run() {
       const detail = (await r.json().catch(() => ({}))).detail || `HTTP ${r.status}`;
       throw new Error(detail);
     }
-    render(await r.json());
+    const data = await r.json();
+    render(data);
     $("#status").textContent = `Done in ${Math.round((Date.now() - t0) / 1000)}s.`;
+    if (loadedArrival) {
+      await boardFetch("/mci/waiting/triage", {
+        method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ arrival_id: loadedArrival, category: data.triage.category }),
+      });
+      $("#status").textContent += " Category recorded — route the patient from the waiting room above.";
+      loadedArrival = null;
+    }
   } catch (e) {
     $("#errbox").innerHTML = `<div class="error">Failed closed: ${esc(e.message)}.
       No category was assigned — assess the patient in person.</div>`;
@@ -718,6 +888,7 @@ loadScenarios().then(() => {
   }
   if (q.get("autorun") === "1") run();
   if (q.get("surge") === "1") runSurge();
+  if (q.get("law") === "1") runCompliance();
 });
 </script>
 </body>

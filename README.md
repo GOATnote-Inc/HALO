@@ -147,6 +147,7 @@ The three scripted scenarios mirror the published failure modes:
 | `src/halo/static/` | The dependency-free demo UI. |
 | `synthetic-ambient-fhir-25/` | Abridge-provided fully synthetic FHIR R4 panel (25 patients). |
 | `tests/` | Offline tests + synthetic goldset — no network, no key. CI-gated. |
+| `docs/AGENTS.md` | The agent inventory: medical (chart reconciliation) and legal (compliance) agents, plus the workflows deliberately kept simpler — mapped to Anthropic's agent doctrine. |
 | `docs/GOVERNANCE.md` | Medical, legal, and ethical posture; AI risk register; limitations. |
 | `docs/WORKFLOW.md` | Who actually does MCI triage (nurses) and where each surface sits. |
 | `docs/INTEGRATION.md` | Epic/FHIR incorporation: SMART launch, alias write-back, CDS Hooks, chart bloat. |
