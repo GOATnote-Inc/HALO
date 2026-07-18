@@ -32,11 +32,13 @@ def health() -> dict[str, str]:
 
 
 def _census_row(entry: Any, decision: Any | None = None) -> dict[str, Any]:
+    from halo.mci.edu_links import edu_links
     from halo.mci.panel import care_flags
 
     row: dict[str, Any] = {
         "bed": entry.bed,
         "patient_id": entry.patient.patient_id,
+        "mrn": entry.patient.mrn,
         "name": entry.patient.display_name,
         "gender": entry.patient.gender,
         "birth_date": entry.patient.birth_date,
@@ -47,6 +49,9 @@ def _census_row(entry: Any, decision: Any | None = None) -> dict[str, Any]:
         "care_flags": [
             {"flag": f.flag_id, "severity": f.severity, "why": f.why}
             for f in care_flags(entry.patient)
+        ],
+        "edu_links": [
+            link.__dict__ for link in edu_links(f"{entry.chief_complaint} {entry.status}")
         ],
     }
     if decision is not None:
@@ -94,6 +99,80 @@ def surge() -> dict[str, Any]:
         "rows": [_census_row(d.entry, d) for d in plan.decisions],
         "synthetic_only": True,
     }
+
+
+def _board_state() -> dict[str, Any]:
+    from halo.mci.board import BOARD, LOC_BED, LOC_CHAIRS, LOC_DEPARTED
+
+    def rows(location: str) -> list[dict[str, Any]]:
+        out = []
+        for ps in BOARD.patients.values():
+            if ps.location != location:
+                continue
+            row = _census_row(ps.entry, ps.decision)
+            row["pull_escalated"] = ps.pull_escalated
+            row["disposition"] = ps.disposition
+            out.append(row)
+        return out
+
+    return {
+        **BOARD.counts(),
+        "assessed": BOARD.assessed,
+        "plan_summary": BOARD.plan_summary,
+        "beds": rows(LOC_BED),
+        "chairs": rows(LOC_CHAIRS),
+        "departed_entries": rows(LOC_DEPARTED),
+        "activity": [e.text for e in BOARD.events][::-1],
+        "synthetic_only": True,
+    }
+
+
+@app.get("/mci/board")
+def board_view() -> dict[str, Any]:
+    """Live board state — census, chairs, departed, audit log."""
+    return _board_state()
+
+
+@app.post("/mci/board/assess")
+def board_assess() -> dict[str, Any]:
+    """Run the reverse-triage assessment on the live board (deterministic)."""
+    from halo.mci.board import BOARD
+
+    BOARD.assess()
+    return _board_state()
+
+
+class BoardActionRequest(BaseModel):
+    bed: str = Field(min_length=1)
+    action: str = Field(min_length=1)
+
+
+@app.post("/mci/board/action")
+def board_action(req: BoardActionRequest) -> dict[str, Any]:
+    """Execute one board transition. Refuses actions the classification forbids."""
+    from halo.mci.board import BOARD, BoardError
+
+    try:
+        BOARD.act(req.bed, req.action)
+    except BoardError as exc:
+        raise HTTPException(status_code=exc.status, detail=exc.detail) from exc
+    return _board_state()
+
+
+@app.post("/mci/board/undo")
+def board_undo() -> dict[str, Any]:
+    from halo.mci.board import BOARD
+
+    BOARD.undo()
+    return _board_state()
+
+
+@app.post("/mci/board/reset")
+def board_reset() -> dict[str, Any]:
+    from halo.mci.board import BOARD
+
+    BOARD.reset()
+    return _board_state()
 
 
 @app.get("/mci/scenarios")
@@ -197,6 +276,7 @@ def handoff(req: HandoffRequest) -> dict[str, Any]:
         candidates.append(
             {
                 "patient_id": c.patient.patient_id,
+                "mrn": c.patient.mrn,
                 "name": c.patient.display_name,
                 "gender": c.patient.gender,
                 "birth_date": c.patient.birth_date,
@@ -217,8 +297,12 @@ def handoff(req: HandoffRequest) -> dict[str, Any]:
             }
         )
 
+    from halo.mci.edu_links import edu_links
+
     return {
         "triage": _result_payload(triage, observations, evidence),
+        # Just-in-time readiness: procedure indicated in the note -> link staff to the card.
+        "edu_links": [link.__dict__ for link in edu_links(req.note)],
         "identity": {
             "status": recon.status,  # never "confirmed" — human adjudicates
             "method": recon.method,

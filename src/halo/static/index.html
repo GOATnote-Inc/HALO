@@ -51,6 +51,28 @@
   .mci button.surge-run{background:#fff;color:var(--board);border:0;border-radius:6px;
        padding:10px 18px;font-weight:700;font-size:14px;cursor:pointer}
   .mci button.surge-run:disabled{opacity:.55;cursor:wait}
+  .mci .ghost{background:none;color:#9FB0C7;border:1px solid var(--board-line);
+       border-radius:6px;padding:9px 14px;font-size:13px;cursor:pointer}
+  .mci .ghost:hover{color:#fff;border-color:#9FB0C7}
+  .eduq{color:#E4B04A;border:1px solid #E4B04A;border-radius:999px;padding:4px 11px;
+        font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap}
+  .eduq:hover{background:#E4B04A;color:var(--board)}
+  .boardmsg{border:1px solid var(--act-hold);border-left-width:4px;background:#FFFBF3;
+        color:#7A3E06;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13.5px}
+  .exe{border:1px solid var(--line);background:#fff;border-radius:6px;padding:6px 10px;
+       font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;color:var(--ink)}
+  .exe:hover{border-color:var(--accent);color:var(--accent)}
+  .exe:disabled{opacity:.5;cursor:default}
+  .exe.pulled{border-color:var(--act-admit);color:var(--act-admit)}
+  .activity li{font:12px/1.8 var(--mono);color:var(--muted);list-style:none}
+  .activity{padding-left:0;background:var(--card);border:1px solid var(--line);
+            border-radius:10px;padding:12px 16px;max-height:220px;overflow-y:auto}
+  .placeholder-li{color:var(--muted);font-style:italic}
+  .eduq-inline{display:inline-block;color:#8A5A00;border:1.5px solid #C98A0B;background:#FFF7E6;
+        border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;
+        text-decoration:none;margin:4px 6px 0 0}
+  .eduq-inline:hover{background:#C98A0B;color:#fff}
+  .mrn{font-family:var(--mono);color:var(--muted)}
 
   main{max-width:1360px;margin:0 auto;padding:18px 20px 40px}
   [hidden]{display:none !important}
@@ -195,6 +217,7 @@
   <nav class="tabs" role="tablist" aria-label="Module views">
     <button class="tab" id="tabbtn-board" role="tab" aria-selected="true" aria-controls="tab-board">Track board</button>
     <button class="tab" id="tabbtn-door" role="tab" aria-selected="false" aria-controls="tab-door">Door triage</button>
+    <button class="tab" id="tabbtn-edu" role="tab" aria-selected="false" aria-controls="tab-edu">Staff readiness</button>
   </nav>
   <div class="badges">
     <span class="badge syn">Synthetic data</span>
@@ -206,7 +229,11 @@
   <span class="declared banner-pulse">MCI declared</span>
   <span class="event">Factory explosion, 2.1 mi — EMS estimates <b>100+</b> inbound ·
     first arrivals <b>~12 min</b></span>
+  <a class="eduq" href="/edu/modules/organophosphate/card" target="_blank"
+     title="Chemical incident readiness — organophosphate card">?&nbsp;Organophosphate card</a>
   <span class="spacer"></span>
+  <button class="ghost" id="undobtn" title="Undo the last board action">Undo</button>
+  <button class="ghost" id="resetbtn" title="Restore the declared-moment census">Reset board</button>
   <button class="surge-run" id="surgebtn">Run surge assessment</button>
 </div>
 
@@ -214,19 +241,41 @@
   <section id="tab-board" role="tabpanel" aria-labelledby="tabbtn-board">
     <div class="tiles" id="tiles"></div>
     <div class="plan" id="plan" hidden></div>
+    <div class="boardmsg" id="boardmsg" role="alert" hidden></div>
     <div class="boardwrap">
       <table class="tb" aria-label="ED track board">
         <thead><tr>
-          <th>Bed</th><th>Patient</th><th>Age/Sex</th><th>ESI</th><th>Complaint</th>
-          <th>Status</th><th>Needs</th><th>Surge action</th>
+          <th>Bed</th><th>Patient</th><th>MRN</th><th>Age/Sex</th><th>ESI</th><th>Complaint</th>
+          <th>Status</th><th>Needs</th><th>Surge action</th><th>Execute</th>
         </tr></thead>
         <tbody id="board"></tbody>
       </table>
       <div class="boardfoot">Reverse triage of the existing census (Kelen et al., Lancet 2006).
       Deterministic rule table — no model call; the board sorts in milliseconds. Undetermined
-      patients HOLD: never move anyone on missing data. Row click shows rationale, required
-      steps, and chart flags.</div>
+      patients HOLD: never move anyone on missing data. Actions are validated against the
+      classification — a HOLD bed refuses discharge; override is a bedside re-assessment.
+      Row click shows rationale, required steps, chart flags, and the full FHIR id.
+      MRN is derived deterministically from the dataset's FHIR Patient id (the source
+      resources carry no identifier field). Every transition lands in the activity log and
+      is undoable.</div>
     </div>
+    <h3 class="sec" id="chairs-h">Chairs — results waiting (<span id="chairs-n">0</span>)</h3>
+    <div class="boardwrap"><table class="tb" aria-labelledby="chairs-h"><tbody id="chairs"></tbody></table></div>
+    <details class="out" id="departed-wrap"><summary>Departed (<span id="departed-n">0</span>)</summary>
+      <div id="departed"></div></details>
+    <h3 class="sec">Board activity (audit trail)</h3>
+    <ol class="trail activity" id="activity"><li class="placeholder-li">No actions yet.</li></ol>
+  </section>
+
+  <section id="tab-edu" role="tabpanel" aria-labelledby="tabbtn-edu" hidden>
+    <div class="plan" style="border-left-color:var(--accent)">
+      <b>Staff readiness (CME)</b> — just-in-time procedure cards and drills for the
+      high-acuity, low-occurrence events this module exists for. Cards also surface
+      contextually: a "?" appears wherever a note or board entry indicates one of these
+      procedures. <a href="/edu/" target="_blank">Open full page</a>.
+    </div>
+    <iframe id="eduframe" src="/edu/" title="Staff readiness — HALO education module"
+      style="width:100%;height:1200px;border:1px solid var(--line);border-radius:10px;background:#fff"></iframe>
   </section>
 
   <section id="tab-door" role="tabpanel" aria-labelledby="tabbtn-door" hidden>
@@ -288,7 +337,7 @@ const esc = (x) => String(x ?? "").replace(/[&<>"']/g,
 
 /* ---------- tabs ---------- */
 function showTab(which) {
-  for (const t of ["board", "door"]) {
+  for (const t of ["board", "door", "edu"]) {
     $(`#tab-${t}`).hidden = t !== which;
     $(`#tabbtn-${t}`).setAttribute("aria-selected", String(t === which));
   }
@@ -296,15 +345,16 @@ function showTab(which) {
 }
 $("#tabbtn-board").addEventListener("click", () => showTab("board"));
 $("#tabbtn-door").addEventListener("click", () => showTab("door"));
+$("#tabbtn-edu").addEventListener("click", () => showTab("edu"));
 
-/* ---------- track board ---------- */
+/* ---------- track board (live, interactive) ---------- */
 const ACTION_LABEL = {
   discharge_now: "Discharge now",
   vertical_chairs: "Move to chairs",
   expedite_admit: "Expedite admission",
   hold_bed: "Hold bed",
 };
-let boardRows = [];
+let boardState = null;
 
 function ageOf(birthDate) {
   const b = new Date(birthDate), now = new Date("2026-07-18");
@@ -320,49 +370,109 @@ function needChips(f) {
   if (f.post_thrombolytic) chips.push('<span class="need hot">tPA</span>');
   return chips.join("") || '<span class="need">&mdash;</span>';
 }
-function tiles(data) {
+function eduChips(links, compact) {
+  return (links || []).map((l) =>
+    `<a class="eduq-inline" href="${esc(l.url)}" target="_blank"
+       title='Readiness card — matched "${esc(l.matched)}"'>?&nbsp;${esc(l.title)}</a>`
+  ).join(compact ? "" : " ");
+}
+function tiles(s) {
   const t = [
-    { n: data.occupied, l: "Beds occupied", cls: "" },
-    { n: data.open_beds, l: "Open now", cls: "" },
-    { n: data.freed_now ?? "—", l: "Freed by ED action", cls: "freed" },
-    { n: data.freed_by_admission_pull ?? "—", l: "Freed by inpatient pull", cls: "pull" },
-    { n: data.held ?? "—", l: "Hold — do not move", cls: "held" },
+    { n: s.occupied, l: "Beds occupied", cls: "" },
+    { n: s.open_beds, l: "Open beds", cls: "freed" },
+    { n: s.in_chairs, l: "In chairs", cls: "" },
+    { n: s.awaiting_pull, l: "Awaiting inpatient pull", cls: "pull" },
+    { n: s.departed, l: "Departed", cls: "" },
     { n: "100+", l: "Est. inbound", cls: "inbound" },
   ];
   $("#tiles").innerHTML = t.map((x) =>
     `<div class="tile ${x.cls}"><div class="n">${esc(x.n)}</div><div class="l">${esc(x.l)}</div></div>`).join("");
 }
-function renderBoard(rows) {
-  boardRows = rows;
-  $("#board").innerHTML = rows.map((r, i) => {
-    const a = r.surge?.action;
-    const chip = a
-      ? `<span class="act act-${esc(a)}">${esc(ACTION_LABEL[a] || a)}</span>`
-      : `<span class="act act-pending">awaiting assessment</span>`;
-    const sex = r.gender === "male" ? "M" : "F";
-    return `<tr class="row ${a ? "a-" + esc(a) : ""}" data-i="${i}" tabindex="0"
-      aria-expanded="false">
-      <td class="bed">${esc(r.bed)}</td>
-      <td class="pt">${esc(r.name)}</td>
-      <td class="agesex">${ageOf(r.birth_date)}${sex}</td>
-      <td><span class="esi esi-${r.esi}">${r.esi}</span></td>
-      <td>${esc(r.chief_complaint)}</td>
-      <td class="status">${esc(r.status)}</td>
-      <td>${needChips(r.features)}</td>
-      <td>${chip}</td>
-    </tr>`;
-  }).join("");
-  for (const tr of document.querySelectorAll("tr.row")) {
+function exeButton(r) {
+  if (!r.surge) return "";
+  const a = r.surge.action;
+  if (a === "discharge_now")
+    return `<button class="exe" data-bed="${esc(r.bed)}" data-act="discharge">Discharge</button>`;
+  if (a === "vertical_chairs")
+    return `<button class="exe" data-bed="${esc(r.bed)}" data-act="to_chairs">To chairs</button>`;
+  if (a === "expedite_admit")
+    return r.pull_escalated
+      ? `<button class="exe pulled" data-bed="${esc(r.bed)}" data-act="assign_bed">Bed assigned — transport</button>`
+      : `<button class="exe" data-bed="${esc(r.bed)}" data-act="escalate_pull">Escalate pull</button>`;
+  return `<button class="exe" data-bed="${esc(r.bed)}" data-act="reassess">Reassess</button>`;
+}
+function bedRow(r, i) {
+  const a = r.surge?.action;
+  const chip = a
+    ? `<span class="act act-${esc(a)}">${esc(ACTION_LABEL[a] || a)}</span>`
+    : `<span class="act act-pending">awaiting assessment</span>`;
+  const sex = r.gender === "male" ? "M" : "F";
+  return `<tr class="row ${a ? "a-" + esc(a) : ""}" data-i="${i}" tabindex="0"
+    aria-expanded="false">
+    <td class="bed">${esc(r.bed)}</td>
+    <td class="pt">${esc(r.name)}</td>
+    <td class="mrn">${esc(r.mrn)}</td>
+    <td class="agesex">${ageOf(r.birth_date)}${sex}</td>
+    <td><span class="esi esi-${r.esi}">${r.esi}</span></td>
+    <td>${esc(r.chief_complaint)}${eduChips(r.edu_links, true)}</td>
+    <td class="status">${esc(r.status)}${r.pull_escalated ? " · <b>pull escalated</b>" : ""}</td>
+    <td>${needChips(r.features)}</td>
+    <td>${chip}</td>
+    <td>${exeButton(r)}</td>
+  </tr>`;
+}
+function renderState(s) {
+  boardState = s;
+  tiles(s);
+  $("#board").innerHTML = s.beds.map(bedRow).join("");
+  // Chairs area — patients stay on the board, bed freed.
+  $("#chairs-n").textContent = s.in_chairs;
+  $("#chairs").innerHTML = s.chairs.length
+    ? s.chairs.map((r) => `<tr>
+        <td class="bed">CHAIRS</td>
+        <td class="pt">${esc(r.name)}</td>
+        <td class="mrn">${esc(r.mrn)}</td>
+        <td class="agesex">${ageOf(r.birth_date)}${r.gender === "male" ? "M" : "F"}</td>
+        <td>${esc(r.chief_complaint)}</td>
+        <td class="status">${esc(r.status)}</td>
+        <td><button class="exe" data-bed="${esc(r.bed)}" data-act="discharge">Discharge from chairs</button></td>
+      </tr>`).join("")
+    : `<tr><td class="status" style="padding:12px">No patients in chairs.</td></tr>`;
+  // Departed roster.
+  $("#departed-n").textContent = s.departed;
+  $("#departed").innerHTML = s.departed_entries.length
+    ? "<ol class='trail'>" +
+      s.departed_entries.map((r) =>
+        `<li>${esc(r.bed)}  ${esc(r.name)}  MRN ${esc(r.mrn)} — ${esc(r.disposition)}</li>`).join("") +
+      "</ol>"
+    : "<p class='reasons' style='margin:8px 0 0'>No departures yet.</p>";
+  // Activity log.
+  $("#activity").innerHTML = s.activity.length
+    ? s.activity.map((t) => `<li>${esc(t)}</li>`).join("")
+    : `<li class="placeholder-li">No actions yet.</li>`;
+  // Plan sentence (proposal at assessment time).
+  const plan = $("#plan");
+  if (s.plan_summary) { plan.hidden = false; plan.innerHTML = `<b>Plan (proposal at assessment):</b> ${esc(s.plan_summary)}`; }
+  else plan.hidden = true;
+  $("#surgebtn").textContent = s.assessed ? "Re-run surge assessment" : "Run surge assessment";
+  // Wire row details + execute buttons.
+  for (const tr of document.querySelectorAll("#board tr.row")) {
     tr.addEventListener("click", () => toggleDetail(tr));
     tr.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDetail(tr); }
+    });
+  }
+  for (const b of document.querySelectorAll("button.exe")) {
+    b.addEventListener("click", (e) => {
+      e.stopPropagation();
+      boardAction(b.dataset.bed, b.dataset.act);
     });
   }
 }
 function toggleDetail(tr) {
   const open = tr.nextElementSibling?.classList.contains("detail");
   if (open) { tr.nextElementSibling.remove(); tr.setAttribute("aria-expanded", "false"); return; }
-  const r = boardRows[Number(tr.dataset.i)];
+  const r = boardState.beds[Number(tr.dataset.i)];
   const s = r.surge;
   const flags = r.care_flags.length
     ? r.care_flags.map((f) =>
@@ -370,36 +480,46 @@ function toggleDetail(tr) {
     : '<span class="reasons">none</span>';
   const detail = document.createElement("tr");
   detail.className = "detail";
-  detail.innerHTML = `<td colspan="8">
+  detail.innerHTML = `<td colspan="10">
     ${s ? `<div class="why"><b>${esc(ACTION_LABEL[s.action])}:</b> ${esc(s.rationale)}</div>
     <div class="steps">${s.required_steps.map((x) => "&#9633; " + esc(x)).join(" &nbsp; ")}</div>` :
     `<div class="why">Run the surge assessment to classify this bed.</div>`}
     <div class="fl">Chart flags (from longitudinal record): ${flags}</div>
+    <div class="steps" style="margin-top:6px">MRN ${esc(r.mrn)} · FHIR Patient/${esc(r.patient_id)} · DOB ${esc(r.birth_date)}</div>
+    ${r.edu_links?.length ? `<div style="margin-top:6px">${eduChips(r.edu_links)}</div>` : ""}
   </td>`;
   tr.after(detail);
   tr.setAttribute("aria-expanded", "true");
 }
-async function loadBoard() {
-  const r = await fetch("/mci/census");
-  const data = await r.json();
-  tiles(data);
-  renderBoard(data.rows);
+function showBoardMsg(text) {
+  const el = $("#boardmsg");
+  if (!text) { el.hidden = true; return; }
+  el.hidden = false;
+  el.textContent = text;
 }
-async function runSurge() {
+async function boardFetch(url, opts) {
+  const r = await fetch(url, opts);
+  const data = await r.json();
+  if (!r.ok) { showBoardMsg(`Refused: ${data.detail || r.status}`); return null; }
+  showBoardMsg("");
+  renderState(data);
+  return data;
+}
+const loadBoard = () => boardFetch("/mci/board");
+const runSurge = async () => {
   const btn = $("#surgebtn");
   btn.disabled = true;
-  try {
-    const r = await fetch("/mci/surge", { method: "POST" });
-    const data = await r.json();
-    tiles(data);
-    renderBoard(data.rows);
-    const plan = $("#plan");
-    plan.hidden = false;
-    plan.innerHTML = `<b>Plan:</b> ${esc(data.summary)}`;
-    btn.textContent = "Re-run surge assessment";
-  } finally { btn.disabled = false; }
-}
+  try { await boardFetch("/mci/board/assess", { method: "POST" }); }
+  finally { btn.disabled = false; }
+};
+const boardAction = (bed, action) =>
+  boardFetch("/mci/board/action", {
+    method: "POST", headers: { "content-type": "application/json" },
+    body: JSON.stringify({ bed, action }),
+  });
 $("#surgebtn").addEventListener("click", runSurge);
+$("#undobtn").addEventListener("click", () => boardFetch("/mci/board/undo", { method: "POST" }));
+$("#resetbtn").addEventListener("click", () => boardFetch("/mci/board/reset", { method: "POST" }));
 
 /* ---------- door triage ---------- */
 const CATEGORY_ACTION = {
@@ -466,7 +586,8 @@ function candidateBlock(c, rationaleHtml) {
     : "";
   return `<div class="cand">
     <div class="nm">${esc(c.name)} <span class="pill unconfirmed">Unconfirmed</span></div>
-    <div class="demo">${esc(c.gender)} · DOB ${esc(c.birth_date)} · panel ID ${esc(c.patient_id.slice(0, 8))}&hellip;</div>
+    <div class="demo">${esc(c.gender)} · DOB ${esc(c.birth_date)} · MRN ${esc(c.mrn)} ·
+      FHIR Patient/${esc(c.patient_id)}</div>
     <div class="scorebar" aria-hidden="true"><i style="width:${pct}%"></i></div>
     <div class="reasons">Deterministic match ${pct}% — ${c.match_reasons.map(esc).join("; ")}</div>
     ${rationaleHtml}
@@ -508,6 +629,8 @@ function render(data) {
       ${derived}
       ${missing}
     </div>
+    ${(data.edu_links || []).length ? `<div style="margin:-4px 0 12px">
+      <span class="reasons">Just-in-time readiness:</span> ${eduChips(data.edu_links)}</div>` : ""}
     <h3 class="sec">Extracted observations (verbatim evidence)</h3>
     <table class="obs"><thead><tr><th>Observation</th><th>Value</th><th>Evidence from note</th></tr></thead>
       <tbody>${obsRows}</tbody></table>
@@ -570,7 +693,7 @@ $("#run").addEventListener("click", run);
 loadBoard();
 loadScenarios().then(() => {
   const q = new URLSearchParams(location.search);
-  if (q.get("tab") === "door") showTab("door");
+  if (["door", "edu"].includes(q.get("tab"))) showTab(q.get("tab"));
   const sid = q.get("scenario");
   if (sid) {
     const s = scenarios.find((x) => x.scenario_id === sid);

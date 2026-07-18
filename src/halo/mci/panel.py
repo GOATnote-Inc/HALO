@@ -37,6 +37,16 @@ class PanelPatient:
     def display_name(self) -> str:
         return f"{' '.join(self.given_names)} {self.family_name}"
 
+    @property
+    def mrn(self) -> str:
+        """Demo MRN, derived deterministically from the dataset's FHIR Patient id.
+
+        The source Patient resources carry no ``identifier`` field, so there is
+        no MRN to import — deriving from the exact stable UUID keeps the number
+        traceable to the source record instead of fabricating one.
+        """
+        return self.patient_id.replace("-", "")[:8].upper()
+
     def age_on(self, iso_date: str) -> int:
         by, bm, bd = (int(x) for x in self.birth_date.split("-"))
         y, m, d = (int(x) for x in iso_date.split("-"))

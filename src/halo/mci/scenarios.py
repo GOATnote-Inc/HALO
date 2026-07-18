@@ -84,6 +84,43 @@ SCENARIOS: tuple[Scenario, ...] = (
         ),
     ),
     Scenario(
+        scenario_id="chemical-exposure-pattern",
+        title="Chemical exposure — pinpoint pupils, secretions",
+        pattern=(
+            "Industrial incidents mix trauma with toxidromes. Organophosphate exposure is the "
+            "canonical HALO event: rare, time-critical, antidote-driven — and most staff have "
+            "never treated one."
+        ),
+        expect=(
+            "RR 34 derives a failed breathing screen (IMMEDIATE), and the toxidrome language "
+            "(pinpoint pupils, drooling) surfaces a just-in-time readiness link to the "
+            "organophosphate card — the CME module wired into the clinical workflow."
+        ),
+        note=(
+            "Pt 41: worker from the plant floor, decon completed at scene. Pinpoint pupils, "
+            "drooling, sweating heavily, muscle fasciculations. RR 34, radial pulse present, "
+            "follows commands, no external bleeding. Name unknown."
+        ),
+    ),
+    Scenario(
+        scenario_id="blast-eye-pattern",
+        title="Blast facial trauma — tense proptotic orbit",
+        pattern=(
+            "Blast injuries produce orbital compartment syndrome; lateral canthotomy is "
+            "vision-saving, minutes matter, and it is exactly the procedure a general ED "
+            "performs perhaps once a career."
+        ),
+        expect=(
+            "Triage runs normally, and the rock-hard proptotic orbit surfaces a just-in-time "
+            "readiness link to the lateral canthotomy card next to the handoff."
+        ),
+        note=(
+            "Pt 44: adult male struck in the face by debris. Left eye proptotic with a "
+            "rock-hard tense orbit, vision going dark in that eye. Breathing comfortably, "
+            "follows commands, radial pulse present, facial bleeding controlled with pressure."
+        ),
+    ),
+    Scenario(
         scenario_id="fail-closed-showcase",
         title="Sparse documentation under surge",
         pattern=(

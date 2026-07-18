@@ -30,7 +30,7 @@ def test_scenarios_endpoint() -> None:
     r = client.get("/mci/scenarios")
     assert r.status_code == 200
     scenarios = r.json()["scenarios"]
-    assert len(scenarios) == 4
+    assert len(scenarios) == 6
     assert all(s["synthetic"] is True for s in scenarios)
     assert all(s["note"] and s["title"] and s["pattern"] for s in scenarios)
 
