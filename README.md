@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/halo-logo.png" alt="HALO — high acuity, low occurrence events in the ED" width="360">
+</p>
+
 # HALO
 
 [![ci](https://github.com/GOATnote-Inc/HALO/actions/workflows/ci.yml/badge.svg)](https://github.com/GOATnote-Inc/HALO/actions/workflows/ci.yml)
@@ -40,50 +44,49 @@ chart-bloat contract): [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
 ## What it does
 
-Four capabilities, one pipeline, every decision fail-closed:
+**One product surface: the ED board** — the track board every emergency department already
+lives in, extended for the hour it breaks. Triage is an area of the same board (patients
+T01+, quick-reg MRNs), rooms A01–C11 beneath it, chairs, departed, and the audit trail on
+one page. Everything below happens on that surface or one click from it.
 
-0. **Surge bed clearance (the track board)** — before the first casualty arrives, reverse
-   triage of the *existing* census (Kelen et al., *Lancet* 2006): a deterministic rule table
-   classifies every occupied bed as discharge now / move to chairs / expedite admission /
-   hold. The 23 synthetic panel patients populate the board; the demo plan frees 17 beds by
-   ED action alone and 4 more by inpatient pull (the NSTEMI on heparin and the post-tPA
-   stroke leave with their monitors), while anything undetermined holds — never move a
-   patient on missing data. No model call; the board sorts in milliseconds. Demoed as a
-   module inside the EHR surface EDs already live in: the track board.
+1. **Surge bed clearance (reverse triage)** — at declaration, a deterministic rule table
+   (Kelen et al., *Lancet* 2006) classifies every occupied room: discharge now / move to
+   chairs / expedite admission (two-phase inpatient pull) / hold. Missing data = don't move.
+   The demo census frees 17 beds by ED action alone, 4 more on pull — against 100+ inbound.
+   No model call; milliseconds.
+2. **One-click door triage** — click Triage on a queue patient: a chart opens, Claude
+   extracts SALT observations from the free-text note (verbatim evidence quotes, nulls for
+   the undocumented, RR≥30 derives the failed breathing screen per START "30-2-Can Do"),
+   and deterministic SALT code assigns the category. The result auto-records to the queue
+   row, which presents its legal routings: resus bay, trauma bay, or an ED bed — consuming
+   the capacity the surge plan just freed. Routing before triage refuses, citing EMTALA.
+   EXPECTANT exists only as a physician decision at secondary triage.
+3. **Medical agent — chart reconciliation** — for garbled identity ("last name sounded like
+   *Wilkerson*… takes a blood thinner"), a bounded Claude agent (SDK tool runner) searches
+   the FHIR panel with name variants and corroborates against chart content. It only
+   *proposes*: every candidate is re-verified deterministically, capped at "possible," and
+   labeled UNCONFIRMED — a human merges charts. Matched candidates surface care-modifier
+   flags with provenance (clopidogrel → occult-hemorrhage risk on a head strike).
+4. **Legal agent — compliance review** — a second Claude agent audits the board's live
+   audit trail against five cited rules (EMTALA 42 USC 1395dd screening; IOM Crisis
+   Standards 2012 documentation and accountability; identity-merge governance; fail-closed
+   overrides). Every finding must quote the real log verbatim — fabricated evidence is
+   dropped *and counted on screen*. In its first live run it caught a genuine logging gap.
+5. **Staff readiness (CME)** — just-in-time "?" links surface procedure cards in the
+   clinical flow (a rock-hard proptotic orbit in a triage note links the lateral-canthotomy
+   card), plus a **simulation lab**: five interactive 2D patient simulations with a live
+   monitor, landmark diagrams, and evidence-cited debriefs structured to physician /
+   nursing / EMS learning objectives — including the IO-site case where a tibial line in
+   penetrating abdominal trauma pours the resuscitation into the belly and the proximal
+   humerus saves the patient.
+6. **FHIR in, FHIR out** — the panel is standard FHIR R4; the triage result writes back as
+   one coded Observation on the MCI alias record (no narrative bloat, candidate data
+   deliberately excluded). Integration path: SMART on FHIR launch, CDS Hooks flags
+   ([docs/INTEGRATION.md](docs/INTEGRATION.md)).
 
-1. **Structured extraction** — Claude turns a free-text field/EMS note (or ambient-style
-   transcript) into SALT triage observations. Every value carries a verbatim evidence quote;
-   anything not documented is `null`. The model **never assigns a triage category**.
-2. **Deterministic SALT triage** — a published national-guideline algorithm (Lerner et al.,
-   *Disaster Med Public Health Prep* 2008) maps observations to a category in pure Python.
-   Missing critical data → `UNABLE_TO_TRIAGE` (assess in person now). Unknown injury extent
-   defaults *up*, never down. `EXPECTANT` requires an explicit human resource decision —
-   the algorithm cannot produce it autonomously.
-3. **Agentic chart reconciliation** — the Route 91 failure mode is unknown patients. Given
-   partial or garbled identity ("last name sounded like *Wilkerson*… takes a blood thinner"),
-   deterministic scoring resolves clean cases; when inconclusive, a bounded Claude agent loop
-   searches the hospital FHIR panel with name variants, corroborates candidates against chart
-   content, and *proposes* — every proposal is re-verified deterministically, demographics
-   alone can never rank "strong," and identity is **never "confirmed" by software**. Matched
-   candidates surface deterministic care-modifier flags with chart provenance: antithrombotic
-   therapy (occult hemorrhage risk), beta-blockade (masked tachycardia), pregnancy, documented
-   hospice goals of care.
-
-```
-free-text field note ──▶ Claude extraction ──▶ deterministic SALT ──▶ category + rationale
-        │                (quotes, nulls)        (published algorithm)   + missing fields
-        │
-        └──▶ cue extraction ──▶ deterministic match ──┬─ strong ─▶ candidates + care flags
-                                    (score, verify)   └─ unclear ─▶ agent loop (search
-                                                          variants, corroborate via chart,
-                                                          propose) ─▶ re-verify ─▶ candidates
-                                                          capped at "possible" + tool trail
-```
-
-The agentic design follows Anthropic's building-effective-agents doctrine: the simplest
-pattern that works everywhere it works (single structured calls, deterministic code), an
-agent loop only where open-ended exploration pays (garbled identity), tools with prescriptive
-descriptions, bounded iterations, and a full tool-call trail in every response.
+The agent design follows Anthropic's building-effective-agents doctrine — workflows where
+the path is known, agents only where open-ended exploration pays, and a deterministic
+verification layer over every agent output. Full inventory: [docs/AGENTS.md](docs/AGENTS.md).
 
 ## The safety case
 
@@ -101,8 +104,8 @@ descriptions, bounded iterations, and a full tool-call trail in every response.
 **Cardinal metric: under-triage false negatives = 0.** Current results on the synthetic
 goldset (N=12 notes, claude-opus-4-8, single run, method in `src/halo/mci/demo.py`):
 11/12 category agreement, **0 under-triage FNs**, 78/84 extraction fields correct; the sole
-disagreement was safe-direction over-triage. 56 offline tests (including a 3⁷ input-space
-totality sweep) gate CI.
+disagreement was safe-direction over-triage. 275 offline tests (including full input-space totality sweeps over the triage and
+surge rule tables) gate CI.
 
 ## Quickstart
 
