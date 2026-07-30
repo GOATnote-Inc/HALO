@@ -3,7 +3,10 @@ synthetic-ambient-fhir-25/index.html
 synthetic-ambient-fhir-25/synthetic-ambient-fhir-25.json
 
 # Build/demo artifacts
+.venv/
 __pycache__/
 *.egg-info/
+*.egg-link
 out/
 .DS_Store
+.coverage
