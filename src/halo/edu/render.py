@@ -16,7 +16,8 @@ from pathlib import Path
 from halo.edu.brief import ReadinessBrief
 from halo.edu.corpus import load_corpus, module_version
 from halo.edu.diagrams import get_diagram
-from halo.edu.models import Med, ProcedureModule, ReviewStatus, Step
+from halo.edu.models import Med, ProcedureModule, Reference, ReviewStatus, Step
+from halo.edu.provenance import PUBMED_URL
 
 _CSS = """
 :root { --ink:#1f2429; --muted:#5b6570; --line:#d7dde2; --panel:#f6f8fa;
@@ -79,6 +80,22 @@ _DISCLAIMER = (
 
 def _e(text: str) -> str:
     return html.escape(text, quote=True)
+
+
+def _reference_html(r: Reference) -> str:
+    """One citation line, with optional PMID link and OpenEM provenance tag.
+
+    Provenance is rendered as text-labeled markup (never color-alone): a
+    ``PMID <n>`` link when the source is indexed, and an ``OpenEM: <id>`` tag
+    when the citation traces back to the shared corpus.
+    """
+    parts = [f"<strong>{_e(r.label)}.</strong> {_e(r.cite)}"]
+    if r.pmid:
+        href = _e(PUBMED_URL.format(pmid=r.pmid))
+        parts.append(f'<a class="prov" href="{href}">PMID {_e(r.pmid)}</a>')
+    if r.openem_id:
+        parts.append(f'<span class="prov muted">OpenEM: {_e(r.openem_id)}</span>')
+    return " ".join(parts)
 
 
 def _draft_banner(module: ProcedureModule) -> str:
@@ -174,9 +191,7 @@ def card_html(module: ProcedureModule) -> str:
     version = module_version(module.id)
     minutes = module.time_target.minutes
     tile_number = f"{minutes} min" if minutes is not None else "NOW"
-    references = "".join(
-        f"<li><strong>{_e(r.label)}.</strong> {_e(r.cite)}</li>" for r in module.references
-    )
+    references = "".join(f"<li>{_reference_html(r)}</li>" for r in module.references)
     drill_note = ""
     if module.drill:
         drill_note = (

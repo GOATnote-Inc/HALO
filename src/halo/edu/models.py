@@ -122,10 +122,19 @@ class Drill:
 
 @dataclass(frozen=True)
 class Reference:
-    """A citation. ``label`` is the short display name, ``cite`` the full form."""
+    """A citation. ``label`` is the short display name, ``cite`` the full form.
+
+    ``pmid`` and ``openem_id`` are optional provenance links. A PMID makes the
+    source independently retrievable; ``openem_id`` traces the citation back to
+    a condition in the OpenEM corpus (the shared, partly physician-reviewed EM
+    knowledge layer this card was sourced from). Both default to ``None`` so
+    hand-authored references stay valid — provenance is enrichment, not a gate.
+    """
 
     label: str
     cite: str
+    pmid: str | None = None
+    openem_id: str | None = None
 
 
 @dataclass(frozen=True)
