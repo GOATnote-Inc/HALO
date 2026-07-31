@@ -70,7 +70,7 @@ def _llm_adjudicate(point: DecisionPoint, answer: str) -> bool:
     )
     try:
         result = llm.structured(prompt, schema)
-    except Exception:
+    except Exception:  # noqa: BLE001 — fail closed: any LLM/parse error must not grant credit
         return False
     return result.get("credit") is True
 

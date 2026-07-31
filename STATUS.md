@@ -121,3 +121,10 @@ you start. Set state to `done` (with the verify command's result) when you finis
   `/edu/brief/card?incident=<banner text>` — one anchor tag; also the door-triage view can
   call `POST /edu/dose` with weight/age for bedside antidote math. Dependency direction
   stays clean: edu imports nothing from mci.
+- 2026-07-30: Repo-wide ruff forward-compat pass (T3, cross-lane, authorized) — CI's unpinned
+  ruff drifted to 0.16.1 and flagged 19 findings in pre-existing code (mostly ISC004 implicit
+  string-concat + 2 BLE001 in fail-closed except-blocks) with no source change, reddening main.
+  Fixed all findings behavior-preservingly (paren-wrapped concats, `# noqa: BLE001` with a
+  fail-closed justification rather than narrowing the catch, `_evidence` unpack, list literal,
+  `datetime.UTC`) and pinned `ruff==0.16.1`. Touches `edu/*` + `mci/{panel,demo,triage,edu_links}`
+  — pure lint, no logic change; `make check` 291 passed. Lesson: pin linters in CI.

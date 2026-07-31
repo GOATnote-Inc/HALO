@@ -48,7 +48,7 @@ _RR_DISTRESS_THRESHOLD = 30
 
 
 def _screen_answers(obs: Observations) -> tuple[dict[str, bool | None], tuple[str, ...]]:
-    invert = lambda v: None if v is None else not v  # noqa: E731
+    invert = lambda v: None if v is None else not v
     derivations: list[str] = []
     no_distress = invert(obs.respiratory_distress)
     if no_distress is None and obs.respiratory_rate is not None:

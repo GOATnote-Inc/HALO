@@ -128,7 +128,7 @@ def main() -> int:
     for case in cases:
         gold_cat = TriageCategory(case["gold_category"])
         try:
-            obs, evidence = extract_observations(case["note"])
+            obs, _evidence = extract_observations(case["note"])
         except LLMFailure as exc:
             print(f"{case['id']}: EXTRACTION FAILED CLOSED ({exc}) -> unable_to_triage")
             escalations.append(case["id"])

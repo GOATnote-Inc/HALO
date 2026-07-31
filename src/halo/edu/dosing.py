@@ -44,8 +44,10 @@ def _pick_population(
     elif ctx.weight_kg is not None:
         population = "peds" if ctx.weight_kg < PEDS_WEIGHT_CUTOFF_KG else "adult"
         warnings = (
-            f"age unknown — {population} spec chosen by weight "
-            f"({_fmt(ctx.weight_kg)} kg vs {_fmt(PEDS_WEIGHT_CUTOFF_KG)} kg cutoff); verify",
+            (
+                f"age unknown — {population} spec chosen by weight "
+                f"({_fmt(ctx.weight_kg)} kg vs {_fmt(PEDS_WEIGHT_CUTOFF_KG)} kg cutoff); verify"
+            ),
         )
     else:
         return DoseResult(

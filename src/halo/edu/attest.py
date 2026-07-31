@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -40,7 +40,7 @@ def make_record(
     when_iso: str | None = None,
 ) -> dict[str, Any]:
     """Build one chained record from a drill result."""
-    when = when_iso or datetime.now(timezone.utc).isoformat(timespec="seconds")
+    when = when_iso or datetime.now(UTC).isoformat(timespec="seconds")
     record: dict[str, Any] = {
         "type": "halo.edu.cme",
         "trainee": trainee,

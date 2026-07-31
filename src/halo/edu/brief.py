@@ -89,8 +89,10 @@ _PROFILES: tuple[_Profile, ...] = (
         cards=(
             (
                 "organophosphate",
-                "Cholinergic casualties: decon before the doors, atropine to a dry chest, "
-                "2-PAM early — and pharmacy pooling starts now.",
+                (
+                    "Cholinergic casualties: decon before the doors, atropine to a dry chest, "
+                    "2-PAM early — and pharmacy pooling starts now."
+                ),
             ),
         ),
         gaps=(
@@ -104,13 +106,17 @@ _PROFILES: tuple[_Profile, ...] = (
         cards=(
             (
                 "lateral_canthotomy",
-                "Blast and facial trauma cause orbital compartment syndrome — proptosis + "
-                "falling vision is a bedside decompression, not a CT trip.",
+                (
+                    "Blast and facial trauma cause orbital compartment syndrome — proptosis + "
+                    "falling vision is a bedside decompression, not a CT trip."
+                ),
             ),
             (
                 "organophosphate",
-                "Industrial explosions can release cholinergic agents — miosis + secretions "
-                "+ wheeze in casualties means treat as nerve agent/OP until proven otherwise.",
+                (
+                    "Industrial explosions can release cholinergic agents — miosis + secretions "
+                    "+ wheeze in casualties means treat as nerve agent/OP until proven otherwise."
+                ),
             ),
         ),
         gaps=(

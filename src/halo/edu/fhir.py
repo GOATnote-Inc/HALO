@@ -97,7 +97,7 @@ def patient_context_from_bundle(
     bundle: dict[str, Any], *, on_date: date | None = None
 ) -> PatientContext:
     """Extract dosing context from a FHIR bundle. Missing data stays None."""
-    today = on_date or date.today()
+    today = on_date or date.today()  # noqa: DTZ011 — local calendar date; callers pass on_date for determinism
     patients = _resources(bundle, "Patient")
     patient = patients[0] if patients else {}
     observations = _resources(bundle, "Observation")

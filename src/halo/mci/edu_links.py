@@ -23,8 +23,10 @@ _RULES: tuple[tuple[str, str, str], ...] = (
     (
         "organophosphate",
         "Organophosphate poisoning",
-        r"organophosphate|nerve agent|pesticide|pinpoint pupils|sludge symptoms"
-        r"|excessive secretions|drooling|fasciculat",
+        (
+            r"organophosphate|nerve agent|pesticide|pinpoint pupils|sludge symptoms"
+            r"|excessive secretions|drooling|fasciculat"
+        ),
     ),
     (
         "perimortem_cesarean",

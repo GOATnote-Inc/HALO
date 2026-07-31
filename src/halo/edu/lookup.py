@@ -29,9 +29,55 @@ class Match:
 
 
 _STOPWORDS = frozenset(
-    "and the for with this that are was has had but not now out who how its all any "
-    "was were been being have does did can may your from into onto over under "
-    "after before during while when where what which there here they them then".split()
+    [
+        "and",
+        "the",
+        "for",
+        "with",
+        "this",
+        "that",
+        "are",
+        "was",
+        "has",
+        "had",
+        "but",
+        "not",
+        "now",
+        "out",
+        "who",
+        "how",
+        "its",
+        "all",
+        "any",
+        "was",
+        "were",
+        "been",
+        "being",
+        "have",
+        "does",
+        "did",
+        "can",
+        "may",
+        "your",
+        "from",
+        "into",
+        "onto",
+        "over",
+        "under",
+        "after",
+        "before",
+        "during",
+        "while",
+        "when",
+        "where",
+        "what",
+        "which",
+        "there",
+        "here",
+        "they",
+        "them",
+        "then",
+    ]
 )
 
 
@@ -100,7 +146,7 @@ def route_with_claude(query: str) -> str | None:
     )
     try:
         result = llm.structured(prompt, schema)
-    except Exception:
+    except Exception:  # noqa: BLE001 — fail closed: any LLM/parse error routes to no match
         return None
     module_id = result.get("module_id")
     return module_id if module_id in ids else None

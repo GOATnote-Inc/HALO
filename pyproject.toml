@@ -16,7 +16,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=8",
-    "ruff==0.15.22",  # pinned: unpinned ruff drifts and flags new rules in CI only
+    "ruff==0.16.1",  # pinned for reproducible lint; bump deliberately + re-run `make check`
     "mypy>=1.10",
     "httpx>=0.27",
 ]

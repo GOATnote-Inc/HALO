@@ -199,36 +199,46 @@ _MED_RULES: tuple[tuple[str, str, str, str], ...] = (
         r"clopidogrel|warfarin|apixaban|rivaroxaban|dabigatran|enoxaparin|heparin",
         "antithrombotic_therapy",
         "high",
-        "On antithrombotic therapy — occult hemorrhage risk; low threshold for "
-        "imaging and for upgrading triage after any significant mechanism.",
+        (
+            "On antithrombotic therapy — occult hemorrhage risk; low threshold for "
+            "imaging and for upgrading triage after any significant mechanism."
+        ),
     ),
     (
         r"metoprolol|atenolol|propranolol|carvedilol|bisoprolol",
         "beta_blockade",
         "high",
-        "Beta-blocked — tachycardic response to hemorrhage may be masked; do not "
-        "rely on heart rate to recognize shock.",
+        (
+            "Beta-blocked — tachycardic response to hemorrhage may be masked; do not "
+            "rely on heart rate to recognize shock."
+        ),
     ),
     (
         r"epinephrine .*auto-injector",
         "anaphylaxis_history",
         "moderate",
-        "Carries an epinephrine auto-injector — documented severe allergy; "
-        "screen exposures before medications are given.",
+        (
+            "Carries an epinephrine auto-injector — documented severe allergy; "
+            "screen exposures before medications are given."
+        ),
     ),
     (
         r"nitroglycerin",
         "coronary_disease",
         "moderate",
-        "On nitrate therapy — known coronary disease; physiologic stress of the "
-        "incident may precipitate ischemia.",
+        (
+            "On nitrate therapy — known coronary disease; physiologic stress of the "
+            "incident may precipitate ischemia."
+        ),
     ),
     (
         r"hydrocodone|tramadol|meperidine|oxycodone|morphine|fentanyl",
         "opioid_therapy",
         "moderate",
-        "Baseline opioid therapy — factor tolerance into analgesia dosing and "
-        "mental-status interpretation.",
+        (
+            "Baseline opioid therapy — factor tolerance into analgesia dosing and "
+            "mental-status interpretation."
+        ),
     ),
 )
 
@@ -237,8 +247,10 @@ _CONDITION_RULES: tuple[tuple[str, str, str, str], ...] = (
         r"normal pregnancy \(finding\)",
         "pregnancy",
         "high",
-        "Documented current pregnancy — left-lateral positioning, early OB "
-        "involvement, and fetal assessment; vitals interpretation differs.",
+        (
+            "Documented current pregnancy — left-lateral positioning, early OB "
+            "involvement, and fetal assessment; vitals interpretation differs."
+        ),
     ),
     (
         r"anemia \(disorder\)",
@@ -253,8 +265,10 @@ _VISIT_RULES: tuple[tuple[str, str, str, str], ...] = (
         r"hospice",
         "comfort_focused_goals",
         "high",
-        "Documented hospice enrollment — confirm goals of care before "
-        "resource-intensive interventions; align with recorded wishes.",
+        (
+            "Documented hospice enrollment — confirm goals of care before "
+            "resource-intensive interventions; align with recorded wishes."
+        ),
     ),
 )
 
