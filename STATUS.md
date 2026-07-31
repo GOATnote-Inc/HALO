@@ -26,7 +26,7 @@ it is the source of truth for who is working where.
 | one-ed-page | T1 | `src/halo/static/index.html`, `tests/test_app.py` | done | `make check` (275 passed); tabs collapsed to ED BOARD + STAFF READINESS; triage = top area of the board (T01-T08 + MRN) above ROOMS A01-C11; scenario chips removed (they ARE the queue patients); chart-style workspace w/ patient banner; Chrome-verified |
 | ecosystem | T3 | `src/halo/edu/models.py` (Reference only), `src/halo/edu/render.py` (references only), `src/halo/edu/provenance.py`, `src/halo/edu/drafting.py`, `src/halo/edu/receipts_export.py`, `docs/ECOSYSTEM.md`, `tests/test_edu_provenance.py`, `tests/test_edu_drafting.py`, `tests/test_edu_receipts_export.py`, `tests/fixtures/openem_condition.md` | done | `make check` green; OpenEM provenance backbone (Reference.pmid/openem_id + drafting skeleton that never fabricates clinical depth), receipts-compatible attestation export (hash primitive proven byte-identical), LostBench FN=0 documented as an eval seam — see `docs/ECOSYSTEM.md` |
 
-| coverage-analysis | T3 | `docs/TEST_COVERAGE.md`, `.gitignore` (venv/coverage lines), `pyproject.toml` (ruff cap) | done | `make check` (275 passed); pytest-cov branch run: 80% line / 77% branch; findings + prioritized proposals in `docs/TEST_COVERAGE.md` |
+| coverage-analysis | T4 | `docs/TEST_COVERAGE.md`, `.gitignore` (venv/coverage lines) | done | `make check` (291 passed post-rebase); pytest-cov branch run: 80% line / 78% combined; findings + prioritized proposals in `docs/TEST_COVERAGE.md` |
 
 Claim a lane: add a row with a short name, your terminal label (T1/T2/…), the exact files or
 directories you own, state `active`, and the command that proves your work. Push the claim before
@@ -109,13 +109,13 @@ you start. Set state to `done` (with the verify command's result) when you finis
   ledger detects edits/deletions of records but not deletion of the whole file (anchor the
   head hash externally); llm=true knobs are unauthenticated cost triggers — strip or gate
   before any exposed deployment. 219 passed.
-- 2026-07-30: ruff drift — 0.16.x expanded its default rule set; a fresh `make setup` now fails
-  `make lint` with 19 pre-existing findings on untouched code (12 ISC004, 2 BLE001, 1 each
-  DTZ011/RUF059/RUF100/SIM905/UP017). Capped `ruff<0.16` in pyproject (flows into CI, which
-  installs unpinned) so the gate stays meaningful; whoever un-caps should fix all 19 in the
-  same pass. Also gitignored `.venv/` + `.coverage`, and landed `docs/TEST_COVERAGE.md`
-  (80% line / 77% branch, N=275 tests; prioritized gaps incl. a confirmed `llm.structured`
-  bad-JSON failure-mode bug — raises JSONDecodeError, not LLMFailure).
+- 2026-07-30: coverage-analysis lane (T4) — gitignored `.venv/` + `.coverage` and landed
+  `docs/TEST_COVERAGE.md` (80% line / 77% branch, N=275 tests at analysis time; re-verified
+  post-rebase at 291 tests / 80% line; prioritized gaps incl. a confirmed `llm.structured`
+  bad-JSON failure-mode bug — raises JSONDecodeError, not LLMFailure, so callers catching
+  LLMFailure 500 instead of failing closed). T4 also hit the ruff-0.16 drift independently
+  and capped `ruff<0.16` as a band-aid; superseded during rebase by T3's repo-wide fix +
+  `ruff==0.16.1` pin (see 07-30 T3 entry below) — the cap never reached main.
 - 2026-07-18: MCI <-> EDU integration (T2, `edu-brief` lane) — the surge board readies the
   BEDS; `halo.edu` readies the HANDS. New `halo.edu.brief`: incident text -> deterministic
   event profiles (blast/chemical/obstetric) -> ranked cards with per-incident "why"

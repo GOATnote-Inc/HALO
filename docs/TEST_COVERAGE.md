@@ -4,6 +4,11 @@ Method: full offline suite under `pytest-cov` (branch mode) on a fresh `make set
 2026-07-30. N = 275 tests over 2,140 statements. Result: **80% line / 77% branch**.
 Numbers below are per-module branch coverage from that run.
 
+Re-verified 2026-07-31 after the ecosystem + lint merges (N = 291 tests over 2,232
+statements): 80% line / 78% combined, `halo/llm.py` still 57% — every gap and priority
+below stands unchanged. The new `edu/provenance.py` (90%), `edu/drafting.py` (83%), and
+`edu/receipts_export.py` (100%) arrived tested and are not on the gap list.
+
 ## What is already strong
 
 The deterministic clinical core carries the safety weight, and it is the best-tested
