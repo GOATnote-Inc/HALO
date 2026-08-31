@@ -102,9 +102,10 @@ verification layer over every agent output. Full inventory: [docs/AGENTS.md](doc
 | Any identity match | At most a *candidate*; confirmation is a human act |
 
 **Cardinal metric: under-triage false negatives = 0.** Current results on the synthetic
-goldset (N=12 notes, claude-opus-4-8, single run, method in `src/halo/mci/demo.py`):
+goldset (single run, 2026-07-18, claude-opus-4-8, on 12 of the current 13 goldset cases —
+`mci-013` was added after that run; rerun pending; method in `src/halo/mci/demo.py`):
 11/12 category agreement, **0 under-triage FNs**, 78/84 extraction fields correct; the sole
-disagreement was safe-direction over-triage. 275 offline tests (including full input-space totality sweeps over the triage and
+disagreement was safe-direction over-triage. 297 offline tests (including full input-space totality sweeps over the triage and
 surge rule tables) gate CI.
 
 ## Quickstart
@@ -120,7 +121,7 @@ Live surfaces (need `ANTHROPIC_API_KEY`):
 
 ```sh
 .venv/bin/python -m halo.mci.demo            # goldset eval: extraction + triage + FN gate
-.venv/bin/python -m halo.mci.demo --handoff  # 4 scripted end-to-end scenarios (see below)
+.venv/bin/python -m halo.mci.demo --handoff  # 6 scripted end-to-end scenarios (see below)
 .venv/bin/python -m halo.mci.demo --surge    # offline: reverse-triage the census, print plan
 make serve                                    # then open http://127.0.0.1:8000
 ```
@@ -131,7 +132,7 @@ care tethers, and the surge action per bed) plus a **door triage** tab (paste or
 note, run the handoff, read the evidence-quoted observations, identity candidates with care
 flags, the agent tool trail, and the FHIR write-back preview).
 
-The three scripted scenarios mirror the published failure modes:
+The six scripted scenarios mirror the published failure modes; three examples:
 
 1. **Route 91 pattern** — self-transported, partial identity, head strike; resolves
    deterministically and surfaces the clopidogrel occult-hemorrhage flag.
@@ -154,12 +155,13 @@ The three scripted scenarios mirror the published failure modes:
 | `docs/GOVERNANCE.md` | Medical, legal, and ethical posture; AI risk register; limitations. |
 | `docs/WORKFLOW.md` | Who actually does MCI triage (nurses) and where each surface sits. |
 | `docs/INTEGRATION.md` | Epic/FHIR incorporation: SMART launch, alias write-back, CDS Hooks, chart bloat. |
-| `CLAUDE.md` / `STATUS.md` | Working charter and live multi-terminal coordination board. |
+| `CLAUDE.md` / `docs/HACKATHON_LOG.md` | Working charter and the archived hackathon coordination board. |
 
 ## Working agreements
 
-Several agent terminals work in this repo concurrently (full rules in [CLAUDE.md](CLAUDE.md)):
-claim a lane in [STATUS.md](STATUS.md) first; stage files by name; `git pull --rebase` +
+During the hackathon several agent terminals worked in this repo concurrently (full rules
+in [CLAUDE.md](CLAUDE.md)): claim a lane in the coordination board (now archived at
+[docs/HACKATHON_LOG.md](docs/HACKATHON_LOG.md)) first; stage files by name; `git pull --rebase` +
 `make check` before every push; synthetic data only; never read or print `.env` contents.
 
 ## Scope & claims
