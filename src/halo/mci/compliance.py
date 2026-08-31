@@ -144,6 +144,11 @@ def run_compliance_review() -> dict[str, Any]:
         max_iterations=8,
     )
 
+    # Fail closed: a review that never reached report_findings must not render as a
+    # clean pass with zero findings — refuse instead of reporting nothing.
+    if not summary_holder:
+        raise llm.LLMFailure("fail-closed: agent never called report_findings")
+
     # Deterministic verification: rule must exist; evidence must actually appear.
     known_rules = {r["rule_id"] for r in RULES}
     haystack = "\n".join(_log_lines()) + "\n" + json.dumps(_snapshot())

@@ -2,8 +2,18 @@
 synthetic-ambient-fhir-25/index.html
 synthetic-ambient-fhir-25/synthetic-ambient-fhir-25.json
 
+# Secrets — never commit key material (.env.example is the committed template)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
 # Build/demo artifacts
+.venv/
 __pycache__/
 *.egg-info/
+*.egg-link
 out/
 .DS_Store
+.coverage

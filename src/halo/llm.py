@@ -91,7 +91,9 @@ def agent_loop(
                 trail.append({"tool": block.name, "input": block.input})
     if last is None:
         raise LLMFailure("fail-closed: agent loop produced no message")
-    if last.stop_reason in ("refusal", "max_tokens", "pause_turn"):
+    # ``tool_use`` as the *final* stop reason means the runner hit ``max_iterations``
+    # mid-loop: the model still wanted tools and never produced a final answer.
+    if last.stop_reason in ("refusal", "max_tokens", "pause_turn", "tool_use"):
         raise LLMFailure(f"fail-closed: stop_reason={last.stop_reason}")
     return _text(last), trail
 
@@ -115,7 +117,10 @@ def structured(
     )
     if response.stop_reason in ("refusal", "max_tokens"):
         raise LLMFailure(f"fail-closed: stop_reason={response.stop_reason}")
-    data = json.loads(_text(response))
+    try:
+        data = json.loads(_text(response))
+    except json.JSONDecodeError as exc:
+        raise LLMFailure(f"fail-closed: invalid JSON: {exc}") from exc
     if not isinstance(data, dict):
         raise LLMFailure(f"expected JSON object, got {type(data).__name__}")
     return data
