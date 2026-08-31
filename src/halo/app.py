@@ -1,6 +1,7 @@
 """API surface + demo UI. Run locally: ``make serve`` -> http://127.0.0.1:8000"""
 
 from dataclasses import asdict
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -351,7 +352,10 @@ class HandoffRequest(BaseModel):
     """
 
     note: str = Field(min_length=1)
-    incident_date: str = Field(default="2026-07-18", pattern=r"^\d{4}-\d{2}-\d{2}$")
+    incident_date: str = Field(
+        default_factory=lambda: datetime.now(tz=UTC).date().isoformat(),
+        pattern=r"^\d{4}-\d{2}-\d{2}$",
+    )
     likely_survivable: bool | None = None
 
 

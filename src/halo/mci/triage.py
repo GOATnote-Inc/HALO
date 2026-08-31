@@ -47,10 +47,13 @@ _SCREEN_FIELDS = (
 _RR_DISTRESS_THRESHOLD = 30
 
 
+def _invert(v: bool | None) -> bool | None:
+    return None if v is None else not v
+
+
 def _screen_answers(obs: Observations) -> tuple[dict[str, bool | None], tuple[str, ...]]:
-    invert = lambda v: None if v is None else not v
     derivations: list[str] = []
-    no_distress = invert(obs.respiratory_distress)
+    no_distress = _invert(obs.respiratory_distress)
     if no_distress is None and obs.respiratory_rate is not None:
         no_distress = obs.respiratory_rate < _RR_DISTRESS_THRESHOLD
         comparator = "<" if no_distress else ">="
@@ -62,7 +65,7 @@ def _screen_answers(obs: Observations) -> tuple[dict[str, bool | None], tuple[st
         "obeys_commands": obs.obeys_commands,
         "peripheral_pulse": obs.peripheral_pulse,
         "no_respiratory_distress": no_distress,
-        "hemorrhage_controlled": invert(obs.major_hemorrhage_uncontrolled),
+        "hemorrhage_controlled": _invert(obs.major_hemorrhage_uncontrolled),
     }
     return answers, tuple(derivations)
 

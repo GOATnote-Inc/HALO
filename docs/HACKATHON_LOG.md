@@ -1,4 +1,9 @@
-# STATUS — live coordination board
+# HACKATHON LOG — archived coordination board
+
+> Archived 2026-08-31. This was the live multi-terminal lane board for the
+> 2026-07-18 hackathon build (formerly `STATUS.md` at the repo root),
+> preserved verbatim below as the build log. Counts and claims reflect the
+> moment each lane closed, not the current tree.
 
 Every terminal updates this file when claiming or finishing work. Commit it with your changes —
 it is the source of truth for who is working where.

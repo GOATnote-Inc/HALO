@@ -6,7 +6,8 @@ anything committed here at any time.
 
 ## Start of session — do this first
 
-1. Read `STATUS.md`. Claim a lane (add/edit a row, commit + push it) **before** writing code.
+1. Read `docs/HACKATHON_LOG.md` (the coordination board, archived post-hackathon at that
+   path). Claim a lane (add/edit a row, commit + push it) **before** writing code.
 2. `make setup` once per machine. `make check` must be green before every push.
 
 ## Commands
@@ -21,12 +22,12 @@ anything committed here at any time.
 
 Several Claude Code sessions share this repo. To keep git history clean:
 
-- **One terminal = one lane.** Scope is a set of files/dirs, recorded in `STATUS.md`. Do not edit
-  files outside your lane; if you must, coordinate via a note in `STATUS.md` first.
+- **One terminal = one lane.** Scope is a set of files/dirs, recorded in `docs/HACKATHON_LOG.md`.
+  Do not edit files outside your lane; if you must, coordinate via a note there first.
 - **Commit small, commit often.** Stage files **by name** — never `git add -A` or `git add .`.
 - **Before every push:** `git pull --rebase origin main`, re-run `make check`, then push.
 - If a rebase conflicts in files outside your lane, stop — don't resolve someone else's work.
-- Shared files (`STATUS.md`, `README.md`, `pyproject.toml`) get one-line focused commits so
+- Shared files (`docs/HACKATHON_LOG.md`, `README.md`, `pyproject.toml`) get one-line focused commits so
   rebases stay trivial.
 
 ## Hard rules
