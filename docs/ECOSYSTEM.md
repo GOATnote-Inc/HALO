@@ -16,7 +16,8 @@ these repos.** They interoperate by shared *data formats* and shared
                   ▼
    ┌────────────────────────────┐
    │  HALO edu / CME engine      │  depth: step-graded drills, computable
-   │  (hand-built, MD-signed)    │  dosing, fail-closed refusal
+   │  (hand-built; all cards     │  dosing, fail-closed refusal
+   │   draft, sign-off pending)  │
    └────────────┬───────────────┘
                 │ hash-chained CME evidence (identical primitive)
                 ▼
@@ -25,6 +26,9 @@ these repos.** They interoperate by shared *data formats* and shared
                 │ FN=0 safety eval (cardinal metric)
             LostBench / SafeShift
 ```
+
+CME engine content status: hand-built; physician sign-off pending (all four cards
+carry `review.status="draft"`).
 
 ## Seam 1 — OpenEM as citation & provenance backbone  *(wired)*
 

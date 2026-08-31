@@ -79,7 +79,7 @@ def extract_observations(note: str) -> tuple[Observations, dict[str, str]]:
         EXTRACTION_SCHEMA,
         system=SYSTEM,
     )
-    values: dict[str, bool | int | None] = {}
+    values: dict[str, Any] = {}
     evidence: dict[str, str] = {}
     for name in _FIELDS:
         entry = data.get(name)

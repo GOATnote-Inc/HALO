@@ -1,0 +1,14 @@
+NOTICE — synthetic-ambient-fhir-25 dataset
+
+This directory contains the "synthetic-ambient-fhir-25" dataset: 25 fully
+synthetic patients (Synthea-simulated records with LLM-generated transcripts
+and notes; no real patient data). It was provided by Abridge for use during
+the Future of Agentic AI in Healthcare hackathon (Abridge x Anthropic x
+Lightspeed, San Francisco, 2026-07-18).
+
+This dataset is NOT covered by the repository's Apache-2.0 license. Its
+redistribution terms have not been confirmed with Abridge. Until they are,
+treat the dataset as provided for hackathon use only: do not redistribute it
+separately from this repository, and do not rely on it under Apache-2.0.
+
+Questions: b@thegoatnote.com

@@ -80,8 +80,9 @@ class IdentityCues:
 
 
 def load_panel(path: str | Path | None = None) -> tuple[PanelPatient, ...]:
-    p = Path(path or os.environ.get("HALO_PANEL_PATH", DEFAULT_PANEL_PATH))
-    return _load_panel_cached(str(p.resolve()))
+    if path is None:
+        path = os.environ.get("HALO_PANEL_PATH") or DEFAULT_PANEL_PATH
+    return _load_panel_cached(str(Path(path).resolve()))
 
 
 @lru_cache(maxsize=4)

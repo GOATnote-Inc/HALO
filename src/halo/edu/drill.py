@@ -20,10 +20,13 @@ human reviewer can spot that.
 
 from __future__ import annotations
 
+import logging
 import re
 
 from halo.edu.corpus import module_version
 from halo.edu.models import DecisionPoint, DrillResult, ProcedureModule, StepGrade
+
+logger = logging.getLogger(__name__)
 
 
 def phrase_hits(phrase: str, text: str) -> bool:
@@ -70,7 +73,10 @@ def _llm_adjudicate(point: DecisionPoint, answer: str) -> bool:
     )
     try:
         result = llm.structured(prompt, schema)
-    except Exception:  # noqa: BLE001 — fail closed: any LLM/parse error must not grant credit
+    except Exception as exc:  # noqa: BLE001 — fail closed: any LLM/parse error must not grant credit
+        logger.warning(
+            "LLM adjudication unavailable (%s: %s); no credit granted", type(exc).__name__, exc
+        )
         return False
     return result.get("credit") is True
 

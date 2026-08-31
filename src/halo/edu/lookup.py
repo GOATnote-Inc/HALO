@@ -10,11 +10,14 @@ an empty tuple — the caller shows the full module list, never a guess.
 
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import dataclass
 
 from halo.edu.corpus import load_corpus
 from halo.edu.models import ProcedureModule
+
+logger = logging.getLogger(__name__)
 
 _ALIAS_SUBSTRING = 3.0
 _ALIAS_TOKEN = 2.0
@@ -146,7 +149,10 @@ def route_with_claude(query: str) -> str | None:
     )
     try:
         result = llm.structured(prompt, schema)
-    except Exception:  # noqa: BLE001 — fail closed: any LLM/parse error routes to no match
+    except Exception as exc:  # noqa: BLE001 — fail closed: any LLM/parse error routes to no match
+        logger.warning(
+            "LLM lookup unavailable (%s: %s); routing to no match", type(exc).__name__, exc
+        )
         return None
     module_id = result.get("module_id")
     return module_id if module_id in ids else None

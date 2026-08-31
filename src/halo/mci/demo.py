@@ -4,7 +4,7 @@ Two modes:
 
 ``python -m halo.mci.demo``            goldset eval — extraction accuracy vs gold
                                        observations and the under-triage FN gate (target 0).
-``python -m halo.mci.demo --handoff``  three scripted scenarios mirroring published MCI
+``python -m halo.mci.demo --handoff``  six scripted scenarios mirroring published MCI
                                        failure modes (Route 91 / Beirut / Boston patterns):
                                        triage + identity reconciliation + care flags.
 """
@@ -36,7 +36,7 @@ def _rule(title: str) -> None:
 
 
 def run_handoff_scenarios() -> int:
-    """Three scripted end-to-end scenarios — the judged demo path."""
+    """All scripted end-to-end scenarios (``SCENARIOS``) — the judged demo path."""
     from halo.mci.panel import care_flags
     from halo.mci.reconcile import reconcile
     from halo.mci.scenarios import INCIDENT_DATE, SCENARIOS

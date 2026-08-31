@@ -7,7 +7,7 @@ requires-python = ">=3.11"
 license = "Apache-2.0"
 authors = [{ name = "GOATnote Inc." }]
 dependencies = [
-    "anthropic>=0.116",
+    "anthropic>=1.0,<2",
     "pydantic>=2",
     "fastapi>=0.110",
     "uvicorn>=0.29",

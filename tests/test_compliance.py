@@ -106,6 +106,45 @@ def test_snapshot_evidence_is_verifiable(monkeypatch: pytest.MonkeyPatch) -> Non
     assert len(out["findings"]) == 1
 
 
+def test_review_fails_closed_when_report_never_called(monkeypatch: pytest.MonkeyPatch) -> None:
+    # End-to-end through the real agent_loop with a fake runner: the model ends its
+    # turn without ever calling report_findings. This must raise, never render as a
+    # clean review with zero findings.
+    from types import SimpleNamespace
+
+    message = SimpleNamespace(
+        stop_reason="end_turn",
+        content=[SimpleNamespace(type="text", text="all looks fine")],
+    )
+
+    def tool_runner(**_kwargs: Any) -> Any:
+        return iter([message])
+
+    fake = SimpleNamespace(beta=SimpleNamespace(messages=SimpleNamespace(tool_runner=tool_runner)))
+    monkeypatch.setattr(llm, "client", lambda: fake)
+    with pytest.raises(llm.LLMFailure, match="report_findings"):
+        comp.run_compliance_review()
+
+
+def test_review_fails_closed_at_iteration_cap(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Runner exhausted max_iterations with the model still requesting tools
+    # (stop_reason stays "tool_use"): agent_loop itself must refuse.
+    from types import SimpleNamespace
+
+    message = SimpleNamespace(
+        stop_reason="tool_use",
+        content=[SimpleNamespace(type="tool_use", name="get_rules", input={})],
+    )
+
+    def tool_runner(**_kwargs: Any) -> Any:
+        return iter([message])
+
+    fake = SimpleNamespace(beta=SimpleNamespace(messages=SimpleNamespace(tool_runner=tool_runner)))
+    monkeypatch.setattr(llm, "client", lambda: fake)
+    with pytest.raises(llm.LLMFailure, match="tool_use"):
+        comp.run_compliance_review()
+
+
 def test_endpoint_fails_closed_on_llm_failure(monkeypatch: pytest.MonkeyPatch) -> None:
     def boom(*_a: Any, **_k: Any):
         raise llm.LLMFailure("refusal")

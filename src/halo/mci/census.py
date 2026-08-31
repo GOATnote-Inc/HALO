@@ -55,8 +55,9 @@ class Census:
 
 
 def load_census(path: str | Path | None = None) -> Census:
-    p = Path(path or os.environ.get("HALO_CENSUS_PATH", DEFAULT_CENSUS_PATH))
-    return _load_census_cached(str(p.resolve()))
+    if path is None:
+        path = os.environ.get("HALO_CENSUS_PATH") or DEFAULT_CENSUS_PATH
+    return _load_census_cached(str(Path(path).resolve()))
 
 
 @lru_cache(maxsize=4)

@@ -60,3 +60,58 @@ def test_structured_rejects_non_object(monkeypatch: pytest.MonkeyPatch) -> None:
     _patch_client(monkeypatch, _resp("end_turn", json.dumps([1, 2])))
     with pytest.raises(llm.LLMFailure):
         llm.structured("p", {"type": "object"})
+
+
+def test_structured_fails_closed_on_invalid_json(monkeypatch: pytest.MonkeyPatch) -> None:
+    _patch_client(monkeypatch, _resp("end_turn", "{not valid json"))
+    with pytest.raises(llm.LLMFailure, match="invalid JSON"):
+        llm.structured("p", {"type": "object"})
+
+
+def _patch_runner(monkeypatch: pytest.MonkeyPatch, messages: list[SimpleNamespace]) -> None:
+    def tool_runner(**_kwargs: Any) -> Any:
+        return iter(messages)
+
+    fake = SimpleNamespace(beta=SimpleNamespace(messages=SimpleNamespace(tool_runner=tool_runner)))
+    monkeypatch.setattr(llm, "client", lambda: fake)
+
+
+def test_agent_loop_returns_text_and_trail(monkeypatch: pytest.MonkeyPatch) -> None:
+    _patch_runner(
+        monkeypatch,
+        [
+            SimpleNamespace(
+                stop_reason="tool_use",
+                content=[SimpleNamespace(type="tool_use", name="lookup", input={"q": 1})],
+            ),
+            SimpleNamespace(
+                stop_reason="end_turn",
+                content=[SimpleNamespace(type="text", text="done")],
+            ),
+        ],
+    )
+    text, trail = llm.agent_loop("p", [])
+    assert text == "done"
+    assert trail == [{"tool": "lookup", "input": {"q": 1}}]
+
+
+def test_agent_loop_fails_closed_on_iteration_cap(monkeypatch: pytest.MonkeyPatch) -> None:
+    # The SDK runner exits at max_iterations leaving stop_reason="tool_use" on the last
+    # message — the agent never produced a final answer, so this must raise, not return.
+    _patch_runner(
+        monkeypatch,
+        [
+            SimpleNamespace(
+                stop_reason="tool_use",
+                content=[SimpleNamespace(type="tool_use", name="lookup", input={})],
+            ),
+        ],
+    )
+    with pytest.raises(llm.LLMFailure, match="tool_use"):
+        llm.agent_loop("p", [])
+
+
+def test_agent_loop_fails_closed_on_no_messages(monkeypatch: pytest.MonkeyPatch) -> None:
+    _patch_runner(monkeypatch, [])
+    with pytest.raises(llm.LLMFailure, match="no message"):
+        llm.agent_loop("p", [])
