@@ -1,11 +1,12 @@
 <p align="center">
 
-> **Maintenance status (2026-09):** passive. This repository is kept available as a reference implementation; CI runs on pushes and pull requests only, Dependabot security alerts remain enabled, and no scheduled jobs or hosted services consume ongoing resources. No active development is planned.
 
   <img src="docs/assets/halo-logo.png" alt="HALO — high acuity, low occurrence events in the ED" width="360">
 </p>
 
 # HALO
+
+> **Maintenance status (2026-09):** passive. This repository is kept available as a reference implementation; CI runs on pushes and pull requests only, Dependabot security alerts remain enabled, and no scheduled jobs or hosted services consume ongoing resources. No active development is planned.
 
 [![ci](https://github.com/GOATnote-Inc/HALO/actions/workflows/ci.yml/badge.svg)](https://github.com/GOATnote-Inc/HALO/actions/workflows/ci.yml)
 
